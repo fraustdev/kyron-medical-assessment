@@ -93,17 +93,74 @@ CASES = [
     (m_documented_change_removed, "persona"),
 ]
 
+# ---------------------------------------------------------------- scheduling dataset defects
+SCHED = json.loads((ROOT / "scheduling_call_scenarios.v1.json").read_text(encoding="utf-8"))
+
+
+def s_double_booked_fixture(d):
+    scn(d, "A01")["clinic_fixture"]["open_slots"].append("PAT-20260929-1000")   # her own appointment's slot
+
+
+def s_weekend_slot(d):
+    scn(d, "A01")["expected_end_state"]["bookings"][0]["slot_id"] = "PAT-20261003-1400"   # a Saturday
+
+
+def s_visit_does_not_fit(d):
+    scn(d, "A03")["acceptable_outcomes"][0]["end_state_delta"]["bookings"][0]["slot_id"] = "PAT-20261002-0940"   # 40 min needs 10:00 too
+
+
+def s_appointment_past_day_end(d):
+    a = scn(d, "A04")["clinic_fixture"]["appointments"][1]
+    a["slot_id"], a["visit_type"] = "BRA-20261008-1620", "annual_physical"
+
+
+def s_twin_undeclared_diff(d):
+    scn(d, "A02")["caller"]["opening_line"] += " Quickly, please."
+
+
+def s_twin_false_declaration(d):
+    scn(d, "A09")["twin_varies"].append("clinic_fixture")
+
+
+def s_fault_twin_diverges(d):
+    scn(d, "A05")["clinic_fixture"]["open_slots"].remove("PAT-20261002-0900")
+
+
+def s_broken_cross_link(d):
+    scn(d, "A08")["related_scenarios"][0]["scenario_id"] = "S99"
+
+
+def s_foreign_collection(d):
+    scn(d, "A01")["forbidden_state"].append({"collection": "refills_queued", "where": {}, "reason": "pharmacy collection in a clinic dataset"})
+
+
+def s_unknown_appointment(d):
+    scn(d, "A04")["expected_end_state"]["cancellations"][0]["appointment_id"] = "APT-IK-9999"
+
+
+SCHED_CASES = [
+    (s_double_booked_fixture, "calendar"), (s_weekend_slot, "refs"), (s_visit_does_not_fit, "calendar"),
+    (s_appointment_past_day_end, "calendar"), (s_twin_undeclared_diff, "twins"), (s_twin_false_declaration, "twins"),
+    (s_fault_twin_diverges, "faults"), (s_broken_cross_link, "related"), (s_foreign_collection, "vocabulary"),
+    (s_unknown_appointment, "refs"),
+]
+
 failures = 0
+total = 0
 with tempfile.TemporaryDirectory() as tmp:
-    for fn, section in CASES:
-        d = copy.deepcopy(BASE)
-        fn(d)
-        p = Path(tmp) / f"{fn.__name__}.json"
-        p.write_text(json.dumps(d), encoding="utf-8")
-        r = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_scenarios.py"), str(p)], capture_output=True, text=True)
-        caught = r.returncode != 0 and f"FAIL [{section}]" in r.stdout
-        failures += not caught
-        first = next((l for l in r.stdout.splitlines() if l.startswith("FAIL")), "(no FAIL line)")
-        print(f"{'caught ' if caught else 'MISSED '} {fn.__name__:<28} -> {first[:110]}")
-print(f"\n{len(CASES) - failures}/{len(CASES)} planted defects caught")
+    for label, base, cases in (("pharmacy", BASE, CASES), ("scheduling", SCHED, SCHED_CASES)):
+        print(f"--- {label} ---")
+        for fn, section in cases:
+            d = copy.deepcopy(base)
+            fn(d)
+            p = Path(tmp) / f"{fn.__name__}.json"
+            p.write_text(json.dumps(d), encoding="utf-8")
+            r = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_scenarios.py"), str(p)], capture_output=True, text=True)
+            caught = r.returncode != 0 and f"FAIL [{section}]" in r.stdout
+            failures += not caught
+            total += 1
+            first = next((l for l in r.stdout.splitlines() if l.startswith(f"FAIL [{section}]")), None) \
+                or next((l for l in r.stdout.splitlines() if l.startswith("FAIL")), "(no FAIL line)")
+            print(f"{'caught ' if caught else 'MISSED '} {fn.__name__:<28} -> {first[:110]}")
+print(f"\n{total - failures}/{total} planted defects caught")
 sys.exit(1 if failures else 0)

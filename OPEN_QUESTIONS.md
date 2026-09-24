@@ -6,9 +6,9 @@ Part 1 lists what is still open (currently nothing). Part 2 is the decision log:
 
 ## Part 1: Still open
 
-**None.** Every question has been answered by the author. One interpretation is worth a second look:
+**None.** Every question has been answered by the author, including the one interpretation that needed confirmation:
 
-- **OQ-28 × OQ-24.** You chose "all transfers" for the availability rule. The option text said this would add an availability callback to S06/S08/S11/S12. But all four are moves to the patient's **new permanent home store**, and your OQ-24 answer said such moves can go directly. I applied both rules consistently: every medication is covered by the **never-promise** rule, and required availability callbacks apply only to non-home stores (e.g. S16's vacation store). S06/S08/S11/S12 gained never-promise checks, not required callbacks. *If you want required callbacks in those four anyway, say so and I'll flip it.*
+- **OQ-28 × OQ-24, confirmed by the author (2026-09-24).** "All transfers" (OQ-28) combined with the permanent-home-store exception (OQ-24): every medication is covered by the **never-promise** rule, and required availability callbacks apply only to stores that are *not* becoming the patient's home (e.g. S16's vacation store). S06, S08, S11 and S12 are moves to a new permanent home store, so they carry never-promise checks, not required callbacks. No data change; this is how the dataset was already built.
 
 ---
 ## Part 2: Decision log (resolved 2026-09-24)

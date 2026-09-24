@@ -1,313 +1,2438 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/harbor-pharmacy/scenario.schema.json",
-  "title": "Harbor Pharmacy call-scenario dataset v2",
+  "title": "Harbor call-scenario datasets (pharmacy v2 + clinic scheduling v1)",
   "type": "object",
-  "required": ["dataset", "version", "description", "simulated_now", "agent_context", "policies", "state_model", "check_dsl",
-               "trace_contract", "tool_fault_types", "workflows", "caller_sim_instructions", "stores", "scenarios"],
+  "required": [
+    "dataset",
+    "version",
+    "description",
+    "simulated_now",
+    "agent_context",
+    "policies",
+    "state_model",
+    "check_dsl",
+    "trace_contract",
+    "tool_fault_types",
+    "workflows",
+    "caller_sim_instructions",
+    "scenarios"
+  ],
   "properties": {
-    "dataset": {"type": "string"},
-    "version": {"type": "string", "pattern": "^2\\.\\d+\\.\\d+$"},
-    "previous_version": {"type": "string"},
-    "description": {"type": "string", "minLength": 1},
-    "simulated_now": {"type": "string"},
+    "dataset": {
+      "enum": [
+        "harbor-pharmacy-call-scenarios",
+        "harbor-clinic-scheduling-scenarios"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "previous_version": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "simulated_now": {
+      "type": "string"
+    },
     "agent_context": {
       "type": "object",
-      "required": ["pharmacy_name", "outside_chain", "tools", "policies"],
-      "properties": {"tools": {"type": "array", "items": {"type": "string"}, "minItems": 1}}
+      "required": [
+        "tools",
+        "policies"
+      ],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
     },
-    "policies": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/policy"}},
-    "state_model": {"type": "object", "required": ["collections"]},
-    "check_dsl": {"type": "object", "required": ["types", "violation_types"]},
-    "trace_contract": {"type": "array", "items": {"type": "string"}},
-    "tool_fault_types": {"type": "object"},
-    "workflows": {"type": "object", "required": ["rx_refill_renewal", "pharmacy_change_transfer", "urgent_symptom_routing"]},
-    "caller_sim_instructions": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-    "stores": {"type": "array", "items": {"$ref": "#/$defs/store"}, "minItems": 1},
-    "scenarios": {"type": "array", "items": {"$ref": "#/$defs/scenario"}, "minItems": 1}
+    "policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/policy"
+      }
+    },
+    "state_model": {
+      "type": "object",
+      "required": [
+        "collections"
+      ]
+    },
+    "check_dsl": {
+      "type": "object",
+      "required": [
+        "types",
+        "violation_types"
+      ]
+    },
+    "trace_contract": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tool_fault_types": {
+      "type": "object"
+    },
+    "workflows": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "caller_sim_instructions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "stores": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/store"
+      },
+      "minItems": 1
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenario"
+      },
+      "minItems": 1
+    },
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "visit_types": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "minutes"
+        ],
+        "properties": {
+          "minutes": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "calendar": {
+      "type": "object",
+      "required": [
+        "generator",
+        "date_range",
+        "weekdays_only",
+        "day_start",
+        "day_end",
+        "slot_minutes",
+        "slot_id_format"
+      ],
+      "properties": {
+        "date_range": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "slot_minutes": {
+          "type": "integer",
+          "minimum": 5
+        },
+        "weekdays_only": {
+          "type": "boolean"
+        },
+        "day_start": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$"
+        },
+        "day_end": {
+          "type": "string",
+          "pattern": "^\\d{2}:\\d{2}$"
+        }
+      }
+    }
   },
   "$defs": {
     "policy": {
       "type": "object",
-      "required": ["id", "title", "text", "source"],
+      "required": [
+        "id",
+        "title",
+        "text",
+        "source"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^POL-[A-Z]+-\\d+$"},
-        "title": {"type": "string"},
-        "text": {"type": "string", "minLength": 1},
-        "source": {"type": "string", "pattern": "^(converted_v1:.+|added_v2_approved|added_v2_needs_review)$"},
-        "derived_from": {"type": "string"}, "note": {"type": "string"}, "revision_note": {"type": "string"},
-        "tier": {"enum": ["none", "pharmacist", "doctor_today", "emergency_911"]}
+        "id": {
+          "type": "string",
+          "pattern": "^POL(-[A-Z]+)+-\\d+$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^(converted_v1:.+|added_v2_approved|added_v2_needs_review|added_needs_review|author_decision:(D\\d+|OQS?-\\d{2}))$"
+        },
+        "derived_from": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "revision_note": {
+          "type": "string"
+        },
+        "tier": {
+          "enum": [
+            "none",
+            "pharmacist",
+            "doctor_today",
+            "emergency_911",
+            "nurse_same_day"
+          ]
+        }
       },
       "additionalProperties": false
     },
     "store": {
       "type": "object",
-      "required": ["id", "name", "address"],
-      "properties": {"id": {"type": "string", "pattern": "^(H|B)-\\d+$"}, "name": {"type": "string"}, "address": {"type": "string"},
-                     "phone": {"type": "string"}, "notes": {"type": "string"}},
+      "required": [
+        "id",
+        "name",
+        "address"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(H|B)-\\d+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
       "additionalProperties": false
     },
-    "tier": {"enum": ["none", "pharmacist", "doctor_today", "emergency_911"]},
-    "workflow": {"enum": ["rx_refill_renewal", "pharmacy_change_transfer", "urgent_symptom_routing"]},
-    "tag": {"enum": ["mid_call_correction", "ambiguous_pharmacy", "zero_refills", "caregiver", "buried_symptom", "controlled_substance", "identity_failure", "out_of_scope"]},
-    "failure_type": {"enum": ["over_caution", "carelessness"]},
-    "violation": {"enum": ["false_completion", "false_status", "fabricated_fact", "unauthorized_promise", "phi_disclosure"]},
-
+    "tier": {
+      "enum": [
+        "none",
+        "pharmacist",
+        "doctor_today",
+        "emergency_911",
+        "nurse_same_day"
+      ]
+    },
+    "workflow": {
+      "enum": [
+        "rx_refill_renewal",
+        "pharmacy_change_transfer",
+        "urgent_symptom_routing",
+        "appointment_scheduling"
+      ]
+    },
+    "tag": {
+      "enum": [
+        "mid_call_correction",
+        "ambiguous_pharmacy",
+        "zero_refills",
+        "caregiver",
+        "buried_symptom",
+        "controlled_substance",
+        "identity_failure",
+        "out_of_scope",
+        "caller_pacing",
+        "ambiguous_date",
+        "ambiguous_appointment",
+        "no_availability",
+        "cross_workflow"
+      ]
+    },
+    "failure_type": {
+      "enum": [
+        "over_caution",
+        "carelessness"
+      ]
+    },
+    "violation": {
+      "enum": [
+        "false_completion",
+        "false_status",
+        "fabricated_fact",
+        "unauthorized_promise",
+        "phi_disclosure"
+      ]
+    },
     "scenario": {
       "type": "object",
-      "required": ["id", "status", "title", "category", "hard_case_tags", "task_type", "workflow", "urgency_tier", "caller",
-                   "disclosure_rules", "scripted_moves", "caller_stop_conditions", "pharmacy_fixture", "agent_known_at_start",
-                   "unavailable_evidence", "critical_entities", "policy_refs", "escalation", "human_involvement",
-                   "expected_end_state", "forbidden_state", "acceptable_outcomes", "grading"],
+      "required": [
+        "id",
+        "status",
+        "title",
+        "category",
+        "hard_case_tags",
+        "task_type",
+        "workflow",
+        "urgency_tier",
+        "caller",
+        "disclosure_rules",
+        "scripted_moves",
+        "caller_stop_conditions",
+        "agent_known_at_start",
+        "unavailable_evidence",
+        "critical_entities",
+        "policy_refs",
+        "escalation",
+        "human_involvement",
+        "expected_end_state",
+        "forbidden_state",
+        "acceptable_outcomes",
+        "grading"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^S\\d{2}(-F\\d+)?$"},
-        "status": {"enum": ["active", "draft_needs_review"]},
-        "parent_id": {"type": "string", "pattern": "^S\\d{2}$"},
-        "title": {"type": "string", "minLength": 1},
-        "category": {"enum": ["control", "ordinary", "hard", "fault"]},
-        "hard_case_tags": {"type": "array", "items": {"$ref": "#/$defs/tag"}, "uniqueItems": true},
-        "task_type": {"enum": ["refill", "transfer", "pharmacy_change"]},
-        "workflow": {"type": "array", "items": {"$ref": "#/$defs/workflow"}, "minItems": 1, "uniqueItems": true},
-        "urgency_tier": {"$ref": "#/$defs/tier"},
+        "id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?$"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "draft_needs_review"
+          ]
+        },
+        "parent_id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "control",
+            "ordinary",
+            "hard",
+            "fault"
+          ]
+        },
+        "hard_case_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tag"
+          },
+          "uniqueItems": true
+        },
+        "task_type": {
+          "enum": [
+            "refill",
+            "transfer",
+            "pharmacy_change",
+            "reschedule",
+            "book",
+            "cancel"
+          ]
+        },
+        "workflow": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/workflow"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "urgency_tier": {
+          "$ref": "#/$defs/tier"
+        },
         "caller": {
           "type": "object",
-          "required": ["name", "role", "patient_name", "persona", "speaking_style", "goal", "opening_line", "sample_lines"],
-          "properties": {"role": {"enum": ["patient", "caregiver", "parent"]}, "sample_lines": {"type": "array", "items": {"type": "string"}}}
-        },
-        "disclosure_rules": {"type": "array", "items": {
-          "type": "object", "required": ["fact", "reveal"],
-          "properties": {"fact": {"type": "string"}, "reveal": {"enum": ["upfront", "only_if_asked", "at_trigger"]}, "trigger": {"type": "string"}},
-          "additionalProperties": false}},
-        "scripted_moves": {"type": "array", "items": {
-          "type": "object", "required": ["trigger", "say"],
-          "properties": {"trigger": {"type": "string", "minLength": 1}, "say": {"type": "string", "minLength": 1}, "added_in": {"type": "string"}},
-          "additionalProperties": false}},
-        "caller_stop_conditions": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-        "persona_changes_v2": {"type": "array", "items": {
-          "type": "object", "required": ["field", "before", "after", "reason"],
-          "properties": {"field": {"type": "string"}, "before": {"type": ["string", "null"]}, "after": {"type": "string"}, "reason": {"type": "string", "minLength": 10}},
-          "additionalProperties": false}},
-        "pharmacy_fixture": {"$ref": "#/$defs/fixture"},
-        "agent_known_at_start": {
-          "type": "object", "required": ["caller_id", "preloaded_patient", "has"],
-          "properties": {"caller_id": {"type": ["string", "null"]}, "preloaded_patient": {"type": ["string", "null"]}, "has": {"type": "array", "items": {"type": "string"}}},
-          "additionalProperties": false},
-        "unavailable_evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-        "critical_entities": {"type": "array", "minItems": 1, "items": {
-          "type": "object", "required": ["type", "value", "role"],
-          "properties": {"type": {"enum": ["patient", "drug", "strength", "rx_id", "store_id", "prescriber", "date"]}, "value": {"type": "string"},
-                         "role": {"enum": ["act_on", "must_not_act_on", "reference"]}},
-          "additionalProperties": false}},
-        "policy_refs": {"type": "array", "items": {"type": "string", "pattern": "^POL-[A-Z]+-\\d+$"}, "minItems": 1, "uniqueItems": true},
-        "escalation": {
-          "type": "object", "required": ["required", "target", "latest_acceptable_turn", "reason"],
-          "properties": {"required": {"type": "boolean"}, "target": {"enum": ["none", "pharmacist", "prescriber", "911"]},
-                         "latest_acceptable_turn": {"enum": ["before any task action", "before call end", null]}, "reason": {"type": "string"}},
-          "additionalProperties": false},
-        "human_involvement": {"type": "array", "items": {
-          "type": "object", "required": ["condition", "who", "mechanism"],
-          "properties": {"condition": {"type": "string"}, "who": {"enum": ["pharmacist", "prescriber", "emergency_services", "patient", "pharmacy staff"]}, "mechanism": {"type": "string"}},
-          "additionalProperties": false}},
-        "trace_events": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^scripted_moves\\[\\d+\\]$"}},
-        "tool_faults": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/tool_fault"}},
-        "fault_notes": {"type": "string"},
-        "harness_integrity_case": {"type": "boolean"},
-        "depends_on_open_questions": {"type": "array", "items": {"type": "string", "pattern": "^OQ-\\d{2}$"}},
-        "expected_end_state": {"$ref": "#/$defs/end_state"},
-        "forbidden_state": {"type": "array", "items": {
-          "type": "object", "required": ["collection", "where", "reason"],
-          "properties": {"collection": {"$ref": "#/$defs/collection"}, "where": {"$ref": "#/$defs/where"}, "reason": {"type": "string"}},
-          "additionalProperties": false}},
-        "acceptable_outcomes": {"type": "array", "maxItems": 3, "items": {
-          "type": "object", "required": ["id", "end_state_delta", "reason"],
-          "properties": {"id": {"type": "string", "pattern": "^A\\d$"}, "conditional_on_open_question": {"type": "string", "pattern": "^OQ-\\d{2}$"}, "end_state_delta": {"$ref": "#/$defs/end_state_partial"}, "reason": {"type": "string", "minLength": 1}},
-          "additionalProperties": false}},
-        "unique_outcome_reason": {"type": "string", "minLength": 1},
-        "grading": {
-          "type": "object", "required": ["success_summary", "state_checks", "judged_checks", "claim_checks"],
+          "required": [
+            "name",
+            "role",
+            "patient_name",
+            "persona",
+            "speaking_style",
+            "goal",
+            "opening_line",
+            "sample_lines"
+          ],
           "properties": {
-            "success_summary": {"type": "string"},
-            "state_checks": {"type": "array", "items": {"$ref": "#/$defs/state_check"}, "minItems": 1},
-            "judged_checks": {"type": "array", "items": {"$ref": "#/$defs/judged_check"}},
-            "claim_checks": {"type": "array", "items": {"$ref": "#/$defs/claim_check"}, "minItems": 1},
-            "retired_v1_items": {"type": "array", "items": {
-              "type": "object", "required": ["source", "text", "kind", "reason"],
-              "properties": {"source": {"type": "string", "pattern": "^S\\d{2}\\.must_(not_)?do\\.\\d+$"}, "text": {"type": "string"}, "kind": {"enum": ["must_do", "must_not_do"]},
-                             "failure_type": {"$ref": "#/$defs/failure_type"}, "reason": {"type": "string", "minLength": 10}},
-              "additionalProperties": false}}
+            "role": {
+              "enum": [
+                "patient",
+                "caregiver",
+                "parent"
+              ]
+            },
+            "sample_lines": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "disclosure_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "fact",
+              "reveal"
+            ],
+            "properties": {
+              "fact": {
+                "type": "string"
+              },
+              "reveal": {
+                "enum": [
+                  "upfront",
+                  "only_if_asked",
+                  "at_trigger"
+                ]
+              },
+              "trigger": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "scripted_moves": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "trigger",
+              "say"
+            ],
+            "properties": {
+              "trigger": {
+                "type": "string",
+                "minLength": 1
+              },
+              "say": {
+                "type": "string",
+                "minLength": 1
+              },
+              "added_in": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "caller_stop_conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
           },
-          "additionalProperties": false}
+          "minItems": 1
+        },
+        "persona_changes_v2": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "field",
+              "before",
+              "after",
+              "reason"
+            ],
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "before": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "after": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 10
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "pharmacy_fixture": {
+          "$ref": "#/$defs/fixture"
+        },
+        "agent_known_at_start": {
+          "type": "object",
+          "required": [
+            "caller_id",
+            "preloaded_patient",
+            "has"
+          ],
+          "properties": {
+            "caller_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "preloaded_patient": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "has": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "unavailable_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "critical_entities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "value",
+              "role"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "patient",
+                  "drug",
+                  "strength",
+                  "rx_id",
+                  "store_id",
+                  "prescriber",
+                  "date",
+                  "appointment_id",
+                  "slot_id",
+                  "provider",
+                  "visit_type"
+                ]
+              },
+              "value": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "act_on",
+                  "must_not_act_on",
+                  "reference"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "policy_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^POL(-[A-Z]+)+-\\d+$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "escalation": {
+          "type": "object",
+          "required": [
+            "required",
+            "target",
+            "latest_acceptable_turn",
+            "reason"
+          ],
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "target": {
+              "enum": [
+                "none",
+                "pharmacist",
+                "prescriber",
+                "911",
+                "nurse_line"
+              ]
+            },
+            "latest_acceptable_turn": {
+              "enum": [
+                "before any task action",
+                "before call end",
+                null
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "human_involvement": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "condition",
+              "who",
+              "mechanism"
+            ],
+            "properties": {
+              "condition": {
+                "type": "string"
+              },
+              "who": {
+                "enum": [
+                  "pharmacist",
+                  "prescriber",
+                  "emergency_services",
+                  "patient",
+                  "pharmacy staff",
+                  "nurse",
+                  "clinic staff"
+                ]
+              },
+              "mechanism": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "trace_events": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^scripted_moves\\[\\d+\\]$"
+          }
+        },
+        "tool_faults": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/tool_fault"
+          }
+        },
+        "fault_notes": {
+          "type": "string"
+        },
+        "harness_integrity_case": {
+          "type": "boolean"
+        },
+        "depends_on_open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^OQS?-\\d{2}$"
+          }
+        },
+        "expected_end_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/end_state"
+            },
+            {
+              "$ref": "#/$defs/end_state_sched"
+            }
+          ]
+        },
+        "forbidden_state": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "collection",
+              "where",
+              "reason"
+            ],
+            "properties": {
+              "collection": {
+                "$ref": "#/$defs/collection"
+              },
+              "where": {
+                "$ref": "#/$defs/where"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "acceptable_outcomes": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "end_state_delta",
+              "reason"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^A\\d$"
+              },
+              "conditional_on_open_question": {
+                "type": "string",
+                "pattern": "^OQS?-\\d{2}$"
+              },
+              "end_state_delta": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/end_state_partial"
+                  },
+                  {
+                    "$ref": "#/$defs/end_state_sched_partial"
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "unique_outcome_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "grading": {
+          "type": "object",
+          "required": [
+            "success_summary",
+            "state_checks",
+            "judged_checks",
+            "claim_checks"
+          ],
+          "properties": {
+            "success_summary": {
+              "type": "string"
+            },
+            "state_checks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/state_check"
+              },
+              "minItems": 1
+            },
+            "judged_checks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/judged_check"
+              }
+            },
+            "claim_checks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/claim_check"
+              },
+              "minItems": 1
+            },
+            "retired_v1_items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "source",
+                  "text",
+                  "kind",
+                  "reason"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "pattern": "^S\\d{2}\\.must_(not_)?do\\.\\d+$"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "enum": [
+                      "must_do",
+                      "must_not_do"
+                    ]
+                  },
+                  "failure_type": {
+                    "$ref": "#/$defs/failure_type"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "clinic_fixture": {
+          "$ref": "#/$defs/clinic_fixture"
+        },
+        "twin_of": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}$"
+        },
+        "twin_varies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "related_scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "dataset",
+              "scenario_id",
+              "relation"
+            ],
+            "properties": {
+              "dataset": {
+                "type": "string"
+              },
+              "scenario_id": {
+                "type": "string"
+              },
+              "relation": {
+                "type": "string",
+                "minLength": 10
+              }
+            },
+            "additionalProperties": false
+          }
+        }
       },
       "additionalProperties": false,
       "allOf": [
-        {"if": {"properties": {"category": {"const": "fault"}}}, "then": {"required": ["parent_id", "tool_faults", "fault_notes"]},
-         "else": {"not": {"anyOf": [{"required": ["parent_id"]}, {"required": ["tool_faults"]}]}}},
-        {"if": {"properties": {"acceptable_outcomes": {"maxItems": 0}}}, "then": {"required": ["unique_outcome_reason"]}}
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "fault"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "parent_id",
+              "tool_faults",
+              "fault_notes"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "parent_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "tool_faults"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "acceptable_outcomes": {
+                "maxItems": 0
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "unique_outcome_reason"
+            ]
+          }
+        },
+        {
+          "oneOf": [
+            {
+              "required": [
+                "pharmacy_fixture"
+              ]
+            },
+            {
+              "required": [
+                "clinic_fixture"
+              ]
+            }
+          ]
+        },
+        {
+          "if": {
+            "required": [
+              "twin_of"
+            ]
+          },
+          "then": {
+            "required": [
+              "twin_varies"
+            ]
+          }
+        }
       ]
     },
-
     "fixture": {
-      "type": "object", "required": ["store_ids", "patients"],
+      "type": "object",
+      "required": [
+        "store_ids",
+        "patients"
+      ],
       "properties": {
-        "store_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
-        "notes": {"type": "string"},
-        "patients": {"type": "array", "minItems": 1, "items": {
-          "type": "object", "required": ["name", "dob", "home_store", "authorized_contacts", "restricted_contacts", "prescriptions"],
-          "not": {"anyOf": [{"required": ["caregiver_authorization"]}, {"required": ["guardian"]}]},
-          "properties": {
-            "authorized_contacts": {"type": "array", "items": {
-              "type": "object", "required": ["name", "relationship", "type"],
-              "properties": {"name": {"type": "string"}, "relationship": {"type": "string"}, "type": {"enum": ["authorized_contact", "caregiver", "parent_of_minor"]}, "dob": {"type": "string"}},
-              "additionalProperties": false}},
-            "restricted_contacts": {"type": "array", "items": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}, "note": {"type": "string"}}, "additionalProperties": false}},
-            "prescriptions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/prescription"}}
-          }}}
+        "store_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "notes": {
+          "type": "string"
+        },
+        "patients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "dob",
+              "home_store",
+              "authorized_contacts",
+              "restricted_contacts",
+              "prescriptions"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "caregiver_authorization"
+                  ]
+                },
+                {
+                  "required": [
+                    "guardian"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "authorized_contacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "relationship",
+                    "type"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "relationship": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "authorized_contact",
+                        "caregiver",
+                        "parent_of_minor"
+                      ]
+                    },
+                    "dob": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "restricted_contacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "prescriptions": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/prescription"
+                }
+              }
+            }
+          }
+        }
       },
       "additionalProperties": false
     },
     "prescription": {
       "type": "object",
-      "required": ["rx_id", "drug", "schedule", "status", "refills", "store_id", "prescriber"],
+      "required": [
+        "rx_id",
+        "drug",
+        "schedule",
+        "status",
+        "refills",
+        "store_id",
+        "prescriber"
+      ],
       "properties": {
-        "rx_id": {"type": "string", "minLength": 1},
-        "drug": {"type": "string"},
-        "schedule": {"enum": [null, "C-II", "C-III", "C-IV", "C-V"]},
-        "status": {"enum": ["active", "filled", "unfilled_erx", "inactive"]},
-        "refills": {"type": "integer", "minimum": 0},
-        "data_note": {"type": "string"},
-        "store_id": {"type": "string"},
-        "prescriber": {"type": ["string", "null"]},
-        "prescriber_detail": {"type": "string"},
-        "filled_date": {"type": "string"},
-        "earliest_fill": {"type": "string"},
-        "purpose": {"type": "string"},
-        "notes": {"type": "string"}
+        "rx_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drug": {
+          "type": "string"
+        },
+        "schedule": {
+          "enum": [
+            null,
+            "C-II",
+            "C-III",
+            "C-IV",
+            "C-V"
+          ]
+        },
+        "status": {
+          "enum": [
+            "active",
+            "filled",
+            "unfilled_erx",
+            "inactive"
+          ]
+        },
+        "refills": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data_note": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        },
+        "prescriber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prescriber_detail": {
+          "type": "string"
+        },
+        "filled_date": {
+          "type": "string"
+        },
+        "earliest_fill": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
-
-    "collection": {"enum": ["refills_queued", "renewal_requests", "new_rx_requests", "transfers", "default_store_changes", "caregiver_auth_requests", "pharmacist_callbacks"]},
-    "rec_refill": {"type": "object", "required": ["rx_id", "store_id"], "properties": {"rx_id": {"type": "string"}, "store_id": {"type": "string"}}, "additionalProperties": false},
-    "rec_renewal": {"type": "object", "required": ["rx_id", "prescriber", "store_id"], "properties": {"rx_id": {"type": "string"}, "prescriber": {"type": "string"}, "store_id": {"type": "string"}}, "additionalProperties": false},
-    "rec_transfer": {"type": "object", "required": ["rx_id", "from_store", "to_store", "status"],
-                     "properties": {"rx_id": {"type": "string"}, "from_store": {"type": "string"}, "to_store": {"type": "string"}, "status": {"enum": ["completed", "requested", "pending_pharmacist"]}}, "additionalProperties": false},
-    "rec_default": {"type": "object", "required": ["patient", "store_id"], "properties": {"patient": {"type": "string"}, "store_id": {"type": "string"}}, "additionalProperties": false},
-    "rec_cg": {"type": "object", "required": ["patient", "caregiver"], "properties": {"patient": {"type": "string"}, "caregiver": {"type": "string"}}, "additionalProperties": false},
-    "rec_callback": {"type": "object", "required": ["patient", "priority", "reason_tag"],
-                     "properties": {"patient": {"type": "string"}, "priority": {"enum": ["routine", "same_day", "urgent"]}, "reason_tag": {"type": "string"}}, "additionalProperties": false},
+    "collection": {
+      "enum": [
+        "refills_queued",
+        "renewal_requests",
+        "new_rx_requests",
+        "transfers",
+        "default_store_changes",
+        "caregiver_auth_requests",
+        "pharmacist_callbacks",
+        "bookings",
+        "cancellations",
+        "waitlist_entries",
+        "callbacks",
+        "nurse_line_transfers"
+      ]
+    },
+    "rec_refill": {
+      "type": "object",
+      "required": [
+        "rx_id",
+        "store_id"
+      ],
+      "properties": {
+        "rx_id": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_renewal": {
+      "type": "object",
+      "required": [
+        "rx_id",
+        "prescriber",
+        "store_id"
+      ],
+      "properties": {
+        "rx_id": {
+          "type": "string"
+        },
+        "prescriber": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_transfer": {
+      "type": "object",
+      "required": [
+        "rx_id",
+        "from_store",
+        "to_store",
+        "status"
+      ],
+      "properties": {
+        "rx_id": {
+          "type": "string"
+        },
+        "from_store": {
+          "type": "string"
+        },
+        "to_store": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "requested",
+            "pending_pharmacist"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_default": {
+      "type": "object",
+      "required": [
+        "patient",
+        "store_id"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "store_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_cg": {
+      "type": "object",
+      "required": [
+        "patient",
+        "caregiver"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "caregiver": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_callback": {
+      "type": "object",
+      "required": [
+        "patient",
+        "priority",
+        "reason_tag"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "routine",
+            "same_day",
+            "urgent"
+          ]
+        },
+        "reason_tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "end_state": {
       "type": "object",
-      "required": ["identity_verified", "refills_queued", "renewal_requests", "new_rx_requests", "transfers", "default_store_changes", "caregiver_auth_requests", "pharmacist_callbacks"],
+      "required": [
+        "identity_verified",
+        "refills_queued",
+        "renewal_requests",
+        "new_rx_requests",
+        "transfers",
+        "default_store_changes",
+        "caregiver_auth_requests",
+        "pharmacist_callbacks"
+      ],
       "properties": {
-        "identity_verified": {"type": "boolean"},
-        "refills_queued": {"type": "array", "items": {"$ref": "#/$defs/rec_refill"}},
-        "renewal_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_renewal"}},
-        "new_rx_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_renewal"}},
-        "transfers": {"type": "array", "items": {"$ref": "#/$defs/rec_transfer"}},
-        "default_store_changes": {"type": "array", "items": {"$ref": "#/$defs/rec_default"}},
-        "caregiver_auth_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_cg"}},
-        "pharmacist_callbacks": {"type": "array", "items": {"$ref": "#/$defs/rec_callback"}}
+        "identity_verified": {
+          "type": "boolean"
+        },
+        "refills_queued": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_refill"
+          }
+        },
+        "renewal_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_renewal"
+          }
+        },
+        "new_rx_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_renewal"
+          }
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_transfer"
+          }
+        },
+        "default_store_changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_default"
+          }
+        },
+        "caregiver_auth_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_cg"
+          }
+        },
+        "pharmacist_callbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_callback"
+          }
+        }
       },
       "additionalProperties": false
     },
     "end_state_partial": {
-      "type": "object", "minProperties": 1,
+      "type": "object",
+      "minProperties": 1,
       "properties": {
-        "identity_verified": {"type": "boolean"},
-        "refills_queued": {"type": "array", "items": {"$ref": "#/$defs/rec_refill"}},
-        "renewal_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_renewal"}},
-        "new_rx_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_renewal"}},
-        "transfers": {"type": "array", "items": {"$ref": "#/$defs/rec_transfer"}},
-        "default_store_changes": {"type": "array", "items": {"$ref": "#/$defs/rec_default"}},
-        "caregiver_auth_requests": {"type": "array", "items": {"$ref": "#/$defs/rec_cg"}},
-        "pharmacist_callbacks": {"type": "array", "items": {"$ref": "#/$defs/rec_callback"}}
+        "identity_verified": {
+          "type": "boolean"
+        },
+        "refills_queued": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_refill"
+          }
+        },
+        "renewal_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_renewal"
+          }
+        },
+        "new_rx_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_renewal"
+          }
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_transfer"
+          }
+        },
+        "default_store_changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_default"
+          }
+        },
+        "caregiver_auth_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_cg"
+          }
+        },
+        "pharmacist_callbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_callback"
+          }
+        }
       },
       "additionalProperties": false
     },
-
-    "where_value": {"anyOf": [
-      {"type": ["string", "number", "boolean"]},
-      {"type": "object", "required": ["in"], "properties": {"in": {"type": "array", "minItems": 1}}, "additionalProperties": false},
-      {"type": "object", "required": ["not_in"], "properties": {"not_in": {"type": "array", "minItems": 1}}, "additionalProperties": false}]},
-    "where": {"type": "object", "additionalProperties": {"$ref": "#/$defs/where_value"},
-              "propertyNames": {"enum": ["rx_id", "store_id", "from_store", "to_store", "patient", "prescriber", "status", "priority", "caregiver", "result", "name"]}},
-    "tool_name": {"enum": ["verify_identity", "list_prescriptions", "find_stores", "queue_refill", "request_renewal", "request_new_rx", "transfer_rx",
-                           "set_default_store", "add_caregiver_authorization_request", "flag_pharmacist_callback"]},
-    "tool_ref": {"anyOf": [{"$ref": "#/$defs/tool_name"}, {"type": "array", "items": {"$ref": "#/$defs/tool_name"}, "minItems": 1}]},
-    "op": {"enum": ["eq", "lte", "gte"]},
-    "order_point": {"anyOf": [
-      {"type": "object", "required": ["tool"], "properties": {"tool": {"$ref": "#/$defs/tool_ref"}, "where": {"$ref": "#/$defs/where"}}, "additionalProperties": false},
-      {"type": "object", "required": ["event"], "properties": {"event": {"type": "string"}}, "additionalProperties": false}]},
-
-    "check": {"oneOf": [
-      {"type": "object", "required": ["type", "collection", "where"], "properties": {"type": {"enum": ["state_contains", "state_not_contains"]}, "collection": {"$ref": "#/$defs/collection"}, "where": {"$ref": "#/$defs/where"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "collection", "where", "op", "value"], "properties": {"type": {"const": "state_count"}, "collection": {"$ref": "#/$defs/collection"}, "where": {"$ref": "#/$defs/where"}, "op": {"$ref": "#/$defs/op"}, "value": {"type": "integer"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "field", "value"], "properties": {"type": {"const": "state_equals"}, "field": {"const": "identity_verified"}, "value": {"type": "boolean"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "tool", "where"], "properties": {"type": {"enum": ["tool_called", "tool_not_called"]}, "tool": {"$ref": "#/$defs/tool_ref"}, "where": {"$ref": "#/$defs/where"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "tool", "where", "op", "value"], "properties": {"type": {"const": "tool_count"}, "tool": {"$ref": "#/$defs/tool_ref"}, "where": {"$ref": "#/$defs/where"}, "op": {"$ref": "#/$defs/op"}, "value": {"type": "integer"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "first", "then"], "properties": {"type": {"const": "tool_order"}, "first": {"$ref": "#/$defs/order_point"}, "then": {"$ref": "#/$defs/order_point"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "tool", "where", "after"], "properties": {"type": {"const": "tool_called_after"}, "tool": {"$ref": "#/$defs/tool_ref"}, "where": {"$ref": "#/$defs/where"}, "after": {"$ref": "#/$defs/order_point"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "event", "tools"], "properties": {"type": {"const": "no_tool_after_event"}, "event": {"type": "string"}, "tools": {"type": "array", "items": {"$ref": "#/$defs/tool_name"}, "minItems": 1}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "metric", "op", "value"], "properties": {"type": {"const": "trace_metric"}, "metric": {"const": "agent_turns"}, "op": {"$ref": "#/$defs/op"}, "value": {"type": "integer"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "tool", "arg", "source_tool"], "properties": {"type": {"const": "arg_from_prior_tool_output"}, "tool": {"$ref": "#/$defs/tool_name"}, "arg": {"type": "string"}, "source_tool": {"$ref": "#/$defs/tool_name"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "checks"], "properties": {"type": {"enum": ["all_of", "any_of"]}, "checks": {"type": "array", "items": {"$ref": "#/$defs/check"}, "minItems": 1}}, "additionalProperties": false}
-    ]},
-    "claim_truth": {"oneOf": [
-      {"$ref": "#/$defs/check"},
-      {"type": "object", "required": ["type"], "properties": {"type": {"const": "never"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "tool", "field"], "properties": {"type": {"const": "matches_tool_output"}, "tool": {"$ref": "#/$defs/tool_name"}, "field": {"type": "string"}}, "additionalProperties": false},
-      {"type": "object", "required": ["type", "patient", "field", "where"], "properties": {"type": {"const": "fixture_contains"}, "patient": {"type": "string"}, "field": {"const": "authorized_contacts"}, "where": {"$ref": "#/$defs/where"}}, "additionalProperties": false}
-    ]},
-
+    "where_value": {
+      "anyOf": [
+        {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "in"
+          ],
+          "properties": {
+            "in": {
+              "type": "array",
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "not_in"
+          ],
+          "properties": {
+            "not_in": {
+              "type": "array",
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "where": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/where_value"
+      },
+      "propertyNames": {
+        "enum": [
+          "rx_id",
+          "store_id",
+          "from_store",
+          "to_store",
+          "patient",
+          "prescriber",
+          "status",
+          "priority",
+          "caregiver",
+          "result",
+          "name",
+          "slot_id",
+          "appointment_id",
+          "provider",
+          "visit_type"
+        ]
+      }
+    },
+    "tool_name": {
+      "enum": [
+        "verify_identity",
+        "list_prescriptions",
+        "find_stores",
+        "queue_refill",
+        "request_renewal",
+        "request_new_rx",
+        "transfer_rx",
+        "set_default_store",
+        "add_caregiver_authorization_request",
+        "flag_pharmacist_callback",
+        "list_appointments",
+        "find_slots",
+        "book_appointment",
+        "cancel_appointment",
+        "add_to_waitlist",
+        "flag_callback",
+        "transfer_to_nurse_line"
+      ]
+    },
+    "tool_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/tool_name"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tool_name"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "op": {
+      "enum": [
+        "eq",
+        "lte",
+        "gte"
+      ]
+    },
+    "order_point": {
+      "anyOf": [
+        {
+          "type": "object",
+          "required": [
+            "tool"
+          ],
+          "properties": {
+            "tool": {
+              "$ref": "#/$defs/tool_ref"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "event"
+          ],
+          "properties": {
+            "event": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "check": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "collection",
+            "where"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "state_contains",
+                "state_not_contains"
+              ]
+            },
+            "collection": {
+              "$ref": "#/$defs/collection"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "collection",
+            "where",
+            "op",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "state_count"
+            },
+            "collection": {
+              "$ref": "#/$defs/collection"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            },
+            "op": {
+              "$ref": "#/$defs/op"
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "field",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "state_equals"
+            },
+            "field": {
+              "const": "identity_verified"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "tool",
+            "where"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "tool_called",
+                "tool_not_called"
+              ]
+            },
+            "tool": {
+              "$ref": "#/$defs/tool_ref"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "tool",
+            "where",
+            "op",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "tool_count"
+            },
+            "tool": {
+              "$ref": "#/$defs/tool_ref"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            },
+            "op": {
+              "$ref": "#/$defs/op"
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "first",
+            "then"
+          ],
+          "properties": {
+            "type": {
+              "const": "tool_order"
+            },
+            "first": {
+              "$ref": "#/$defs/order_point"
+            },
+            "then": {
+              "$ref": "#/$defs/order_point"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "tool",
+            "where",
+            "after"
+          ],
+          "properties": {
+            "type": {
+              "const": "tool_called_after"
+            },
+            "tool": {
+              "$ref": "#/$defs/tool_ref"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            },
+            "after": {
+              "$ref": "#/$defs/order_point"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "event",
+            "tools"
+          ],
+          "properties": {
+            "type": {
+              "const": "no_tool_after_event"
+            },
+            "event": {
+              "type": "string"
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/tool_name"
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "metric",
+            "op",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "trace_metric"
+            },
+            "metric": {
+              "const": "agent_turns"
+            },
+            "op": {
+              "$ref": "#/$defs/op"
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "tool",
+            "arg",
+            "source_tool"
+          ],
+          "properties": {
+            "type": {
+              "const": "arg_from_prior_tool_output"
+            },
+            "tool": {
+              "$ref": "#/$defs/tool_name"
+            },
+            "arg": {
+              "type": "string"
+            },
+            "source_tool": {
+              "$ref": "#/$defs/tool_name"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "checks"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "all_of",
+                "any_of"
+              ]
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/check"
+              },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "claim_truth": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/check"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "never"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "tool",
+            "field"
+          ],
+          "properties": {
+            "type": {
+              "const": "matches_tool_output"
+            },
+            "tool": {
+              "$ref": "#/$defs/tool_name"
+            },
+            "field": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "patient",
+            "field",
+            "where"
+          ],
+          "properties": {
+            "type": {
+              "const": "fixture_contains"
+            },
+            "patient": {
+              "type": "string"
+            },
+            "field": {
+              "const": "authorized_contacts"
+            },
+            "where": {
+              "$ref": "#/$defs/where"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "state_check": {
-      "type": "object", "required": ["id", "source", "text", "kind", "check"],
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "text",
+        "kind",
+        "check"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^S\\d{2}(-F\\d+)?\\.state\\.\\d+$"},
-        "source": {"type": "string", "pattern": "^(S\\d{2}\\.must_(not_)?do\\.\\d+|v2_added)$"},
-        "text": {"type": "string", "minLength": 1},
-        "kind": {"enum": ["must_do", "must_not_do"]},
-        "failure_type": {"$ref": "#/$defs/failure_type"},
-        "check": {"$ref": "#/$defs/check"}
+        "id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?\\.state\\.\\d+$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^([SA]\\d{2}\\.must_(not_)?do\\.\\d+|v2_added|authored)$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "must_do",
+            "must_not_do"
+          ]
+        },
+        "failure_type": {
+          "$ref": "#/$defs/failure_type"
+        },
+        "check": {
+          "$ref": "#/$defs/check"
+        }
       },
       "additionalProperties": false,
-      "if": {"properties": {"kind": {"const": "must_not_do"}}}, "then": {"required": ["failure_type"]}
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "must_not_do"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "failure_type"
+        ]
+      }
     },
     "judged_check": {
-      "type": "object", "required": ["id", "source", "text", "kind"],
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "text",
+        "kind"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^S\\d{2}(-F\\d+)?\\.judged\\.\\d+$"},
-        "source": {"type": "string", "pattern": "^(S\\d{2}\\.must_(not_)?do\\.\\d+|v2_added)$"},
-        "text": {"type": "string", "minLength": 1},
-        "kind": {"enum": ["must_do", "must_not_do"]},
-        "failure_type": {"$ref": "#/$defs/failure_type"},
-        "linked_claim_check": {"type": "string", "pattern": "^S\\d{2}(-F\\d+)?\\.claim\\.\\d+$"}
+        "id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?\\.judged\\.\\d+$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^([SA]\\d{2}\\.must_(not_)?do\\.\\d+|v2_added|authored)$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "must_do",
+            "must_not_do"
+          ]
+        },
+        "failure_type": {
+          "$ref": "#/$defs/failure_type"
+        },
+        "linked_claim_check": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?\\.claim\\.\\d+$"
+        }
       },
       "additionalProperties": false,
-      "if": {"properties": {"kind": {"const": "must_not_do"}}}, "then": {"required": ["failure_type"]}
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "must_not_do"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "failure_type"
+        ]
+      }
     },
     "claim_check": {
-      "type": "object", "required": ["id", "claim", "true_iff", "violation"],
+      "type": "object",
+      "required": [
+        "id",
+        "claim",
+        "true_iff",
+        "violation"
+      ],
       "properties": {
-        "id": {"type": "string", "pattern": "^S\\d{2}(-F\\d+)?\\.claim\\.\\d+$"},
-        "claim": {"type": "string", "minLength": 1},
-        "true_iff": {"$ref": "#/$defs/claim_truth"},
-        "violation": {"$ref": "#/$defs/violation"},
-        "must_not_precede": {"type": "object", "required": ["tool", "result"], "properties": {"tool": {"$ref": "#/$defs/tool_name"}, "result": {"type": "string"}}, "additionalProperties": false},
-        "attribution_rule": {"type": "string"},
-        "expected_verdict_if_agent_behaves_as_in_parent": {"type": "string"}
+        "id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?\\.claim\\.\\d+$"
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "true_iff": {
+          "$ref": "#/$defs/claim_truth"
+        },
+        "violation": {
+          "$ref": "#/$defs/violation"
+        },
+        "must_not_precede": {
+          "type": "object",
+          "required": [
+            "tool",
+            "result"
+          ],
+          "properties": {
+            "tool": {
+              "$ref": "#/$defs/tool_name"
+            },
+            "result": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "attribution_rule": {
+          "type": "string"
+        },
+        "expected_verdict_if_agent_behaves_as_in_parent": {
+          "type": "string"
+        }
       },
       "additionalProperties": false
     },
     "tool_fault": {
-      "type": "object", "required": ["tool", "on_call", "behavior"],
+      "type": "object",
+      "required": [
+        "tool",
+        "on_call",
+        "behavior"
+      ],
       "properties": {
-        "tool": {"$ref": "#/$defs/tool_name"},
-        "on_call": {"anyOf": [{"type": "integer", "minimum": 1}, {"const": "all"}]},
-        "match": {"type": "object", "properties": {"query_contains": {"type": "string"}}, "additionalProperties": false},
-        "behavior": {"enum": ["timeout", "error", "returns_pending", "silent_noop", "latency_ms", "returns_empty"]},
+        "tool": {
+          "$ref": "#/$defs/tool_name"
+        },
+        "on_call": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "const": "all"
+            }
+          ]
+        },
+        "match": {
+          "type": "object",
+          "properties": {
+            "query_contains": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "behavior": {
+          "enum": [
+            "timeout",
+            "error",
+            "returns_pending",
+            "silent_noop",
+            "latency_ms",
+            "returns_empty"
+          ]
+        },
         "value": {}
       },
       "additionalProperties": false
+    },
+    "rec_booking": {
+      "type": "object",
+      "required": [
+        "patient",
+        "slot_id",
+        "provider",
+        "visit_type"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "slot_id": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}-\\d{8}-\\d{4}$"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "visit_type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_cancellation": {
+      "type": "object",
+      "required": [
+        "appointment_id",
+        "patient"
+      ],
+      "properties": {
+        "appointment_id": {
+          "type": "string"
+        },
+        "patient": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_waitlist": {
+      "type": "object",
+      "required": [
+        "patient",
+        "provider",
+        "visit_type",
+        "window_start",
+        "window_end"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "visit_type": {
+          "type": "string"
+        },
+        "window_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "window_end": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rec_nurse": {
+      "type": "object",
+      "required": [
+        "patient",
+        "reason_tag"
+      ],
+      "properties": {
+        "patient": {
+          "type": "string"
+        },
+        "reason_tag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "end_state_sched": {
+      "type": "object",
+      "required": [
+        "identity_verified",
+        "bookings",
+        "cancellations",
+        "waitlist_entries",
+        "callbacks",
+        "nurse_line_transfers"
+      ],
+      "properties": {
+        "identity_verified": {
+          "type": "boolean"
+        },
+        "bookings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_booking"
+          }
+        },
+        "cancellations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_cancellation"
+          }
+        },
+        "waitlist_entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_waitlist"
+          }
+        },
+        "callbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_callback"
+          }
+        },
+        "nurse_line_transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_nurse"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "end_state_sched_partial": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "identity_verified": {
+          "type": "boolean"
+        },
+        "bookings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_booking"
+          }
+        },
+        "cancellations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_cancellation"
+          }
+        },
+        "waitlist_entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_waitlist"
+          }
+        },
+        "callbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_callback"
+          }
+        },
+        "nurse_line_transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rec_nurse"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "clinic_fixture": {
+      "type": "object",
+      "required": [
+        "provider_ids",
+        "patients",
+        "appointments",
+        "open_slots"
+      ],
+      "properties": {
+        "provider_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "minItems": 1
+        },
+        "patients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "dob",
+              "provider_of_record",
+              "authorized_contacts",
+              "restricted_contacts"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "dob": {
+                "type": "string",
+                "format": "date"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "provider_of_record": {
+                "type": "string"
+              },
+              "authorized_contacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "relationship",
+                    "type"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "relationship": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "authorized_contact",
+                        "caregiver",
+                        "parent_of_minor"
+                      ]
+                    },
+                    "dob": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "restricted_contacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "appointments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "appointment_id",
+              "patient",
+              "provider",
+              "slot_id",
+              "start",
+              "visit_type",
+              "status"
+            ],
+            "properties": {
+              "appointment_id": {
+                "type": "string",
+                "pattern": "^APT-[A-Z]{2}-\\d{4}$"
+              },
+              "patient": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "slot_id": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}-\\d{8}-\\d{4}$"
+              },
+              "start": {
+                "type": "string"
+              },
+              "visit_type": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "booked"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "open_slots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}-\\d{8}-\\d{4}$"
+          },
+          "uniqueItems": true
+        },
+        "external_records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "source",
+              "patient",
+              "status"
+            ]
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "dataset": {
+            "const": "harbor-pharmacy-call-scenarios"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "stores"
+        ],
+        "properties": {
+          "agent_context": {
+            "required": [
+              "pharmacy_name",
+              "outside_chain"
+            ]
+          },
+          "workflows": {
+            "required": [
+              "rx_refill_renewal",
+              "pharmacy_change_transfer",
+              "urgent_symptom_routing"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dataset": {
+            "const": "harbor-clinic-scheduling-scenarios"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "providers",
+          "visit_types",
+          "calendar"
+        ],
+        "properties": {
+          "agent_context": {
+            "required": [
+              "clinic_name"
+            ]
+          },
+          "workflows": {
+            "required": [
+              "appointment_scheduling"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$comment": "See SCHEMA_CHANGELOG.md. v2.2: extended for the clinic scheduling dataset; the pharmacy dataset stays valid unchanged."
 }

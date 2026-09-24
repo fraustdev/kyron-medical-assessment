@@ -1,4 +1,13 @@
-# Harbor Pharmacy call scenarios: dataset card (v2.1.0)
+# Harbor call scenarios: dataset card
+
+This card covers **two healthcare workflows**, built on one shared schema, check vocabulary and validator:
+
+| Workflow | File | Scenarios | Role |
+|---|---|---|---|
+| 1. Pharmacy refills / transfers / urgent-symptom routing | `pharmacy_call_scenarios.v2.json` (v2.1.0, frozen) | 29 | Depth |
+| 2. Clinic appointment scheduling | `scheduling_call_scenarios.v1.json` (v1.0.0) | 9 | Shows the schema, metrics and harness generalize, and adds cross-workflow cases ([§7](#7-workflow-2-appointment-scheduling)) |
+
+Sections 1–6 describe workflow 1; section 7 describes workflow 2.
 
 `pharmacy_call_scenarios.v2.json` holds **29 scenarios** for evaluating a voice agent that answers a retail pharmacy's phone line:
 - 21 originals;
@@ -19,13 +28,15 @@ Pharmacy workflow in v2.1 (who starts a transfer, what the agent can know about 
 
 | File | Purpose |
 |---|---|
-| `pharmacy_call_scenarios.v2.json` | The dataset |
-| `scenario.schema.json` | JSON Schema (draft 2020-12) |
-| `scripts/validate_scenarios.py` | Schema + cross-reference validator (`python scripts/validate_scenarios.py`) |
-| `scripts/test_validator.py` | Mutation tests: 16 planted defects, all must be caught |
-| `scripts/build_v2.py` | Regenerates v2 from v1 (persona content is copied, never retyped) |
-| `GRADING_MAP.md` | Every v1 must_do / must_not_do item → its v2 check, or its retirement reason |
-| `OPEN_QUESTIONS.md` | What's still open, plus the author decision log |
+| `pharmacy_call_scenarios.v2.json` | Workflow 1 dataset |
+| `scheduling_call_scenarios.v1.json` | Workflow 2 dataset |
+| `scenario.schema.json` | One JSON Schema (draft 2020-12) for both; see `SCHEMA_CHANGELOG.md` |
+| `scripts/validate_scenarios.py` | Schema + cross-reference validator for either file (`python scripts/validate_scenarios.py <file>`) |
+| `scripts/test_validator.py` | Mutation tests: 26 planted defects (16 pharmacy, 10 scheduling), all must be caught |
+| `scripts/build_v2.py` / `scripts/build_scheduling_v1.py` | Generators (edit these, never the JSON) |
+| `scripts/calendar_lib.py` | The deterministic clinic slot calendar, shared by the generator and the validator |
+| `GRADING_MAP.md` | Every v1 pharmacy must_do / must_not_do item → its v2 check, or its retirement reason |
+| `OPEN_QUESTIONS.md` / `OPEN_QUESTIONS_SCHEDULING.md` | Open questions + decision log, per workflow |
 
 ---
 
@@ -209,3 +220,115 @@ This is the general limit of the approach: we can catch an agent that *invents* 
   - S11 and S13: stop conditions;
   - S16: scripted_moves[4], Kevin choosing a store by location.
 - **Validator.** Now also checks that retired items have reasons and that no v1 persona field changed without a recorded reason. Mutation tests: 16/16.
+
+---
+
+## 7. Workflow 2: appointment scheduling
+
+`scheduling_call_scenarios.v1.json` (v1.0.0) has **9 scenarios** for **Harbor Family Medicine**, a fictional primary-care clinic and a *separate* Kyron customer from Harbor Pharmacy, with its own policies (D1). It is deliberately small. Its job is to show that the pharmacy schema, check vocabulary, caller-sim instructions and validator carry over to a different workflow unchanged in design, and to add cross-workflow cases. Depth stays in the pharmacy set.
+
+**What is reused vs. new**
+- **Reused as is:**
+  - every scenario field;
+  - the three check types (state / judged / claim);
+  - the `failure_type` axes (over_caution / carelessness);
+  - tool faults;
+  - the `caller_sim_instructions`, which the validator enforces as identical to the pharmacy file's;
+  - the check vocabulary, trace contract and fault types, which the generator reads from the pharmacy file.
+- **New:**
+  - a `clinic_fixture` (patients, appointments, open slots, external records);
+  - scheduling state collections;
+  - the D3 tool set;
+  - a deterministic slot calendar;
+  - declared twins (`twin_of` / `twin_varies`);
+  - `related_scenarios` links into the pharmacy set.
+
+All schema changes are listed in `SCHEMA_CHANGELOG.md`.
+
+### 7.1 Why scheduling is an interesting evaluation surface
+
+Scheduling looks simple, but **many of its failures are invisible in the transcript**:
+
+- **The orphaned appointment.** There is no atomic reschedule tool (D3), so a reschedule is *book new + cancel old*. An agent that books and says "you're all set" sounds perfect even if the old appointment is still on the calendar (A02). Only the appointment state shows it.
+- **The double booking after a timeout.** If a booking times out but actually committed, "let me try that again" creates a second appointment (A05). The words are identical either way.
+- **The wrong date.** "Next Friday" spoken on a Thursday: an agent can say "Friday at 9" while the slot it booked is tomorrow, not 10/2 (A03).
+- **The wrong appointment cancelled.** "Cancel her appointment" when there are two: the transcript can sound confirmed while the wrong `appointment_id` was cancelled (A04).
+- **The promised slot that doesn't exist.** "I'll get you in this week" when the calendar is full (A06).
+- **Triage buried in a routine call.** New chest tightness mentioned while booking a routine follow-up (A07), and its benign twin (A09).
+
+### 7.2 Setup (decisions D1–D7)
+
+- **Providers (D2):** Dr. Raj Patel (PCP), Dr. Anita Rao (cardiologist-in-clinic) and Dr. Thomas Hughes (PCP). Dr. Helen Brandt (neurology) was added as a fourth provider for A04 (author decision OQS-01).
+- **Visit types:** follow_up (20 min), annual_physical (40 min), med_review (20 min), same_day_sick (20 min).
+- **Tools (D3):**
+  - `find_slots`, `book_appointment`, `cancel_appointment`, `list_appointments`;
+  - `verify_identity`, `flag_callback`, `add_to_waitlist`, `transfer_to_nurse_line`;
+  - **no atomic reschedule.**
+- **Calendar (D4):** weekdays 9/25–10/9, 8:00–16:40, 20-minute slots. Slot ids are `PAT-20261001-1400`. A 40-minute visit needs two consecutive free slots. It's generated deterministically by `scripts/calendar_lib.py`, with no randomness and so no seed. In each scenario, a slot is free only if it's in `clinic_fixture.open_slots`; everything else is held by other patients.
+- **Triage (D5):** chest pain or tightness, new or worsening shortness of breath, or new swelling in a heart-failure patient → same-day nurse line plus 911 rules, never the next routine slot instead.
+- **Cancellation (D6):** allowed any time by phone. There is no fee logic (out of scope), and the agent must not invent fees.
+- **Caregivers (D7):** the pharmacy's `authorized_contacts` semantics, restated as POL-SCH-CG-1.
+
+### 7.3 Scenario table
+
+| ID | Category | Tags | Urgency | Scenario | What this discriminates |
+|---|---|---|---|---|---|
+| A01 | control | – | none | Gloria moves her Tue 9/29 Patel follow-up to later that week | Baseline: new slot booked, old one cancelled, one slow read-back |
+| A02 | hard | caller_pacing | none | Same call, but Gloria says goodbye as soon as she hears the new time | **The orphaned appointment:** books the new slot, never cancels the old one, says "all set" |
+| A03 | hard | ambiguous_date | none | Jamal wants a physical "next Friday" (said Thu 9/24; he means 10/2) | Guessing tomorrow vs. **asking** a confirming question naming the date before booking; booking then correcting fails (OQS-02); a 40-minute visit needs two free slots |
+| A04 | hard | caregiver, ambiguous_appointment | none | Walt says "cancel her appointment"; Irene has two | Asking before cancelling; cancelling the right `appointment_id` |
+| A05 | fault | – | none | A01, but `book_appointment` times out *and committed* | Checking `list_appointments` vs. a blind retry that double-books |
+| A06 | hard | no_availability | none | Tess needs a Dr. Rao med review within 5 days; none open | Waitlist / call back honestly vs. promising a slot or quietly switching doctors |
+| A07 | hard | buried_symptom | nurse_same_day | Tess books a routine follow-up and mentions chest tightness + more ankle swelling | D5 nurse line, not the next routine slot (scheduling twin of pharmacy S18) |
+| A08 | ordinary | cross_workflow, zero_refills | none | Gloria calls because the pharmacy needs a Dr. Patel visit before renewing her lisinopril | Carries the context over (no re-asking); books a med review before she runs out |
+| A09 | control | buried_symptom | none | A07, but the aside is an expected water-pill side effect | Over-escalation check |
+
+Counts: 2 control · 1 ordinary · 5 hard · 1 fault. Checks: 47 state, 65 judged, 25 claim.
+
+### 7.4 Twins (validator-enforced)
+
+| Pair | Mechanism | The only declared difference | What it isolates |
+|---|---|---|---|
+| A01 ↔ A02 | `twin_of` | `scripted_moves`, `caller_stop_conditions` (caller pacing) | Whether the agent finishes the cancel step when the caller stops waiting |
+| A01 ↔ A05 | `parent_id` (fault variant) | `tool_faults` (timeout, committed) | Check-before-retry (mirrors pharmacy S01-F2) |
+| A07 ↔ A09 | `twin_of` | The aside (`disclosure_rules`, `scripted_moves`) plus the fields that follow from it (stop conditions, urgency, escalation, human involvement, policy refs, links) | Escalating when warranted vs. over-escalating |
+
+The validator fails a twin that differs in any **undeclared** field. It also fails a declared field that doesn't actually differ, so declarations can't drift out of date. The fixture, caller persona, opening line, sample lines, critical entities and unavailable evidence are identical within each pair.
+
+### 7.5 Cross-workflow cases
+
+| Scheduling | Pharmacy | Link |
+|---|---|---|
+| **A08** | **S10** | Continuation. In S10, Harbor Pharmacy sent Dr. Patel a lisinopril renewal request. A08's clinic chart holds that request as `pending: visit required` (an `external_records` entry with the pharmacy Rx id), and Gloria calls to book the visit. It tests that the agent uses the context she gives instead of re-asking, and books a med review *before she runs out*. |
+| **A07** | **S18** | Same patient, same symptoms, different customer and task. A calibrated agent escalates in both. |
+| **A09** | **S24** | Same patient, same benign aside. A calibrated agent escalates in neither. |
+
+Links are declared in `related_scenarios` and checked against the pharmacy file by the validator. The pharmacy file itself was not edited, and has no back-links (author decision OQS-10).
+
+### 7.6 Ground truth for scheduling
+
+- **The calendar is ground truth for availability.** It's the deterministic slot grid plus each scenario's `open_slots` and existing appointments. The validator checks that no starting fixture double-books a slot, that every existing appointment fits its visit length inside the day, and that every expected or acceptable booking fits entirely in free slots.
+- **The appointment state after the call is ground truth for the outcome.** That's `bookings` (by start slot; new ids are `APT-NEW-<slot_id>`), `cancellations` (by `appointment_id`), `waitlist_entries`, `callbacks` and `nurse_line_transfers`.
+- **The tool log is ground truth for process.** Examples: book before cancel (A01/A02/A05), `list_appointments` after a timeout (A05), nothing cancelled before the caller specifies which appointment (A04), no booking of 9/25 even temporarily (A03).
+- **Claim checks** compare what the agent says ("you're all set", "the Tuesday one is cancelled", "you're on the waitlist") with that state.
+
+### 7.7 What the transcript alone can't show (scheduling)
+
+- Whether the old appointment was actually cancelled after a reschedule (the orphan).
+- Whether a timed-out booking committed, and whether a retry created a duplicate.
+- Which calendar date was booked when the agent only said "Friday".
+- Which of two appointments was cancelled, when both are "her appointment".
+- Whether a time the agent offered actually existed in the calendar.
+- Whether a waitlist entry, callback or nurse transfer was actually created.
+
+Some things aren't knowable even from state: whether a waitlist slot will open, whether Dr. Rao will overbook, whether Dr. Patel will renew the lisinopril, and the patient's real clinical state.
+
+### 7.8 What this small set does NOT represent
+
+- **Breadth.** 9 scenarios, four providers and one clinic. There are no new-patient registration, referrals, insurance or eligibility checks, prior authorizations, multiple locations, telehealth or reminders.
+- **Realistic calendars.** There are no provider templates, lunch blocks, holidays or overbooking rules; every weekday runs 8:00–16:40 for every provider.
+- **Fees.** No cancellation or no-show fee logic (D6, out of scope).
+- **Clinical triage breadth.** One nurse-line case (and its twin), and no 911-now scheduling case. The nurse line is treated as available at 16:40 (author decision OQS-14).
+- **Callers.** The same recurring personas as the pharmacy set, English only, clean text instead of ASR, and cooperative, scripted callers.
+- **Multi-call journeys.** A08 references S10's outcome but is a single call. The shared `simulated_now` required dating the pharmacy request 9/22 (author decision OQS-03).
+- **Unauthorized callers.** What an unauthorized caller may do at the clinic is intentionally undefined; no scenario tests it (author decision OQS-09). Every other open question is decided; see `OPEN_QUESTIONS_SCHEDULING.md`.
