@@ -1,0 +1,7 @@
+# Early exploratory dataset formats (superseded by pharmacy_call_scenarios.json / .v2.json)
+variants/
+docs/plans/pharmacy-scenarios/variants/
+
+__pycache__/
+*.pyc
+.venv/
