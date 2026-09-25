@@ -1,0 +1,45 @@
+{
+  "key": "5858f102ec70751b8c47c3891662011f1ccc5ab560aa6a73397452e2c0fd30a1",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hi, I'm calling for my mother, Irene Kowalski. I want Maple Ave to be her pharmacy for everything.\n[#2] AGENT: Hi! I'd be happy to help set up Maple Ave as your mother's pharmacy. Let me start by verifying her identity. What's Irene Kowalski's date of birth?\nCALLER: March 3rd, 1942.\n[#8] AGENT: Great, I've verified your mother's information. Before I set Maple Ave as her pharmacy, I need to confirm which Maple Ave location you mean. Can you give me the street address or the city?\nCALLER: I don't have the exact address on me, but it's the Maple Ave pharmacy she's been going to. Just the one in town.\n[#13] AGENT: I understand. Let me search for the Maple Ave location in your area so we can make sure we're setting up the right store. Perfect! I found Harbor Pharmacy at 88 Maple Ave in Brookfield. Is that the one your mother uses?\nCALLER: Yeah, that's the one. Harbor Pharmacy, Maple Ave, Brookfield. That's it.\n[#16] AGENT: I have good news—that's already her home pharmacy. Her default store is set to Harbor Pharmacy on Maple Ave in Brookfield, so everything is all set. Is there anything else I can help with for your mother today?\nCALLER: Alright then, good. Thanks for checking. Bye.\n\nCLAIMS:\nS08.claim.1: Agent says all of Irene's prescriptions are now at Maple Ave.\nS08.claim.2: Agent says Maple Ave is now Irene's default store.\nS08.claim.3: Agent says the Maple Ave store has the medication in stock or will have it ready.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 2000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgGK4cSCtvb164Nv1uM",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S08.claim.1\": [], \"S08.claim.2\": [{\"turn\": 16, \"quote\": \"Her default store is set to Harbor Pharmacy on Maple Ave in Brookfield\", \"date\": null, \"time\": null, \"text\": \"Harbor Pharmacy, 88 Maple Ave, Brookfield\"}], \"S08.claim.3\": []}"
+        }
+      }
+    ],
+    "created": 1790363042,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 315,
+      "prompt_tokens": 1038,
+      "total_tokens": 1353
+    }
+  },
+  "latency_ms": 3161,
+  "created_at": "2026-09-25T19:04:02.162Z"
+}

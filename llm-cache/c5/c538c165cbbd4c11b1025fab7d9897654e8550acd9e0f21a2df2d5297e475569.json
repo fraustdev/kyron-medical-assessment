@@ -1,0 +1,319 @@
+{
+  "key": "c538c165cbbd4c11b1025fab7d9897654e8550acd9e0f21a2df2d5297e475569",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says a store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional. The never-promise rule still applies."
+      },
+      {
+        "role": "user",
+        "content": "Hello honey, it's Gloria Hart. I need the water pill..."
+      },
+      {
+        "role": "assistant",
+        "content": "Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?"
+      },
+      {
+        "role": "user",
+        "content": "Oh, it's May 12th, 1947, honey. But wait, no, not the water pill, I meant the blood pressure one... lisinopril."
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "verify_identity",
+          "description": "verify_identity(patient, dob[, second_factor])",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient full name"
+              },
+              "dob": {
+                "type": "string",
+                "description": "Patient date of birth"
+              },
+              "second_factor": {
+                "type": "string",
+                "description": "Address or phone, if needed"
+              }
+            },
+            "required": [
+              "patient",
+              "dob"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "list_prescriptions",
+          "description": "list_prescriptions(patient)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Verified patient's full name"
+              }
+            },
+            "required": [
+              "patient"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "find_stores",
+          "description": "find_stores(query)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "Words from the store's name, street, city or cross street"
+              }
+            },
+            "required": [
+              "query"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "queue_refill",
+          "description": "queue_refill(rx, store) -> ready_time",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "rx": {
+                "type": "string",
+                "description": "rx_id from list_prescriptions"
+              },
+              "store": {
+                "type": "string",
+                "description": "Store id for pickup, e.g. H-110"
+              }
+            },
+            "required": [
+              "rx",
+              "store"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "request_renewal",
+          "description": "request_renewal(rx, prescriber, store)  # refill authorization for an existing non-controlled Rx with 0 refills",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "rx": {
+                "type": "string",
+                "description": "rx_id from list_prescriptions"
+              },
+              "prescriber": {
+                "type": "string",
+                "description": "Prescriber's name"
+              },
+              "store": {
+                "type": "string",
+                "description": "Store id"
+              }
+            },
+            "required": [
+              "rx",
+              "prescriber",
+              "store"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "request_new_rx",
+          "description": "request_new_rx(based_on_rx, prescriber, store)  # new prescription (e.g. filled C-II); the prescriber may change the dose",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "based_on_rx": {
+                "type": "string",
+                "description": "rx_id of the prescription the new one replaces"
+              },
+              "prescriber": {
+                "type": "string",
+                "description": "Prescriber's name"
+              },
+              "store": {
+                "type": "string",
+                "description": "Store id where the new Rx should be sent"
+              }
+            },
+            "required": [
+              "based_on_rx",
+              "prescriber",
+              "store"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "transfer_rx",
+          "description": "transfer_rx(rx, from_store, to_store)  # Harbor->Harbor non-controlled: completed; inbound from another chain: requested (staff call after the call); controlled: pending_pharmacist; outbound to another chain: error (receiving pharmacy must request, POL-XFER-1)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "rx": {
+                "type": "string",
+                "description": "rx_id (for an inbound transfer from another chain, a drug description is accepted)"
+              },
+              "from_store": {
+                "type": "string",
+                "description": "Store id the Rx is at now"
+              },
+              "to_store": {
+                "type": "string",
+                "description": "Store id it should move to"
+              }
+            },
+            "required": [
+              "rx",
+              "from_store",
+              "to_store"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "set_default_store",
+          "description": "set_default_store(patient, store)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "store": {
+                "type": "string",
+                "description": "Store id"
+              }
+            },
+            "required": [
+              "patient",
+              "store"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "add_caregiver_authorization_request",
+          "description": "add_caregiver_authorization_request(patient, caregiver)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "caregiver": {
+                "type": "string",
+                "description": "Caregiver's full name"
+              }
+            },
+            "required": [
+              "patient",
+              "caregiver"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "flag_pharmacist_callback",
+          "description": "flag_pharmacist_callback(patient, reason, priority)  # also used to ask a pharmacist to confirm another store can fill a controlled Rx (POL-AVAIL-1)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why the pharmacist should call, with the relevant context"
+              },
+              "priority": {
+                "type": "string",
+                "description": "routine | same_day | urgent"
+              }
+            },
+            "required": [
+              "patient",
+              "reason",
+              "priority"
+            ]
+          }
+        }
+      }
+    ],
+    "params": {
+      "temperature": 0.3,
+      "seed": 1,
+      "max_tokens": 400
+    }
+  },
+  "response": {
+    "id": "msg_011CfQi3s1MVg8JVjWsS7w1R",
+    "choices": [
+      {
+        "finish_reason": "tool_calls",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "Got it, lisinopril for blood pressure. Let me verify your information with that date of birth, May 12th, 1947.",
+          "tool_calls": [
+            {
+              "id": "toolu_01EjwHCB8sqAfaD3ujMA5CDE",
+              "type": "function",
+              "function": {
+                "name": "verify_identity",
+                "arguments": "{\"patient\": \"Gloria Hart\", \"dob\": \"05/12/1947\"}"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "created": 1790364444,
+    "model": "claude-haiku-4-5-20251001",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 109,
+      "prompt_tokens": 3854,
+      "total_tokens": 3963
+    }
+  },
+  "latency_ms": 1281,
+  "created_at": "2026-09-25T19:27:25.052Z"
+}

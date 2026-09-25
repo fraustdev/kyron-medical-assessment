@@ -1,0 +1,45 @@
+{
+  "key": "58be4b08a420a29342632171e4c61ff1dd4644b2412146afe5f519ca6c5db8df",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, Tess Morgan. I need to book my regular follow-up with Dr. Rao.\nAGENT: Hi Tess! I'd be happy to help you book a follow-up with Dr. Rao. Before I can do that, I need to verify your identity. Can you give me your date of birth?\nCALLER: Sure thing, honey - January 19th, 1974.\nAGENT: Thank you! Now, to complete the verification, I need either your address or phone number on file. Which would you prefer to give me?\nCALLER: Oh, I don't have that memorized off the top of my head, honey. Can we just go with the date of birth or is there another way?\nAGENT: I understand—the date of birth alone isn't quite enough for our verification process, but an address or phone number should do it. Do you have your phone number handy, or would it be easier to look up your address?\nCALLER: I really just need the appointment, honey. Can't we just get that booked?\nAGENT (LATEST): I hear you, but our clinic policy requires me to verify a bit more information before I can book an appointment. It'll just take a second—do you have a phone number or address I can use to confirm it's really you?\n\nCONDITIONS:\nmove_1: the agent first raises concern about what she mentioned\nmove_3: the agent offers morning times next week\nstop_0: Agent confirms her follow-up time.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhrsfyn7rq2BfX5y75n",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": false, \"why\": \"No new concern raised, just repeats verification request\"}, \"move_3\": {\"met\": false, \"why\": \"No morning times offered\"}, \"stop_0\": {\"met\": false, \"why\": \"No appointment confirmed yet, still verifying identity\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790364296,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 125,
+      "prompt_tokens": 800,
+      "total_tokens": 925
+    }
+  },
+  "latency_ms": 1873,
+  "created_at": "2026-09-25T19:24:56.541Z"
+}

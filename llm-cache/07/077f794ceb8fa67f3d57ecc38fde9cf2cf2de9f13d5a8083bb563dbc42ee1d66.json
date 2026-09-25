@@ -1,0 +1,45 @@
+{
+  "key": "077f794ceb8fa67f3d57ecc38fde9cf2cf2de9f13d5a8083bb563dbc42ee1d66",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, mixes up her pills and corrects herself.\nFacts:\n- Starts by asking for 'the water pill' [upfront]\n- DOB 1947-05-12 [only_if_asked]\n- Has about a week of lisinopril left [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hello honey, it's Gloria Hart. I need the water pill...\n[turn 1] AGENT: Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\n[turn 2] CALLER: No, wait, not the water pill, honey... the blood pressure one, lisinopril. My birthday is May 12th, 1947.\n[turn 2] AGENT: Got it, lisinopril for blood pressure. Let me verify your information—May 12th, 1947. And just to confirm, your full name is Gloria Hart, correct?\n[turn 3] CALLER: Yes, that's right, honey. Gloria Hart.\n[turn 3] AGENT: Thank you, Gloria. Let me look up your prescriptions now. Great, Gloria. Now let me pull up your prescriptions. Perfect, I found your lisinopril 10 milligrams. I see it has zero refills left, so I'll need to send a renewal request to Dr. Raj Patel. Is that okay?\n[turn 4] CALLER: No refills? What do I do, honey?\n[turn 4] AGENT: Don't worry—I can send a renewal request to Dr. Patel right now, and he should get back to us to authorize more refills. While we're waiting for that, if you run out before he responds, a pharmacist can look into whether a short emergency supply might be possible under state rules, but I can't promise that. Should I go ahead and request the renewal?\n[turn 5] CALLER: Yes, please send that request, honey. I only have about a week of pills left, so I hope he gets back to you soon.\n[turn 5] AGENT: Perfect, Gloria—the renewal request has been sent to Dr. Patel. Since you only have about a week left, I'm going to flag our pharmacist to give you a call and check on that emergency supply option, just in case. You should hear from them soon.\n[turn 6] CALLER: Oh, thank you, honey, that's a relief. You have a good day now, bye bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgJyCcBv133Mp3ZJmJc",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 5, \"fact\": \"Has about a week of lisinopril left\", \"severity\": \"major\", \"quote\": \"I only have about a week of pills left\", \"why\": \"Volunteered without being directly asked, and it changed agent's action (triggered pharmacist flag for emergency supply)\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363078,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 310,
+      "prompt_tokens": 1313,
+      "total_tokens": 1623
+    }
+  },
+  "latency_ms": 3845,
+  "created_at": "2026-09-25T19:04:38.901Z"
+}

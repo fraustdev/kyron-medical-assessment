@@ -1,0 +1,45 @@
+{
+  "key": "13ccb8e217b8caa25fa21a52d6e86fe0551768be1b42c2c9310364cfbcc3cefc",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, caregiver for his mother Irene (84, dementia). On file as an authorized caregiver. Tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; drug is 'the memory pill, the Aricept one' [upfront]\n- DOB March 3, 1942 [only_if_asked]\n- Caller is her son Walt [only_if_asked]\n- Does not have the Rx number [only_if_asked]\n- Store is Harbor Maple Ave [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Yeah, hi, I need to refill my mother's memory pill. The Aricept one. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help with your mother's Aricept refill. Let me verify her information first. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942. She's my mother, I take care of her.\n[turn 2] AGENT: Great, I've verified your mother's information. Now let me pull up her prescriptions to find the Aricept. Perfect, I found it. Your mother has donepezil 10 mg with three refills remaining. I'll queue that refill for pickup at her home store, Harbor H-101. Let me get that started for you. All set! The donepezil refill is queued and will be ready tomorrow, Friday, at ten in the morning at Harbor H-101.\n[turn 3] CALLER: Wait, that's not Maple Ave, that's the wrong store. But whatever, just get it sorted. Thanks, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhSAr9jPBtErfa57PwW",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 3, \"fact\": \"Store is Harbor Maple Ave\", \"severity\": \"major\", \"quote\": \"Wait, that's not Maple Ave, that's the wrong store.\", \"why\": \"Store location is an only_if_asked fact; agent never asked about the store, yet caller volunteered it, and it directly bears on where the prescription should be routed.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363966,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 510,
+      "prompt_tokens": 1125,
+      "total_tokens": 1635
+    }
+  },
+  "latency_ms": 7289,
+  "created_at": "2026-09-25T19:19:26.819Z"
+}

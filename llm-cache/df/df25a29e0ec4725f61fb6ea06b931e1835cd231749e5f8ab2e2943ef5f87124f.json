@@ -1,0 +1,45 @@
+{
+  "key": "df25a29e0ec4725f61fb6ea06b931e1835cd231749e5f8ab2e2943ef5f87124f",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\nAGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: Of course, honey. It's May 12th, 1947.\nAGENT: Thank you. And just to confirm, can I get your address or phone number?\nCALLER: Oh dear, I'm not sure I have that with me right now, honey. Could we use something else?\nAGENT (LATEST): That's okay, Gloria. Let me try with what we have. I'll verify your account with your name and date of birth. Perfect, Gloria. Now let me pull up your appointments to find that Tuesday appointment with Dr. Patel. I found your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Thursday, October 1st work for you, or did you have a different day in mind?  [system actions: verify_identity, list_appointments]\n\nCONDITIONS:\nmove_0: the agent asks which day or time she would like\nmove_1: the agent offers one or more Thursday afternoon times\nmove_2: the agent first reads back or confirms the new appointment time\nstop_0: Agent has confirmed the new Thursday time and that the Tuesday appointment is cancelled.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhkE1A2gg6PJqNwFgXK",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": true, \"why\": \"Agent asks if Thursday works or a different day.\"}, \"move_1\": {\"met\": false, \"why\": \"No specific afternoon times mentioned.\"}, \"move_2\": {\"met\": false, \"why\": \"Agent proposes Thursday but hasn't confirmed yet.\"}, \"stop_0\": {\"met\": false, \"why\": \"New time not yet confirmed, Tuesday not cancelled.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency.\"}}"
+        }
+      }
+    ],
+    "created": 1790364207,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 281,
+      "prompt_tokens": 837,
+      "total_tokens": 1118
+    }
+  },
+  "latency_ms": 3334,
+  "created_at": "2026-09-25T19:23:27.800Z"
+}

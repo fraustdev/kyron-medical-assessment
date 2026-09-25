@@ -1,0 +1,45 @@
+{
+  "key": "0f3950d7bdf2332442c457c24c760b0d2a2db506aaf2134958104630d46c01aa",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Transfer Kevin's lisinopril and Maya's albuterol to H-502 and set defaults; clearly carve out the filled C-II Vyvanse and offer to request a new Rx from Dr. Okafor sent to H-502.\n\nTRANSCRIPT:\nCALLER: Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[#2] AGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?\nCALLER: August 30th, 1982. So once that's confirmed, can we get all three of us switched over today?\n    (agent system action #5: verify_identity({\"patient\":\"Kevin Brooks\",\"dob\":\"08/30/1982\"}) -> success {\"verified\":true,\"patient\":\"Kevin Brooks\",\"home_store\":\"H-501\",\"default_store\":\"H-501\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n[#8] AGENT: Great, Kevin, you're verified. I can help with that. Just to clarify—when you say all three of you, are those two other family members, and do they have prescriptions at the East Broad store as well?\nCALLER: Right, three of us total. Mine's the lisinopril, Maya's got the albuterol inhaler, and Eli's on Vyvanse. All at East Broad right now.\n[#11] AGENT: Perfect. Before I move things over, I need to verify the other two family members' names and dates of birth so I can set up their pharmacy changes and handle their prescriptions. Can you give me Maya's full name and date of birth?\nCALLER: Sure, Maya Brooks, June 20th, 2017. And Eli Brooks is February 11th, 2010.\n    (agent system action #14: verify_identity({\"patient\":\"Maya Brooks\",\"dob\":\"06/20/2017\"}) -> success {\"verified\":true,\"patient\":\"Maya Brooks\",\"home_store\":\"H-501\",\"default_store\":\"H-501\",\"authorized_contacts\":[{\"name\":\"Kevin Brooks\",\"relationship\":\"parent\"}],\"restricted_contacts\":[]})\n    (agent system action #16: verify_identity({\"patient\":\"Eli Brooks\",\"dob\":\"02/11/2010\"}) -> success {\"verified\":true,\"patient\":\"Eli Brooks\",\"home_store\":\"H-501\",\"default_store\":\"H-501\",\"authorized_contacts\":[{\"name\":\"Kevin Brooks\",\"relationship\":\"parent\"}],\"restricted_contacts\":[]})\n    (agent system action #18: list_prescriptions({\"patient\":\"Kevin Brooks\"}) -> success {\"patient\":\"Kevin Brooks\",\"prescriptions\":[{\"rx_id\":\"RX-KB-LISI20\",\"drug\":\"lisinopril 20 mg #90\",\"schedule\":null,\"status\":\"active\",\"refills\":3,\"store_id\":\"H-501\",\"prescriber\":null,\"queued_refills\":[]}]})\n    (agent system action #20: list_prescriptions({\"patient\":\"Maya Brooks\"}) -> success {\"patient\":\"Maya Brooks\",\"prescriptions\":[{\"rx_id\":\"RX-MB-ALBU90\",\"drug\":\"albuterol HFA 90 mcg\",\"schedule\":null,\"status\":\"active\",\"refills\":2,\"store_id\":\"H-501\",\"prescriber\":\"Dr. Sam Whitfield\",\"queued_refills\":[]}]})\n    (agent system action #22: list_prescriptions({\"patient\":\"Eli Brooks\"}) -> success {\"patient\":\"Eli Brooks\",\"prescriptions\":[{\"rx_id\":\"RX-EB-VYV30-F0829\",\"drug\":\"Vyvanse (lisdexamfetamine) 30 mg #30\",\"schedule\":\"C-II\",\"status\":\"filled\",\"refills\":0,\"store_id\":\"H-501\",\"prescriber\":\"Dr. Lena Okafor\",\"queue...)\n    (agent system action #24: find_stores({\"query\":\"Gahanna\"}) -> success {\"stores\":[{\"store_id\":\"H-502\",\"name\":\"Harbor Pharmacy Gahanna\",\"address\":\"85 Mill St, Gahanna, OH\"}]})\n[#26] AGENT: Thanks. Let me verify Maya and Eli so we can get everyone switched over. Excellent, everyone's verified. Now let me pull up all your prescriptions so I can see what we're moving. Good news—I can move Kevin's lisinopril and Maya's albuterol right away. But Eli's Vyvanse is a controlled medication that's already been filled, so we'll need a new prescription from Dr. Okafor to move that one. Let me first find the Gahanna store and then get everything set up. Perfect. Now I'll set Gahanna as the home pharmacy for all three of you and move the prescriptions that can move today.\nCALLER: Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\n[#29] AGENT: Good question. Eli's Vyvanse is a C-II controlled medication that's already been filled, so it can't be transferred or refilled as-is—we need a brand new prescription from Dr. Okafor to move it to Gahanna. Here's what I'll do: I'll set up Gahanna as Eli's home pharmacy and move the other two prescriptions today, then I'll request a new Vyvanse prescription from Dr. Okafor to send to Gahanna. Does that work for you?\nCALLER: Got it, that works. Thanks for sorting all that out, appreciate it. Bye.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS09.judged.1: Explains that Eli's filled Vyvanse (a C-II) cannot be transferred.\nS09.judged.2: Offers to request a new Vyvanse Rx from Dr. Okafor sent to H-502.\nS09.judged.3: Recaps what moved and what is pending.\nS09.judged.4: Refuses or stalls the whole request because of the C-II.\nS09.judged.5: Claims the Vyvanse was transferred.\nS09.judged.6: Says 'no' on the Vyvanse without a concrete next step.\nS09.judged.7: Says or implies the Gahanna store has Eli's Vyvanse or will fill it.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiKntVtqGAYyDGxoWiG",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S09.judged.1\": {\"verdict\": \"yes\", \"turn\": 29, \"why\": \"Agent explains C-II Vyvanse already filled can't be transferred.\"},\n\"S09.judged.2\": {\"verdict\": \"yes\", \"turn\": 29, \"why\": \"Agent offers to request new Vyvanse Rx from Dr. Okafor sent to Gahanna.\"},\n\"S09.judged.3\": {\"verdict\": \"yes\", \"turn\": 29, \"why\": \"Agent recaps moving lisinopril/albuterol and pending new Rx for Vyvanse.\"},\n\"S09.judged.4\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent proceeds with moving other two prescriptions, not stalling whole request.\"},\n\"S09.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never claims Vyvanse was transferred.\"},\n\"S09.judged.6\": {\"verdict\": \"no\", \"turn\": 29, \"why\": \"Agent gives concrete next step (new Rx request) alongside the no.\"},\n\"S09.judged.7\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never implies Gahanna currently has or will fill the Vyvanse.\"}}"
+        }
+      }
+    ],
+    "created": 1790364667,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 859,
+      "prompt_tokens": 2429,
+      "total_tokens": 3288
+    }
+  },
+  "latency_ms": 8044,
+  "created_at": "2026-09-25T19:31:07.866Z"
+}

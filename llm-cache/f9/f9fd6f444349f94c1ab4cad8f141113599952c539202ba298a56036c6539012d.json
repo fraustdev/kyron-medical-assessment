@@ -1,0 +1,45 @@
+{
+  "key": "f9fd6f444349f94c1ab4cad8f141113599952c539202ba298a56036c6539012d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, I need to refill my mother's blood pressure pill, the amlodipine. Irene Kowalski.\nAGENT: I'd be happy to help you refill your mother's amlodipine. To get started, I need to verify her identity. What's her date of birth?\nCALLER: March 3rd, 1942. I'm her son Walt, I take care of her stuff.\nAGENT: Thank you, Walt. Let me verify that information and pull up her prescriptions. Great, Walt. I found your mother's amlodipine 5 mg, but it currently has zero refills left. I can send a renewal request to her prescriber, Dr. Thomas Hughes, so he can authorize more refills. Would you like me to do that?  [system actions: verify_identity, list_prescriptions]\nCALLER: No refills? She's only got three left. That's not gonna last long, doc.\nAGENT (LATEST): I understand your concern. Let me clarify—the system shows zero refills remaining on that prescription right now. That means we'll need to get Dr. Thomas Hughes to authorize more refills before we can dispense it again. Would you like me to send that renewal request to him today?\n\nCONDITIONS:\nstop_0: Agent confirms renewal sent to Dr. Hughes and explains the backup.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQi4cWVdeQwjaKr3zNUr",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"stop_0\": {\"met\": false, \"why\": \"Agent is asking permission, hasn't confirmed sending yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790364455,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 73,
+      "prompt_tokens": 783,
+      "total_tokens": 856
+    }
+  },
+  "latency_ms": 1830,
+  "created_at": "2026-09-25T19:27:35.738Z"
+}

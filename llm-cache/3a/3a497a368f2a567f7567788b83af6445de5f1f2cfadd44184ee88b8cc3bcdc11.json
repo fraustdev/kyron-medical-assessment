@@ -1,0 +1,45 @@
+{
+  "key": "3a497a368f2a567f7567788b83af6445de5f1f2cfadd44184ee88b8cc3bcdc11",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, NEVER unlocked in this call]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 2]\n- Does not know the address [only_if_asked, the agent asked at turn 2]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity first, then help with those transfers. Great, Jamal. I can help with that. Let me find the Harbor store on Main in Lakeview to confirm the right location. I found three Harbor locations on Main in Lakeview. Which one—downtown at 120 Main, university area at 2250 Main, or north at 5400 Main in Northgate Mall?\n[turn 2] CALLER (scenario-scripted): Uh, I don't know the address, but it's near Oak.\n[turn 2] AGENT: That's the one at 2250 Main near Oak Street. Let me pull up your prescriptions so I can transfer those two for you. I'm not seeing any active prescriptions under your name in our system. Are the albuterol and sertraline currently at the Brightway in Columbus, or did you mean a different pharmacy?\n[turn 3] CALLER: No, they're at the Brightway, store number 4471, in Columbus. That's where I'm trying to transfer them from.\n[turn 3] AGENT: Got it—those are at Brightway, not at Harbor yet. To transfer prescriptions from another pharmacy chain to Harbor, the receiving pharmacy needs to request them. I can ask our pharmacist to contact Brightway and request those transfers for you.\n\nWhen our pharmacist calls Brightway, they'll need the prescription details. Can you give me the names and strengths of your albuterol and sertraline—for example, albuterol inhaler and what dose of sertraline?\n[turn 4] CALLER: Uh, I don't actually have the dosages in front of me, but it's just the standard albuterol inhaler and sertraline. Can't your system pull that up once you call Brightway?\n[turn 4] AGENT: Our pharmacist will work that out when they call Brightway—they can look it up by your name and date of birth. Let me flag this for them now. Perfect. Our pharmacist will call Brightway to request those transfers and get the details sorted out. They'll reach out to you if they need anything else. Is there anything else I can help with?\n[turn 5] CALLER: Nah that's it, thanks. How long's that usually take?\n[turn 5] AGENT: It typically takes a day or two once our pharmacist makes the call. They'll contact Brightway after we hang up, so you should hear back soon if there are any questions. Thanks for calling Harbor!\n[turn 6] CALLER: Alright, cool, appreciate it. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiMqjhmzCnYmQ67Ct32",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364688,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1717,
+      "total_tokens": 1733
+    }
+  },
+  "latency_ms": 1255,
+  "created_at": "2026-09-25T19:31:28.860Z"
+}

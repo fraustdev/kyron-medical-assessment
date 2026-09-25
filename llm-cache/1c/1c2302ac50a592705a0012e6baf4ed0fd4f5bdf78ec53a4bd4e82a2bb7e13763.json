@@ -1,0 +1,45 @@
+{
+  "key": "1c2302ac50a592705a0012e6baf4ed0fd4f5bdf78ec53a4bd4e82a2bb7e13763",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, caregiver. 31, calling for his mother Denise; he is listed on her profile as an authorized contact.\nFacts:\n- Patient Denise Carter, DOB 1962-07-02, drug lisinopril [upfront]\n- Caller is her son Jamal Carter [only_if_asked]\n- Store is H-302 [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I'm calling to refill my mom's blood pressure med. Denise Carter, July 2nd, 1962. The lisinopril.\n[turn 1] AGENT: I'll verify your mom's information and pull up her prescriptions. Great! I found her lisinopril 10 mg with two refills available. Before I queue it up, are you calling as her son Jamal, or are you a different family member?\n[turn 2] CALLER: Yeah, it's me, Jamal, her son.\n[turn 2] AGENT: Perfect. I'll queue up the lisinopril refill for your mom at her pharmacy, H-302. All set! The lisinopril will be ready tomorrow morning at ten o'clock at H-302.\n[turn 3] CALLER: Great, that works. Thanks a lot, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhQT5ehdPfogDjDiP4R",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363937,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 995,
+      "total_tokens": 1011
+    }
+  },
+  "latency_ms": 1257,
+  "created_at": "2026-09-25T19:18:57.476Z"
+}

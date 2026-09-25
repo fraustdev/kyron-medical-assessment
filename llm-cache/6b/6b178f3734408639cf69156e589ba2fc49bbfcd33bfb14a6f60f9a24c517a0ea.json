@@ -1,0 +1,45 @@
+{
+  "key": "6b178f3734408639cf69156e589ba2fc49bbfcd33bfb14a6f60f9a24c517a0ea",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, mixes up her pills and corrects herself.\nFacts:\n- Starts by asking for 'the water pill' [upfront]\n- DOB 1947-05-12 [only_if_asked]\n- Has about a week of lisinopril left [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hello honey, it's Gloria Hart. I need the water pill...\n[turn 1] AGENT: Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\n[turn 2] CALLER: May 12th, 1947, honey. Oh wait, no, not the water pill - it's the blood pressure one I need... lisinopril.\n[turn 2] AGENT: Thank you, Gloria. Let me verify your information and then look up your lisinopril prescription. Great, I've got you verified. Now let me pull up your prescriptions to find your lisinopril. I found your lisinopril 10 milligrams, but it shows zero refills left. Would you like me to send a renewal request to Dr. Raj Patel so you can get it refilled?\n[turn 3] CALLER: No refills? What do I do, honey?\n[turn 3] AGENT: Don't worry—I can send a renewal request to Dr. Patel right now, and he should get back to us to authorize more refills. Would you like me to go ahead and do that?\n[turn 4] CALLER: Oh, yes please, honey, that would be wonderful. How long do you think that will take? I only have about a week left of it.\n[turn 4] AGENT: Let me send that renewal request to Dr. Patel for you right now. Perfect, I've sent the renewal request to Dr. Patel. As for timing, it usually takes a day or two for the doctor to respond, but it can vary. Since you mentioned you only have about a week left, let me have a pharmacist give you a call to discuss your options—they may be able to help bridge the gap while we wait for the doctor's response. Is that okay?\n[turn 5] CALLER: Oh, that sounds fine, honey. Thank you for your help. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgJcFHFNCYJtf6Q83y9",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 4, \"fact\": \"Has about a week of lisinopril left\", \"severity\": \"major\", \"quote\": \"I only have about a week left of it.\", \"why\": \"Volunteered without being asked; directly influenced agent's decision to escalate to pharmacist for bridging refill.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363073,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 307,
+      "prompt_tokens": 1238,
+      "total_tokens": 1545
+    }
+  },
+  "latency_ms": 3582,
+  "created_at": "2026-09-25T19:04:33.724Z"
+}

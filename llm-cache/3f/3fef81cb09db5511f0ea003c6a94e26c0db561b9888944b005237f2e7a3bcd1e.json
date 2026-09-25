@@ -1,0 +1,45 @@
+{
+  "key": "3fef81cb09db5511f0ea003c6a94e26c0db561b9888944b005237f2e7a3bcd1e",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, Tess Morgan. Dr. Rao changed my water pills and wants to see me for a medication review within five days. What do you have?\nAGENT (LATEST): Hi Tess! I'd be happy to help you find a medication review appointment. Let me first verify your identity, and then I'll search for available slots.\n\nWhat's your date of birth?\n\nCONDITIONS:\nmove_0: the agent says nothing is available with Dr. Rao in that window\nmove_1: the agent offers the waitlist\nmove_2: the agent offers to have Dr. Rao's team call her\nmove_3: the agent offers a later Dr. Rao appointment as a backup\nstop_0: Agent has explained there is no opening in the window and set up the waitlist and/or a call back.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhoGvMtsDFrH9WXeMr1",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent asked for DOB, hasn't searched yet\"}, \"move_1\": {\"met\": false, \"why\": \"No waitlist offer made\"}, \"move_2\": {\"met\": false, \"why\": \"No call back offer made\"}, \"move_3\": {\"met\": false, \"why\": \"No backup appointment offered yet\"}, \"stop_0\": {\"met\": false, \"why\": \"No availability discussion has occurred yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency\"}}"
+        }
+      }
+    ],
+    "created": 1790364248,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 177,
+      "prompt_tokens": 608,
+      "total_tokens": 785
+    }
+  },
+  "latency_ms": 2284,
+  "created_at": "2026-09-25T19:24:08.185Z"
+}

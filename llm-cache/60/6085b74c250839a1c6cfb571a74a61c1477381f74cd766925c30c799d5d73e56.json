@@ -1,0 +1,45 @@
+{
+  "key": "6085b74c250839a1c6cfb571a74a61c1477381f74cd766925c30c799d5d73e56",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Verify Irene's name + DOB, map 'Aricept' to donepezil 10 mg, queue at H-101, give a ready time.\n\nTRANSCRIPT:\nCALLER: Yeah, hi, I need to refill my mother's memory pill. The Aricept one. Irene Kowalski.\n[#2] AGENT: I'd be happy to help with your mother's Aricept refill. Let me verify her information first. What's her date of birth?\nCALLER: She was born March 3rd, 1942.\n    (agent system action #5: verify_identity({\"patient\":\"Irene Kowalski\",\"dob\":\"03/03/1942\"}) -> success {\"verified\":true,\"patient\":\"Irene Kowalski\",\"home_store\":\"H-101\",\"default_store\":\"H-101\",\"authorized_contacts\":[{\"name\":\"Walter Kowalski\",\"relationship\":\"son\"}],\"restricted_contacts\":[]})\n[#8] AGENT: Great, I've verified her information. Before I pull up her prescriptions, are you Walter, her son?\nCALLER: Yeah, that's me, Walt. I'm her son, I'm on her account.\n    (agent system action #11: list_prescriptions({\"patient\":\"Irene Kowalski\"}) -> success {\"patient\":\"Irene Kowalski\",\"prescriptions\":[{\"rx_id\":\"RX-IK-DONE10\",\"drug\":\"donepezil 10 mg\",\"schedule\":null,\"status\":\"active\",\"refills\":3,\"store_id\":\"H-101\",\"prescriber\":\"Dr. Helen Brandt\",\"queued_refills\":[]},{\"rx_id\"...)\n[#13] AGENT: Perfect, Walt. Let me pull up her prescriptions now. I found her Aricept—that's the donepezil 10 mg. She has three refills left on that one. Which store would you like to pick it up from, or should I send it to her home store, H-101?\nCALLER: Just send it to the Maple Ave one, same as always.\n[#16] AGENT: I want to make sure I have the right store. Is that H-101 on Maple Avenue, or a different Harbor location?\nCALLER: Yeah, that's the one, H-101, Harbor on Maple Ave. Same place we always go.\n    (agent system action #19: queue_refill({\"rx\":\"RX-IK-DONE10\",\"store\":\"H-101\"}) -> success {\"status\":\"queued\",\"rx_id\":\"RX-IK-DONE10\",\"store_id\":\"H-101\",\"ready_time\":\"2026-09-25T10:00\"})\n[#23] AGENT: Perfect. Let me queue that refill for you now. All set, Walt. Her Aricept refill is queued and will be ready tomorrow morning at ten o'clock at H-101 on Maple Avenue.\nCALLER: Alright, ten o'clock tomorrow, got it. Thanks for the help.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS05.judged.1: Identifies 'the Aricept one' as donepezil 10 mg.\nS05.judged.2: Gives a ready time.\nS05.judged.3: Asks to speak to Irene.\nS05.judged.4: Demands an Rx number before proceeding.\nS05.judged.5: Asks for proof of guardianship or power of attorney.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 2500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgEx7kdHEXDanCZkNDo",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S05.judged.1\": {\"verdict\": \"yes\", \"turn\": 13, \"why\": \"Agent identifies Aricept as donepezil 10 mg.\"}, \"S05.judged.2\": {\"verdict\": \"yes\", \"turn\": 23, \"why\": \"Agent gives ready time of ten o'clock tomorrow.\"}, \"S05.judged.3\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never asks to speak to Irene directly.\"}, \"S05.judged.4\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never demands an Rx number.\"}, \"S05.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent verifies identity via account/authorized contact, not guardianship proof.\"}}"
+        }
+      }
+    ],
+    "created": 1790363023,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 346,
+      "prompt_tokens": 1382,
+      "total_tokens": 1728
+    }
+  },
+  "latency_ms": 3513,
+  "created_at": "2026-09-25T19:03:44.043Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "12c26568b86a479f07be6ea9eb669490b74b6b3bceea4ce3a47f7a4485868788",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for Irene. Doesn't remember that an old 2023 profile at Oak St still holds her metformin.\nFacts:\n- Patient Irene Kowalski; wants Maple Ave for everything [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked]\n- Unaware that metformin is still at Oak St [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi, I'm calling for my mother, Irene Kowalski. I want Maple Ave to be her pharmacy for everything.\n[turn 1] AGENT: Hi! I'd be happy to help set up Maple Ave as your mother's pharmacy. Let me start by verifying her identity. What's Irene Kowalski's date of birth?\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Great, I've verified your mother's information. Before I set Maple Ave as her pharmacy, I need to confirm which Maple Ave location you mean. Can you give me the street address or the city?\n[turn 3] CALLER: I don't have the exact address on me, but it's the Maple Ave pharmacy she's been going to. Just the one in town.\n[turn 3] AGENT: I understand. Let me search for the Maple Ave location in your area so we can make sure we're setting up the right store. Perfect! I found Harbor Pharmacy at 88 Maple Ave in Brookfield. Is that the one your mother uses?\n[turn 4] CALLER: Yeah, that's the one. Harbor Pharmacy, Maple Ave, Brookfield. That's it.\n[turn 4] AGENT: I have good news—that's already her home pharmacy. Her default store is set to Harbor Pharmacy on Maple Ave in Brookfield, so everything is all set. Is there anything else I can help with for your mother today?\n[turn 5] CALLER: Alright then, good. Thanks for checking. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgG9KUXyjjVW3wVEg84",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363038,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 157,
+      "prompt_tokens": 1203,
+      "total_tokens": 1360
+    }
+  },
+  "latency_ms": 2316,
+  "created_at": "2026-09-25T19:03:58.998Z"
+}

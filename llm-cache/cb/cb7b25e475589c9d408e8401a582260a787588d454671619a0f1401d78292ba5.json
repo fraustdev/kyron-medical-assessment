@@ -1,0 +1,45 @@
+{
+  "key": "cb7b25e475589c9d408e8401a582260a787588d454671619a0f1401d78292ba5",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nFacts:\n- Kevin Brooks, wants everything moved H-501 to H-502 [upfront]\n- Kevin DOB 1982-08-30 [only_if_asked]\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11 [only_if_asked]\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[turn 1] AGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?\n[turn 2] CALLER: August 30th, 1982.\n[turn 2] AGENT: Thanks. Let me verify that and pull up your prescriptions. Great, Kevin. I see you have one active prescription at East Broad: lisinopril 20 mg with three refills remaining. Before I move it, let me find the Gahanna store for you. Perfect. I'll set Gahanna as your home pharmacy and transfer your lisinopril there. All set! Your home pharmacy is now Harbor Pharmacy Gahanna at 85 Mill Street, and your lisinopril has been transferred there. You mentioned family prescriptions—do you have other family members whose prescriptions you'd like to move as well?\n[turn 3] CALLER: Yes, exactly. Maya's got the albuterol inhaler, and Eli's on Vyvanse. Let's move both of those too.\n[turn 3] AGENT: I'd be happy to help with Maya and Eli's prescriptions. To pull up their records, I'll need their full names and dates of birth. Let's start with Maya—what's her full name and date of birth?\n[turn 4] CALLER: Maya Brooks, June 20th, 2017.\n[turn 4] AGENT: Thanks. And what's Eli's full name and date of birth?\n[turn 5] CALLER: Eli Brooks, February 11th, 2010. So what's the plan to get both of them moved over?\n[turn 5] AGENT: Let me verify their identities and pull up their prescriptions. Good news on Maya—her albuterol inhaler has two refills, so I can transfer that right away. For Eli, his Vyvanse is a controlled medication that's already been filled, so I can't transfer a filled C-II. We'll need to request a new prescription from his prescriber, Dr. Lena Okafor, to send to Gahanna. Let me set both kids' home pharmacy to Gahanna and handle the transfers.\n[turn 6] CALLER: Wait, why not the Vyvanse? Okay, so what's the plan for Eli then?\n[turn 6] AGENT: Good question. With controlled medications like Vyvanse, once they're filled, they can't be transferred or refilled—that's a safety rule. So we'll need to request a brand new prescription from Dr. Okafor to send to the Gahanna store. Let me set both kids' home pharmacy to Gahanna and transfer Maya's albuterol, then I'll request the new Vyvanse prescription for Eli.\n[turn 7] CALLER: Okay, got it, that makes sense. So you'll reach out to Dr. Okafor's office and get that new script sent to Gahanna? How long's that usually take?\n[turn 7] AGENT: I can't call the doctor's office myself, but I'll flag our pharmacist to reach out to Dr. Okafor and request the new Vyvanse prescription for the Gahanna store. The pharmacist will handle that contact. Let me get everything set up now. Perfect! Both kids' home pharmacy is now set to Gahanna, Maya's albuterol is transferred and ready there, and the request for Eli's new Vyvanse prescription has been sent to Dr. Okafor. Turnaround on prescriber requests varies, but our pharmacist will follow up if needed. You're all set at Harbor Pharmacy Gahanna on 85 Mill Street!\n[turn 8] CALLER: Alright, sounds good. Appreciate the help, thanks. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgJZki7nP49JTvGtxDE",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363073,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 352,
+      "prompt_tokens": 2028,
+      "total_tokens": 2380
+    }
+  },
+  "latency_ms": 4274,
+  "created_at": "2026-09-25T19:04:33.853Z"
+}

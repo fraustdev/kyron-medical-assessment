@@ -1,0 +1,45 @@
+{
+  "key": "37a274978ea4c1eaf9fc74e2263e5982ba75648306406dce290e1fc44bd9f51c",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\nAGENT (LATEST): I'll verify your identity and then queue that refill for you. Great, Jamal. I'm queuing that sertraline refill at the Main St University store now. Perfect. Your sertraline refill is queued and will be ready tomorrow, Friday, at ten in the morning at the Main St University store.  [system actions: verify_identity, queue_refill]\n\nCONDITIONS:\nmove_0: the agent asks again for any detail he already gave in the opening line\nmove_1: after the agent gives a ready time\nmove_3: the agent tells him to ask his doctor about the dose\nmove_4: the agent offers a pharmacist callback or consult\ndisclosure_2: after the agent gives a ready time\ndisclosure_3: after the agent responds to the missed-dose question\nstop_0: Agent has confirmed the refill and ready time and routed both questions.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhhgX1rFkcZ7ddGRyP6",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent did not re-ask any previously given detail.\"},\n\"move_1\": {\"met\": true, \"why\": \"Agent gave ready time: tomorrow Friday 10am.\"},\n\"move_3\": {\"met\": false, \"why\": \"No mention of consulting doctor about dose.\"},\n\"move_4\": {\"met\": false, \"why\": \"No pharmacist callback or consult offered.\"},\n\"disclosure_2\": {\"met\": true, \"why\": \"Ready time provided after queuing refill.\"},\n\"disclosure_3\": {\"met\": false, \"why\": \"No missed-dose question was raised or answered.\"},\n\"stop_0\": {\"met\": false, \"why\": \"Only one request handled; no second question routed.\"},\n\"emergency\": {\"met\": false, \"why\": \"No mention of emergency or 911.\"}}"
+        }
+      }
+    ],
+    "created": 1790364175,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 507,
+      "prompt_tokens": 690,
+      "total_tokens": 1197
+    }
+  },
+  "latency_ms": 5257,
+  "created_at": "2026-09-25T19:22:55.250Z"
+}

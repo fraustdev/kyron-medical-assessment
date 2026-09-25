@@ -1,0 +1,45 @@
+{
+  "key": "335ccd89e016c598a1b410e3b03e4c0122b3e859b2dc7a72f754be1b95dafef9",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Tess Morgan, patient. 52, heart failure + type 2 diabetes. Dr. Rao changed her water pills and wants a medication review within five days. Practical; pushes once.\nFacts:\n- Name; needs a Dr. Rao medication review within five days after a water-pill change [upfront]\n- DOB 1974-01-19 [only_if_asked]\n- Feels fine; the review is routine follow-up to the medication change [only_if_asked]\n- Would accept a waitlist spot, a call back from Dr. Rao's team, and a later appointment as a backup [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi honey, Tess Morgan. Dr. Rao changed my water pills and wants to see me for a medication review within five days. What do you have?\n[turn 1] AGENT: Hi Tess! I'd be happy to help you find a medication review appointment. Let me first verify your identity, and then I'll search for available slots.\n\nWhat's your date of birth?\n[turn 2] CALLER: Sure thing, honey. January 19th, 1974.\n[turn 2] AGENT: Thank you. And just to confirm, that's January 19th, 1974, correct?\n[turn 3] CALLER: That's right, honey.\n[turn 3] AGENT: Perfect, thank you. Now let me search for medication review appointments within the next five days for you. Great! I found two medication review slots for you. You have an opening with Dr. Raj Patel on Tuesday, September 28th at ten in the morning, or with Dr. Thomas Hughes on Tuesday, September 29th at nine in the morning. Which works better for you?\n[turn 4] CALLER: Oh, hold on honey, I really need to see Dr. Rao herself for this review, not another doctor. Is there any way to get in with her?\n[turn 4] AGENT: Let me search specifically for Dr. Rao's availability for a medication review within those five days. Unfortunately, Dr. Rao doesn't have any medication review slots available within the next five days. I can add you to a waitlist for Dr. Rao in case something opens up, or I can flag a callback request so the clinic can reach out to you about scheduling. Would either of those options work for you?\n[turn 5] CALLER: Can't you squeeze me in, honey? She said five days.\n[turn 5] AGENT: I understand—Dr. Rao did say five days. Unfortunately, the calendar shows she has no openings for a medication review in that window, so I can't create a slot that isn't there. But I can put you on a waitlist for Dr. Rao through September 29th, and the clinic will call you if something becomes available. Would you like me to do that?\n[turn 6] CALLER: Okay, put me on the list, honey. That'll do for now.\n[turn 6] AGENT: Perfect, I'll add you to the waitlist for Dr. Rao. You're all set, Tess. You're on the waitlist for Dr. Rao for a medication review through September 29th, and the clinic will call you if an opening comes up. Is there anything else I can help you with today?\n[turn 7] CALLER: Okay, that's fine, honey. Thanks for your help.\n[turn 7] AGENT: You're welcome, Tess! Take care, and we'll be in touch.\n[turn 8] CALLER: Alright honey, thanks again. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgZwb33argqbXyFk3gH",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363279,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1632,
+      "total_tokens": 1648
+    }
+  },
+  "latency_ms": 1101,
+  "created_at": "2026-09-25T19:07:59.246Z"
+}

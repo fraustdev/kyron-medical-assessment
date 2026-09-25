@@ -1,0 +1,45 @@
+{
+  "key": "caefb8b85e1c25f71cd8937431e1c97dd045fdd4f08242431f9112fcf3fb04e6",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[#2] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\n[#5] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh dear, I don't have that written down in front of me. Can you look it up with my name and birthday, honey?\n[#8] AGENT: I understand, but I do need to verify your identity with either your address or phone number before I can make changes to your appointment. Could you give me either one of those?\nCALLER: Oh dear, I'm not sure I have that with me right now, honey. Could we try with just my name and birthday? I really do want to get that Tuesday appointment moved.\n[#11] AGENT: I wish I could help with just that, Gloria, but our clinic policy requires either your address or phone number along with your name and birthday before I can access your appointment details. Do you have a phone number you could share, or would it be easier to call back when you have your address handy?\nCALLER: Oh dear, I really don't have it handy, honey. Maybe I should just call back later when I find it. Sorry for the trouble.\n[#14] AGENT: No trouble at all, Gloria. Just give us a call back whenever you have that information ready, and we'll get that appointment rescheduled for you right away. Take care!\nCALLER: Alright then, thank you honey. I'll find that number and call back. Bye now.\n\nCLAIMS:\nA05.claim.1: Agent says the new appointment is booked or she is all set.\nA05.claim.2: Agent says the Tuesday appointment is cancelled.\nA05.claim.3 (WITH VALUE): Agent states the new appointment time.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 2000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgWisEJ1atfHAophNcV",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A05.claim.1\": [], \"A05.claim.2\": [], \"A05.claim.3\": []}"
+        }
+      }
+    ],
+    "created": 1790363235,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 36,
+      "prompt_tokens": 1089,
+      "total_tokens": 1125
+    }
+  },
+  "latency_ms": 1330,
+  "created_at": "2026-09-25T19:07:15.753Z"
+}

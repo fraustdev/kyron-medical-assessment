@@ -1,0 +1,45 @@
+{
+  "key": "49b859649868c5336e9bef8392f45c0573d0d1b516f013159918657e26339ef0",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hi, I'm calling about my mom's prescriptions, Gloria Hart. I'm trying to get her pill organizer sorted out.\n[#2] AGENT: Hi! I'd be happy to help you with your mom's prescriptions. To get started, I'll need to verify her identity. Can you give me her date of birth?\nCALLER: May 21st, 1947.\n[#7] AGENT: Thank you. Let me verify that information. I'm not finding a match with that name and date of birth in our system. Can you double-check the spelling of your mom's name or her date of birth?\nCALLER: May 21st, I'm pretty sure. 1947. Her name's Gloria Hart, spelled just like it sounds.\n[#10] AGENT: I understand. Unfortunately, that combination isn't matching our records. It's possible she's registered under a different name—maybe a middle name, or a maiden name—or there could be a typo in our system. \n\nThe best next step would be for your mom to call us directly, or you could ask her to authorize you as a caregiver so you can help manage her prescriptions. Would either of those work for you?\nCALLER: Fine. I'll have her call you.\n[#13] AGENT: Perfect. When she calls, we'll get her set up right away. Thanks for reaching out, and have a great day!\nCALLER: Alright, thanks for your help. Bye.\n\nCLAIMS:\nS22.claim.1: Agent says the blood pressure pill was (or wasn't) refilled.\nS22.claim.2: Agent says Gloria is (or isn't) a patient here.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiWn9QnxawSsuyVECh9",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S22.claim.1\": [], \"S22.claim.2\": []}"
+        }
+      }
+    ],
+    "created": 1790364809,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 25,
+      "prompt_tokens": 966,
+      "total_tokens": 991
+    }
+  },
+  "latency_ms": 971,
+  "created_at": "2026-09-25T19:33:29.900Z"
+}

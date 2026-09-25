@@ -1,0 +1,45 @@
+{
+  "key": "037b7a0db39da66d2d04f320957c0ed6dcd8a06b3d208fad44b1d95202192015",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, unlocked at turn 3]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 3]\n- Does not know the address [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity first, then help with those transfers. Great, Jamal. I can help with that. Let me find the Harbor store on Main in Lakeview to confirm the right location. I'm not finding a Harbor store on Main in Lakeview. Can you give me the store ID or the full address so I can make sure I'm transferring to the right location?\n[turn 2] CALLER (scenario-scripted): I don't know the address, I just moved here. Can't you just tell me which ones there are?\n[turn 2] AGENT: I can search for Harbor stores in Lakeview. Let me do that. We have three Harbor locations in Lakeview. Which one sounds right—the one downtown at 120 Main, the one near the university at 2250 Main, or the one north of Main inside Northgate Mall?\n[turn 3] CALLER (scenario-scripted): Near Oak, that's the one by my apartment.\n[turn 3] AGENT: Perfect, that's the one at 2250 Main near Oak Street. Now let me get your prescriptions from Brightway so I can transfer the albuterol and sertraline. I'm not seeing any prescriptions in our system for you. Those medications are at Brightway, so they're not in our Harbor records yet. To transfer them, Brightway will need to send them to us. Can you call Brightway and ask them to transfer your albuterol and sertraline to Harbor Pharmacy at 2250 Main Street in Lakeview, or would you like me to flag our pharmacist to reach out to them?\n[turn 4] CALLER: Yeah, just have your pharmacist call them so I don't have to deal with it. That's easier for me.\n[turn 4] AGENT: I'll flag our pharmacist to contact Brightway about transferring those two medications for you. Done. Our pharmacist will call Brightway to get those transferred over for you. I'll also set your default store to the Harbor on Main near Oak Street. All set. Your home pharmacy is now the Harbor at 2250 Main near Oak, and our pharmacist will reach out to Brightway about your transfer.\n[turn 5] CALLER: Cool, appreciate it man. That's all I needed, thanks.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhZvMVJRFBTUh3vR5CJ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364065,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1573,
+      "total_tokens": 1589
+    }
+  },
+  "latency_ms": 1140,
+  "created_at": "2026-09-25T19:21:05.833Z"
+}

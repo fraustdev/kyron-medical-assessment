@@ -1,0 +1,45 @@
+{
+  "key": "3cd24d4814cd4c2e1f7228bc5563b8d8a8f43c8f9acd50312511f5c2be2324a7",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Same correct outcome as A01, but Gloria says goodbye as soon as she hears the new time. The agent must still cancel the Tuesday appointment (in the same turn, if needed) and must not say 'all set' while the old appointment is still booked.\n\nTRANSCRIPT:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[#2] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\n[#5] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh dear, I don't have that written down in front of me. Can you look it up with my name and birthday, honey?\n[#8] AGENT: I understand, but I do need to verify your identity with either your address or phone number before I can make changes to your appointment. Could you give me either one of those?\nCALLER: Oh dear, I'm not sure I have that with me right now, honey. Could we try with just my name and birthday? I really do want to get that Tuesday appointment moved.\n[#11] AGENT: I wish I could help with just that, Gloria, but our clinic policy requires either your address or phone number along with your name and birthday before I can access your appointment details. Do you have a phone number you could share, or would it be easier to call back when you have your address handy?\nCALLER: Oh dear, I really don't have it handy, honey. Maybe I should just call back later when I find it. Sorry for the trouble.\n[#14] AGENT: No trouble at all, Gloria. Just give us a call back whenever you have that information ready, and we'll get that appointment rescheduled for you right away. Take care!\nCALLER: Alright, thank you for your patience, honey. I'll find that number and call back. Bye now.\n(call ended: stop_condition)\n\nBEHAVIORS:\nA02.judged.1: Reads the new appointment back once, slowly: day, date, time, doctor.\nA02.judged.2: Tells her the Tuesday appointment is cancelled.\nA02.judged.3: Repeats more slowly when she asks.\nA02.judged.4: Asks for an appointment number she doesn't have, or makes her look it up.\nA02.judged.5: Adds unrequested clinical questions or counseling.\nA02.judged.6: Reads out other appointments or medical details she didn't ask about.\nA02.judged.7: Shows impatience or rushes her.\nA02.judged.8: Before the call ends, completes the cancellation and tells her the Tuesday appointment is cancelled, despite her hurry.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 2500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQg2gAj6LL6Rd56AXsFw",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A02.judged.1\": {\"verdict\": \"n/a\", \"turn\": null, \"why\": \"Call never reached rescheduling; identity verification failed.\"}, \"A02.judged.2\": {\"verdict\": \"n/a\", \"turn\": null, \"why\": \"No cancellation occurred; identity was never verified.\"}, \"A02.judged.3\": {\"verdict\": \"n/a\", \"turn\": null, \"why\": \"She never asked for repetition of details.\"}, \"A02.judged.4\": {\"verdict\": \"no\", \"turn\": 8, \"why\": \"Agent asked for address/phone, not an appointment number.\"}, \"A02.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"No clinical questions or counseling were added.\"}, \"A02.judged.6\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"No other appointments or medical details were read.\"}, \"A02.judged.7\": {\"verdict\": \"no\", \"turn\": 14, \"why\": \"Agent remained patient and polite throughout the call.\"}, \"A02.judged.8\": {\"verdict\": \"no\", \"turn\": 14, \"why\": \"Call ended without verifying identity or cancelling the Tuesday appointment.\"}}"
+        }
+      }
+    ],
+    "created": 1790362858,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 416,
+      "prompt_tokens": 1220,
+      "total_tokens": 1636
+    }
+  },
+  "latency_ms": 4399,
+  "created_at": "2026-09-25T19:00:58.414Z"
+}

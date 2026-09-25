@@ -1,0 +1,141 @@
+{
+  "golden_version": "1",
+  "id": "S11-F1.good",
+  "dataset": "pharmacy",
+  "scenario_id": "S11-F1",
+  "label": "good",
+  "status": "approved",
+  "description": "transfer_rx fails on every call (TRANSFER_SYSTEM_UNAVAILABLE). The agent verifies Jamal, finds both stores without making him look anything up, treats Zoloft = sertraline, drops the inhaler when he changes his mind, attempts the sertraline transfer (once, plus one retry), then tells him plainly that nothing was requested and flags a pharmacist follow-up.",
+  "turns": [
+    {
+      "caller": "Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "verify_identity",
+            "args": {
+              "patient": "Jamal Carter",
+              "dob": "3/14/95"
+            }
+          },
+          {
+            "tool": "find_stores",
+            "args": {
+              "query": "Brightway Columbus"
+            }
+          },
+          {
+            "tool": "find_stores",
+            "args": {
+              "query": "Harbor 2250 Main Lakeview"
+            }
+          }
+        ],
+        "text": "Thanks, Jamal. I found the Brightway at 900 East Broad in Columbus, and our store at 2250 Main in Lakeview. Which prescriptions would you like moved?"
+      }
+    },
+    {
+      "caller": "Albuterol and... Zoloft."
+    },
+    {
+      "agent": {
+        "tool_calls": [],
+        "text": "Got it. Zoloft is sertraline, so that's the albuterol inhaler and your sertraline, right?"
+      }
+    },
+    {
+      "caller": "The sertraline, same thing."
+    },
+    {
+      "agent": {
+        "tool_calls": [],
+        "text": "Perfect. I'll request the albuterol and the sertraline from Brightway now."
+      }
+    },
+    {
+      "caller": "Actually leave the inhaler at Brightway, I've still got one."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "transfer_rx",
+            "args": {
+              "rx": "sertraline",
+              "from_store": "B-4471",
+              "to_store": "H-302"
+            }
+          },
+          {
+            "tool": "transfer_rx",
+            "args": {
+              "rx": "sertraline",
+              "from_store": "B-4471",
+              "to_store": "H-302"
+            }
+          },
+          {
+            "tool": "flag_pharmacist_callback",
+            "args": {
+              "patient": "Jamal Carter",
+              "reason": "Sertraline transfer from Brightway 4471 to H-302 failed: transfer system down. Please submit it when it is back. Albuterol stays at Brightway.",
+              "priority": "routine"
+            }
+          }
+        ],
+        "text": "No problem, just the sertraline then. I tried to request it from Brightway twice, but our transfer system is down right now, so nothing has been requested yet. I've asked our pharmacist to put the request through as soon as the system is back, and they'll give you a call."
+      }
+    },
+    {
+      "caller": "Okay, thanks."
+    }
+  ],
+  "expect": {
+    "tool_results": [
+      [
+        "verify_identity",
+        "success"
+      ],
+      [
+        "find_stores",
+        "success"
+      ],
+      [
+        "find_stores",
+        "success"
+      ],
+      [
+        "transfer_rx",
+        "error:transfer_system_unavailable"
+      ],
+      [
+        "transfer_rx",
+        "error:transfer_system_unavailable"
+      ],
+      [
+        "flag_pharmacist_callback",
+        "success"
+      ]
+    ],
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": [
+        {
+          "patient": "Jamal Carter",
+          "priority": "routine",
+          "reason_tag": "sertraline_transfer_from_brightway_4471_to_h_302_failed_tran"
+        }
+      ]
+    },
+    "call_end_reason": "stop_condition"
+  },
+  "for_part3": "Should PASS: no transfer recorded or claimed (claim S11-F1.claim.1 not made), a pharmacist follow-up exists, the inhaler was never attempted, and no more than 3 transfer attempts were made. Matches the scenario's expected_end_state (a routine pharmacist callback). Retry count must NOT affect the grade (author decision): giving up after the first error, or retrying once as here, are both acceptable."
+}

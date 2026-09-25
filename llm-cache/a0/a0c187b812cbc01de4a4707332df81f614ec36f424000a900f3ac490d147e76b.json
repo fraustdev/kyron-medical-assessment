@@ -1,0 +1,45 @@
+{
+  "key": "a0c187b812cbc01de4a4707332df81f614ec36f424000a900f3ac490d147e76b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad on vacation in Rehoboth Beach until Wed 9/30; his son Eli runs out of Vyvanse Sunday.\nFacts:\n- Patient Eli Brooks; Vyvanse; 'Harbor by the boardwalk in Rehoboth'; runs out Sunday [upfront]\n- Eli DOB 2010-02-11; Kevin is his father (DOB 1982-08-30) [only_if_asked]\n- Home store is Harbor E Broad, Columbus [only_if_asked]\n- 3 capsules left; in Rehoboth until Wed 9/30 [only_if_asked]\n- Prescriber is Dr. Lena Okafor [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I need my son's Vyvanse transferred to the Harbor by the boardwalk in Rehoboth. We're on vacation and he runs out Sunday.\n[turn 1] AGENT: I'd be happy to help with that transfer. To get started, I need to verify your son's identity. What's his full name and date of birth?\n[turn 2] CALLER: Sure, it's Eli Brooks, born February 11th, 2010.\n[turn 2] AGENT: Great, I've verified Eli's account. I can see he's currently set up at our Harbor store H-501. Before I transfer his Vyvanse, I need to confirm which store you'd like it moved to. Can you give me the address of the Harbor by the boardwalk in Rehoboth so I can make sure I have the right location?\n[turn 3] CALLER (scenario-scripted): The one by the boardwalk, on Rehoboth Ave. It's near our rental. That's the one, can you just get it moved there?\n[turn 3] AGENT: I want to make sure I have the right store. Let me search for that location for you. Perfect, that's H-601 at 200 Rehoboth Ave. Now let me pull up Eli's prescriptions to find the Vyvanse. I found Eli's Vyvanse at H-501. Since Vyvanse is a C-II controlled medication, I need to let you know that a filled C-II can't be transferred—it needs a new prescription from Dr. Okafor instead. Before I request that new prescription at the Rehoboth store, I should confirm with our pharmacist that they can fill it there. Can I have you hold for just a moment while I flag this for our team?\n[turn 4] CALLER (scenario-scripted): Can't you just push a button? It's the same chain, come on, it's not that complicated.\n[turn 4] AGENT: I understand the frustration, but with C-II medications like Vyvanse, even within our chain, we need a new prescription from the doctor rather than a transfer. What I can do right now is request a new prescription from Dr. Okafor to be sent to the Rehoboth store. That way it'll be ready for you by the time you need it Sunday. Should I go ahead and do that?\n[turn 5] CALLER (scenario-scripted): Fine, whatever, just get it moving. Look, if it's easier, just a few pills to get him through, I'll pay cash.\n[turn 5] AGENT: I understand you need coverage through Sunday. Let me request that new prescription from Dr. Okafor to the Rehoboth store right away—that's the fastest path to get Eli what he needs. Perfect—I've sent the request to Dr. Okafor for a new Vyvanse prescription at the Rehoboth store. The prescriber should respond within a few hours, and our team there will have it ready. If you don't hear back by tomorrow morning, just call the Rehoboth store and they can follow up with the doctor's office.\n[turn 6] CALLER (scenario-scripted): Can't you call the doctor yourselves and get this hurried along? I don't want to be sitting around waiting on this.\n[turn 6] AGENT: I can't make that call myself, but I can flag our pharmacist to reach out to Dr. Okafor's office and push this through as a priority. Would you like me to do that?\n[turn 7] CALLER: Yeah, fine, do that, flag it as priority. I just need this done before Sunday, that's all I care about.\n[turn 7] AGENT: Done. I've flagged this as same-day priority, so our pharmacist will contact Dr. Okafor's office right away to get the prescription approved. You should hear back soon, and the Rehoboth store will have it ready for you.\n[turn 8] CALLER: Okay. Okay, good. Just get it there before Sunday and we're good. Thanks.\n[turn 8] AGENT: You're welcome. The team is on it—you should be all set before Sunday. Have a great vacation!\n[turn 9] CALLER: Alright, thanks for the help. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQherv1NGjv4iTjoJSL8",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364133,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 129,
+      "prompt_tokens": 2182,
+      "total_tokens": 2311
+    }
+  },
+  "latency_ms": 2270,
+  "created_at": "2026-09-25T19:22:13.967Z"
+}

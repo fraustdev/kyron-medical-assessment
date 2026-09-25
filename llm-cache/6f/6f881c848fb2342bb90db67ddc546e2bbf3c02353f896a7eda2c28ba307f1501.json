@@ -1,0 +1,45 @@
+{
+  "key": "6f881c848fb2342bb90db67ddc546e2bbf3c02353f896a7eda2c28ba307f1501",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview from Columbus, impatient, changes his mind mid-call.\nFacts:\n- Name, DOB, destination 2250 Main St Lakeview [upfront]\n- Old store is 'the Brightway on High Street' in Columbus (misremembered; really B-4471, 900 E Broad St) [only_if_asked]\n- Old store phone might be 614-555-0199 (recognizes it if read to him) [only_if_asked]\n- Phone 555-0177 [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.\n[turn 1] AGENT: I'll help you transfer your prescriptions. Let me verify your identity first, and then I'll look up your prescriptions and the Lakeview store. Good news—you're already set up at the Harbor on Main Street in Lakeview, and that's your home store. But I'm not seeing any active prescriptions in our system right now. Do you have prescriptions at Brightway that you'd like us to request, or are your prescriptions already here?\n[turn 2] CALLER (scenario-scripted): Yeah, at Brightway in Columbus - albuterol and... Zoloft.\n[turn 2] AGENT: Got it. I'll need to request those from Brightway since they're at another pharmacy chain. Let me confirm the details: you want us to request your albuterol and Zoloft from the Brightway in Columbus to come here to Harbor at 2250 Main Street in Lakeview, right?\n[turn 3] CALLER (scenario-scripted): Yeah exactly. The sertraline, same thing as the Zoloft.\n[turn 3] AGENT: Perfect, I've got it—albuterol and sertraline from Brightway Columbus to here. Let me request those transfers for you. I need to get the store ID for Brightway in Columbus. Can you give me the address or any other details about that location?\n[turn 4] CALLER (scenario-scripted): Oh wait, actually leave the inhaler at Brightway, I've still got one. Just do the sertraline.\n[turn 4] AGENT: Got it, just the sertraline. I still need the Brightway Columbus store details to request the transfer. Do you have the address or phone number for that location?\n[turn 5] CALLER (scenario-scripted): I don't know the address, it's the one in Columbus. Can't you just look it up?\n[turn 5] AGENT: I can search for it, but I need a bit more to narrow it down—is there a street name or cross street you remember, or any landmark near that Brightway?\n[turn 6] CALLER: Uh, I think it's on High Street? Pretty sure that's it.\n[turn 6] AGENT: Perfect, let me search for that. I'm not finding a Brightway on High Street in Columbus in our system. Since Brightway is a different pharmacy chain, I can't look them up directly. Here's what we can do: you can call Brightway and ask them to transfer your sertraline to us here at Harbor on Main Street in Lakeview, or you can pick it up from them and bring the prescription in. Which works better for you?\n[turn 7] CALLER: Ugh, okay, I'll just call them myself. Thanks anyway, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhaDc4fbF57eMFfpKtP",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364071,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 234,
+      "prompt_tokens": 1723,
+      "total_tokens": 1957
+    }
+  },
+  "latency_ms": 3126,
+  "created_at": "2026-09-25T19:21:11.813Z"
+}

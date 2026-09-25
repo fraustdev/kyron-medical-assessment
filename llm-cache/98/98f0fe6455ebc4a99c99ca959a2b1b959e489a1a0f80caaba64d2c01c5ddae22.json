@@ -1,0 +1,45 @@
+{
+  "key": "98f0fe6455ebc4a99c99ca959a2b1b959e489a1a0f80caaba64d2c01c5ddae22",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, it's Gloria Hart. The pharmacy said Dr. Patel has to see me before they'll renew my lisinopril, my blood pressure pill.\nAGENT: Hi Gloria, thanks for calling Harbor Family Medicine. I can help you get that set up. Let me just verify your information first—what's your date of birth?\nCALLER: May 12th, 1947, honey.\nAGENT (LATEST): Thank you. And just to confirm, is that May 12th, 1947?\n\nCONDITIONS:\nmove_0: the agent asks again why she is calling or which medication, after she already said\nmove_1: the agent offers appointment times\nmove_2: the agent first reads back the appointment\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"About a week of lisinopril left\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Wants the soonest appointment\"\nstop_0: Agent confirms a Dr. Patel appointment she understood.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQi3sKxDpaWXxFdwfUwk",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent asks about DOB, not medication or reason\"}, \"move_1\": {\"met\": false, \"why\": \"No appointment times offered\"}, \"move_2\": {\"met\": false, \"why\": \"Agent confirms DOB, not appointment\"}, \"asked_2\": {\"met\": false, \"why\": \"Question is about DOB, not medication supply\"}, \"asked_3\": {\"met\": false, \"why\": \"Question is about DOB, not appointment urgency\"}, \"stop_0\": {\"met\": false, \"why\": \"No appointment confirmed yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency\"}}"
+        }
+      }
+    ],
+    "created": 1790364447,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 316,
+      "prompt_tokens": 710,
+      "total_tokens": 1026
+    }
+  },
+  "latency_ms": 3327,
+  "created_at": "2026-09-25T19:27:27.199Z"
+}

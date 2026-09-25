@@ -1,0 +1,45 @@
+{
+  "key": "4719da45fb81c96d9dc5be5890bdfae9515c082eca1c994d3029d30355c83fe6",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\n[#2] AGENT: Hi Gloria, thanks for calling Harbor Pharmacy. I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?\nCALLER: May twelfth, nineteen forty-seven, honey.\n[#14] AGENT: Thank you. Let me pull up your account and see what we have for that amlodipine. Perfect, Gloria. I found your amlodipine five milligram prescription with three refills available. I'll queue that refill for you at Harbor H-110, which is your home store. Let me get that started. Great news—your refill is all set. It'll be ready for pickup tomorrow morning at ten o'clock at H-110. Is there anything else I can help you with?\nCALLER: What, honey? Say that again a little slower.\n[#17] AGENT: Your refill will be ready tomorrow morning at ten o'clock at Harbor H-110. You can pick it up then.\nCALLER: Oh, tomorrow morning at ten, that's fine, dear. And that's my Main Street store, right, honey?\n[#20] AGENT: I have you set up at Harbor H-110, but I don't have the street address in front of me right now. If you'd like to confirm that's your Main Street location, you can give the store a quick call, or I can look up the address for you—would either of those work?\nCALLER: Oh, that's alright, honey, I'll just call and check myself. Thank you for your help, dear. Bye now.\n\nCLAIMS:\nS01.claim.1: Agent says the amlodipine refill is placed, queued, in process or ready.\nS01.claim.2 (WITH VALUE): Agent states a ready/pickup time.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 2000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQg9aRtRkztnX1H1tmBR",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S01.claim.1\": [{\"turn\": 14, \"quote\": \"your refill is all set\", \"date\": null, \"time\": null, \"text\": null}, {\"turn\": 17, \"quote\": \"Your refill will be ready tomorrow morning at ten o'clock at Harbor H-110.\", \"date\": null, \"time\": null, \"text\": null}], \"S01.claim.2\": [{\"turn\": 14, \"quote\": \"ready for pickup tomorrow morning at ten o'clock at H-110\", \"date\": \"2026-09-25\", \"time\": \"10:00\", \"text\": \"tomorrow morning at ten o'clock\"}, {\"turn\": 17, \"quote\": \"Your refill will be ready tomorrow morning at ten o'clock\", \"date\": \"2026-09-25\", \"time\": \"10:00\", \"text\": \"tomorrow morning at ten o'clock\"}]}"
+        }
+      }
+    ],
+    "created": 1790362950,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 324,
+      "prompt_tokens": 1052,
+      "total_tokens": 1376
+    }
+  },
+  "latency_ms": 3325,
+  "created_at": "2026-09-25T19:02:30.740Z"
+}

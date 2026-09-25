@@ -1,0 +1,45 @@
+{
+  "key": "ed66d63dbcb02985f0f3b809c346338fd4c7567ae0670fd062b47e782b568559",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\nAGENT: Hi Gloria, thanks for calling Harbor Pharmacy. I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?\nCALLER: May twelfth, nineteen forty-seven, honey.\nAGENT: Thank you. Let me pull up your account and see what we have for that amlodipine. Perfect, Gloria. I found your amlodipine five milligram prescription with three refills available. I'll queue that refill for you at Harbor H-110, which is your home store. Let me get that started. Great news—your refill is all set. It'll be ready for pickup tomorrow morning at ten o'clock at H-110. Is there anything else I can help you with?  [system actions: verify_identity, list_prescriptions, queue_refill]\nCALLER: What, honey? Say that again a little slower.\nAGENT: Your refill will be ready tomorrow morning at ten o'clock at Harbor H-110. You can pick it up then.\nCALLER: Oh, tomorrow morning at ten, that's fine, dear. And that's my Main Street store, right, honey?\nAGENT (LATEST): I have you set up at Harbor H-110, but I don't have the street address in front of me right now. If you'd like to confirm that's your Main Street location, you can give the store a quick call, or I can look up the address for you—would either of those work?\n\nCONDITIONS:\nstop_0: Agent has confirmed the amlodipine refill and a ready time she understood.\nstop_1: Agent has refused or failed to act after two clear requests.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1200
+    }
+  },
+  "response": {
+    "id": "msg_011CfQg8okJLDbkhZ1pTB5gs",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"stop_0\": {\"met\": true, \"why\": \"Caller confirmed understanding of refill time earlier.\"}, \"stop_1\": {\"met\": false, \"why\": \"Agent offered to look up address, not refusing.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency.\"}}"
+        }
+      }
+    ],
+    "created": 1790362939,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 173,
+      "prompt_tokens": 926,
+      "total_tokens": 1099
+    }
+  },
+  "latency_ms": 2567,
+  "created_at": "2026-09-25T19:02:19.706Z"
+}

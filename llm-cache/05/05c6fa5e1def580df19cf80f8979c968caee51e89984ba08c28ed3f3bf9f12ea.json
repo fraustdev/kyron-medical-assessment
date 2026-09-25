@@ -1,0 +1,45 @@
+{
+  "key": "05c6fa5e1def580df19cf80f8979c968caee51e89984ba08c28ed3f3bf9f12ea",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver; moving his mother's meds to a Brightway nearer his work. Gets the store wrong at first.\nFacts:\n- Patient Irene; sertraline + donepezil; 'the Brightway on Route 9' [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked, the agent asked at turn 2]\n- Correct store is Brightway Elm St by the FreshMart [at_trigger, unlocked at turn 3]\n- Also wants 'the anxiety one' (lorazepam) moved [at_trigger, unlocked at turn 4]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, calling for my mother, Irene Kowalski. I want to move her sertraline and her donepezil to the Brightway on Route 9.\n[turn 1] AGENT: I'd be happy to help you move those prescriptions for your mother. Let me start by verifying her identity. What's Irene Kowalski's date of birth?\n[turn 2] CALLER: March 3rd, 1942. I'm her son Walt, I'm on the account.\n[turn 2] AGENT: Thank you, Walt. Let me verify that information and check her prescriptions. Great, Walt. I found the Brightway on Route 9 in Brookfield. I can move the sertraline and donepezil there for you. Before I do, I want to confirm: are you asking me to move those two prescriptions to Brightway as your mother's new home pharmacy, or just to pick them up there while she's traveling?\n[turn 3] CALLER (scenario-scripted): Wait, not Route 9, the one on Elm by the FreshMart.\n[turn 3] AGENT: Got it, let me find the Brightway on Elm by the FreshMart. Perfect, I found it—Brightway Drug on Elm Street by the FreshMart in Brookfield. Is this becoming your mother's new home pharmacy, or are you just moving the prescriptions there for a temporary pickup?\n[turn 4] CALLER (scenario-scripted): Yeah, that's the one, make it her new home pharmacy. And the anxiety one while you're at it.\n[turn 4] AGENT: Just to confirm—you want me to move the sertraline, donepezil, and the lorazepam to Brightway Elm as her new home pharmacy, correct?\n[turn 5] CALLER: Yeah, that's right. All three of 'em to the Elm street one.\n[turn 5] AGENT: Perfect. Let me set up the move for all three prescriptions to Brightway Elm. I've set Brightway Elm as your mother's new home pharmacy. However, I can't send the prescriptions out to them directly—Brightway has to call us to request the transfer. You'll need to contact Brightway Drug on Elm Street and ask them to call Harbor Pharmacy to transfer over the sertraline, donepezil, and lorazepam. Give them the store location and those prescription names, and they'll handle it from there.\n[turn 6] CALLER: Alright, got it. I'll have them call over. Thanks for your help.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiMuszaKCWQ62KFzpSw",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364689,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1681,
+      "total_tokens": 1697
+    }
+  },
+  "latency_ms": 1385,
+  "created_at": "2026-09-25T19:31:29.995Z"
+}

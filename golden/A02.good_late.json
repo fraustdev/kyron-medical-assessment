@@ -1,0 +1,141 @@
+{
+  "golden_version": "1",
+  "id": "A02.good_late",
+  "dataset": "scheduling",
+  "scenario_id": "A02",
+  "label": "good",
+  "status": "approved",
+  "description": "Acceptable-but-late variant (kept at the author's request): the agent books Thursday 2:00, states the time, and only cancels the Tuesday appointment on its very last turn, after Gloria says goodbye. It shows the agent using the one remaining turn A02 gives it (OQS-13). The ideal order is in A02.good.json.",
+  "turns": [
+    {
+      "caller": "Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week."
+    },
+    {
+      "agent": {
+        "tool_calls": [],
+        "text": "I can help with that, Gloria. Can I have your date of birth, please?"
+      }
+    },
+    {
+      "caller": "May 12th, 1947."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "verify_identity",
+            "args": {
+              "patient": "Gloria Hart",
+              "dob": "May 12th, 1947"
+            }
+          },
+          {
+            "tool": "list_appointments",
+            "args": {
+              "patient": "Gloria Hart"
+            }
+          }
+        ],
+        "text": "Thank you. I see your follow-up with Dr. Patel on Tuesday, September 29th at 10 in the morning. What day later that week would you like?"
+      }
+    },
+    {
+      "caller": "Thursday afternoon would be best, if you have it."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "find_slots",
+            "args": {
+              "visit_type": "follow_up",
+              "date_range": "2026-10-01..2026-10-01",
+              "provider": "Dr. Patel"
+            }
+          }
+        ],
+        "text": "On Thursday, October 1st, Dr. Patel has 2 o'clock or 3:20 in the afternoon."
+      }
+    },
+    {
+      "caller": "The earliest of those is fine, dear."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "book_appointment",
+            "args": {
+              "patient": "Gloria Hart",
+              "slot_id": "PAT-20261001-1400",
+              "visit_type": "follow_up"
+            }
+          }
+        ],
+        "text": "You're booked for Thursday, October 1st, at 2 in the afternoon with Dr. Patel."
+      }
+    },
+    {
+      "caller": "Perfect, that works. That's all I needed, honey, thank you. Bye now!"
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "cancel_appointment",
+            "args": {
+              "appointment_id": "APT-GH-0929"
+            }
+          }
+        ],
+        "text": "Before you go: I've cancelled your Tuesday the 29th appointment, so you only have Thursday at 2. Take care, Gloria!"
+      }
+    }
+  ],
+  "expect": {
+    "tool_results": [
+      [
+        "verify_identity",
+        "success"
+      ],
+      [
+        "list_appointments",
+        "success"
+      ],
+      [
+        "find_slots",
+        "success"
+      ],
+      [
+        "book_appointment",
+        "success"
+      ],
+      [
+        "cancel_appointment",
+        "success"
+      ]
+    ],
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20261001-1400",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "follow_up"
+        }
+      ],
+      "cancellations": [
+        {
+          "appointment_id": "APT-GH-0929",
+          "patient": "Gloria Hart"
+        }
+      ],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "call_end_reason": "stop_condition"
+  },
+  "for_part3": "Should PASS (same end state as A02.good). The cancellation happens after the read-back instead of before it, which is allowed but later than ideal; whether a grader should prefer A02.good over this is a judged-quality question, not a state question."
+}

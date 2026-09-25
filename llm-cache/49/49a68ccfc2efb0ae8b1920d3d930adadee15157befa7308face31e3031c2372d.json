@@ -1,0 +1,45 @@
+{
+  "key": "49a68ccfc2efb0ae8b1920d3d930adadee15157befa7308face31e3031c2372d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, NEVER unlocked in this call]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 2]\n- Does not know the address [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity first, then help with those transfers. Great, Jamal. I can help with that. Let me find the Harbor store on Main in Lakeview to confirm the right location. I found three Harbor locations on Main in Lakeview. Which one—downtown at 120 Main, university area at 2250 Main, or north at 5400 Main in Northgate Mall?\n[turn 2] CALLER: Near Oak.\n[turn 2] AGENT: Perfect, that's the one at 2250 Main near Oak Street. Let me get your prescriptions and set that up. I'm not seeing any active prescriptions under your name in our system. The albuterol and sertraline may still be at Brightway. Since those are at another pharmacy chain, you'll need to ask Harbor Main Street University—that's the one near Oak—to call Brightway and request the transfer. Give them the store number 4471 and the medication names, and they'll handle it from there.\n[turn 3] CALLER: Oh okay, so I gotta call Harbor myself and give them the Brightway number and the med names? Got it, I'll do that. Thanks.\n[turn 3] AGENT: You're welcome! Yes, just call Harbor at 2250 Main near Oak and let them know you want to transfer your albuterol and sertraline from Brightway 4471. They'll take it from there. Have a good one!\n[turn 4] CALLER: Cool, got it. Thanks for the help, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgLvSxbaVezZVCzPt9S",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363102,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1263,
+      "total_tokens": 1279
+    }
+  },
+  "latency_ms": 1124,
+  "created_at": "2026-09-25T19:05:02.598Z"
+}

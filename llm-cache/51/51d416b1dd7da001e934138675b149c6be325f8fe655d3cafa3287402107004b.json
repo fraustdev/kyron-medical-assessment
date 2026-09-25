@@ -1,0 +1,45 @@
+{
+  "key": "51d416b1dd7da001e934138675b149c6be325f8fe655d3cafa3287402107004b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nFacts:\n- Kevin Brooks, wants everything moved H-501 to H-502 [upfront]\n- Kevin DOB 1982-08-30 [only_if_asked]\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11 [only_if_asked]\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[turn 1] AGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?\n[turn 2] CALLER: Yeah, August 30th, 1982.\n[turn 2] AGENT: Thanks. Let me verify that and pull up your prescriptions. Great, Kevin. I see you have one active prescription at East Broad—lisinopril 20 mg with three refills remaining. Before I move it and set Gahanna as your home pharmacy, do you have other family members whose prescriptions we need to move as well?\n[turn 3] CALLER: Yeah, exactly - I've got my daughter Maya, her albuterol inhaler, and my son Eli's Vyvanse. Need all three moved over to Gahanna.\n[turn 3] AGENT: Got it. To pull up Maya and Eli's prescriptions, I'll need their dates of birth. Can you give me those?\n[turn 4] CALLER: Sure - Maya's June 20th, 2017, and Eli's February 11th, 2010.\n[turn 4] AGENT: Thanks. Let me verify them and see what prescriptions they have. Perfect. I have all three. Now, let me find the Gahanna store for you. Great. I found Harbor Pharmacy Gahanna at 85 Mill Street. Now, here's what I can do: Kevin's lisinopril and Maya's albuterol can move right over since they have refills. But Eli's Vyvanse is a C-II controlled medication that's already been filled with no refills left, so it can't be transferred—he'll need a new prescription from Dr. Okafor sent to Gahanna instead. Does that work for you?\n[turn 5] CALLER (scenario-scripted): Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\n[turn 5] AGENT: C-II medications like Vyvanse can only be filled once per prescription, so a filled one can't be transferred or refilled. To get Eli set up at Gahanna, I'll request a new prescription from Dr. Okafor and send it to the Gahanna store. The doctor may adjust the dose if needed. Should I go ahead and request that?\n[turn 6] CALLER: Yeah, go ahead and request that from Dr. Okafor. So lisinopril and the inhaler are all set at Gahanna now, right?\n[turn 6] AGENT: Let me request the new Vyvanse prescription and set everyone's home pharmacy to Gahanna first.\n[turn 7] CALLER: Sounds good. So just to confirm - lisinopril and the inhaler are moving now, and the Vyvanse request goes out to Dr. Okafor for Gahanna. That's the plan?\n[turn 7] AGENT: Yes, that's right. Let me get those moving now.\n[turn 8] CALLER: Great, thanks for sorting that out. That's everything I needed, appreciate it.\n[turn 8] AGENT: You're welcome! Let me process all three moves now.\n[turn 9] CALLER: Sounds good, thanks for your help. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhWeqzvKq9SMpkctdQo",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364024,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 255,
+      "prompt_tokens": 1926,
+      "total_tokens": 2181
+    }
+  },
+  "latency_ms": 3992,
+  "created_at": "2026-09-25T19:20:24.382Z"
+}

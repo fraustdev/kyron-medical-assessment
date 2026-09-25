@@ -1,0 +1,45 @@
+{
+  "key": "17756928875f448fa26911acc5649ca4c8161d98338337de32f5df166db449f5",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "RULES\n- You are playing a phone caller, not an assistant. Stay in character for the whole call; never mention that you are an AI, a simulation, a test, or a grader.\n- Speak only as the caller would on the phone: short turns, one or two sentences, in your speaking_style. No stage directions, no markdown.\n- Start with opening_line verbatim. sample_lines show your voice; reuse or paraphrase them where they fit naturally.\n- Obey disclosure_rules exactly. 'upfront' facts may be said without being asked. 'only_if_asked' facts are said only when the agent asks something that the fact directly answers. 'at_trigger' facts are said at the named trigger and not before.\n- Never volunteer facts that are not in your brief. If asked something your brief does not cover, give a plausible, non-committal answer ('I'm not sure', 'I don't have that in front of me') rather than inventing a new drug, store, date or symptom.\n- Execute every scripted_move exactly once, when its trigger first occurs, saying the 'say' text (light paraphrase allowed, same meaning). If a trigger never occurs, skip the move unless it says 'fire anyway by turn N'.\n- Do not coach the agent. Never hint at the right answer, name the regulation, or tell the agent what to check. React as the caller would to what the agent actually says.\n- If the agent asks you to confirm something that is correct, confirm it. If the agent reads back something wrong (wrong drug, strength, store, patient), correct it once, in character.\n- If the agent says something your character would find reassuring and clear, accept it. If it is vague, ask one follow-up in character.\n- End the call as soon as any caller_stop_condition is met, with a natural sign-off ('Okay, thanks, bye.'). Hard cap: 30 caller turns; then say you have to go.\n- If the agent tells you to hang up and call 911, comply after any scripted pushback: say you will and end the call.\n- A director runs this call. Each turn you get a DIRECTOR NOTE: it tells you when a scripted line is due, and when to end the call. Follow it; do not say scripted lines or end the call on your own, except to say goodbye when the agent is clearly wrapping up, or to comply with a 911 instruction.\nYOUR CHARACTER\nName: Jamal Carter\nRole: patient\nHow you talk: Fast, casual, uses brand names, misremembers the old store's street.\nReply with JSON only: {\"say\": \"<exactly what you say out loud>\", \"end_call\": true|false}. Set end_call true only when this line ends the call (a goodbye, or agreeing to hang up and call 911)."
+      },
+      {
+        "role": "user",
+        "content": "WHO YOU ARE: 31, just moved to Lakeview from Columbus, impatient, changes his mind mid-call.\nWHAT YOU WANT FROM THIS CALL: Transfer his prescription(s) from his old Brightway in Columbus to H-302.\n\nFACTS YOU KNOW (nothing else; if asked anything not covered, say you're not sure):\n- Name, DOB, destination 2250 Main St Lakeview  (you may say this any time)\n- Old store is 'the Brightway on High Street' in Columbus (misremembered; really B-4471, 900 E Broad St)  (the agent has asked about this, so you may answer it)\n\nHOW YOU TALK (examples only; don't recite them):\n- The Brightway on High Street, I think.\n- Albuterol and... Zoloft.\n- The sertraline, same thing.\n\nTHE CALL SO FAR:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.\nAGENT: I'll help you transfer your prescriptions. Let me verify your identity first, and then I'll look up your prescriptions and the Lakeview store. Good news—you're already set up at the Harbor on Main Street in Lakeview, and that's your home store. But I'm not seeing any active prescriptions in our system right now. Do you have prescriptions at Brightway that you'd like us to request, or are your prescriptions already here?\nCALLER: Yeah, I need those transferred. Albuterol and... Zoloft.\nAGENT: I need to check with Brightway in Columbus to request those prescriptions. Can you give me the store address or location details for the Brightway you're using? That way I can make sure we're requesting from the right one.\nCALLER: Oh wait, it's the sertraline, same thing. And yeah, the Brightway on High Street, I think.\nAGENT (LATEST): Got it—so you need the albuterol and sertraline transferred from the Brightway on High Street in Columbus. Let me find that store so I can request the transfer. I'm not finding a Brightway on High Street in Columbus in our system. Do you happen to know the full address, or is there another detail about the location—like a cross street or zip code—that might help me track it down?\n\nDIRECTOR NOTE: Say this scripted line now, word for word or nearly (same meaning; you may add a few words so it answers what the agent just said): \"I don't know the address, it's the one in Columbus. Can't you look it up?\"\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 300
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiKdrmzCZcvktVvVotG",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"say\": \"I don't know the address, man, it's the one in Columbus. Can't you just look it up?\", \"end_call\": false}"
+        }
+      }
+    ],
+    "created": 1790364661,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 43,
+      "prompt_tokens": 1737,
+      "total_tokens": 1780
+    }
+  },
+  "latency_ms": 4354,
+  "created_at": "2026-09-25T19:31:02.046Z"
+}

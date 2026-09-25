@@ -1,0 +1,45 @@
+{
+  "key": "9652ec9dded33fc2c9d80c13d9f32bb9036eb8ba93631674f2bf6483e83babb6",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Tess Morgan, patient. 52, heart failure and type 2 diabetes, stoic, wants no fuss.\nFacts:\n- Name Tess Morgan; wants Riverside store [upfront]\n- DOB 1974-01-19 [only_if_asked, the agent asked at turn 2]\n- Wants all active prescriptions moved [only_if_asked, the agent asked at turn 3]\n- Frequent urination in the mornings since taking the water pill [at_trigger, unlocked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi honey, this is Tess Morgan. I want to switch to the Riverside store, it's closer to my house.\n[turn 1] AGENT: Hi Tess! I'd be happy to help you switch to the Riverside store. Before I make that change, I need to verify your identity. Can you give me your date of birth?\n[turn 2] CALLER: Sure thing, honey. January 19th, 1974.\n[turn 2] AGENT: Thank you! Let me verify that for you. Great, Tess! I've verified your identity. Now let me find the Riverside store for you and set that as your home pharmacy. Perfect! I found Harbor Pharmacy Riverside at 900 Riverside Drive in Fairview. Let me set that as your home pharmacy now. All set, Tess! Your home pharmacy is now Harbor Pharmacy Riverside. Do you have any active prescriptions at your old store that you'd like me to move over to Riverside?\n[turn 3] CALLER (scenario-scripted): Yes honey, move everything over. Oh, and that water pill has me running to the bathroom all morning, but that's normal right?\n[turn 3] AGENT: I'll move your prescriptions over for you. Let me pull up your list first to see what you have. Great, I see you have five prescriptions. Let me transfer them all to Riverside now.\n[turn 4] CALLER: Sounds good, honey. And that bathroom thing in the mornings, that's just normal with the water pill, right?\n[turn 4] AGENT: That's a question for your prescriber, Dr. Rao—they know your full health picture best. A pharmacist can also chat with you about it if you'd like. But let me get these prescriptions moved for you first.\n[turn 5] CALLER: Okay, that's fair, honey. Just wanted to double check. So we're all set with the move then?\n[turn 5] AGENT: Not quite yet—let me transfer all five prescriptions to Riverside now.\n[turn 6] CALLER: Sounds good, honey, take your time. Just let me know when it's all done.\n[turn 6] AGENT: (says nothing)\n[turn 7] CALLER: Take your time, honey, I'm not going anywhere.\n[turn 7] AGENT: (says nothing)\n[turn 8] CALLER: Still here, honey, whenever you're ready.\n[turn 8] AGENT: (says nothing)\n[turn 9] CALLER: You still there, honey? Just checking in.\n[turn 9] AGENT: Yes, I'm here! Let me transfer all your prescriptions to Riverside now.\n[turn 10] CALLER: Okay honey, take your time, no rush.\n[turn 10] AGENT: (says nothing)\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiHvtQRAuwut8VHYrVe",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364636,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 119,
+      "prompt_tokens": 1726,
+      "total_tokens": 1845
+    }
+  },
+  "latency_ms": 2237,
+  "created_at": "2026-09-25T19:30:36.818Z"
+}

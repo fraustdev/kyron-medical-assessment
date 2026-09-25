@@ -1,0 +1,45 @@
+{
+  "key": "787bb97cdbb09c9bb179ac75e18bc480ad905adcc43e93569e33e0345fd4ff1a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hey, Jamal Carter, DOB 3/14/95. I want to make the Harbor at 2250 Main Street in Lakeview my default pharmacy.\n[#7] AGENT: I'll verify your identity and then set that as your default store. Good news—that's already your default store, H-302. Is there anything else I can help you with today?\nCALLER: Perfect, thanks. That's all I needed.\n\nCLAIMS:\nS03.claim.1: Agent says H-302 / 2250 Main St is now his default store.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiCwhshYy37sTQoRozx",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S03.claim.1\": [{\"turn\": 7, \"quote\": \"that's already your default store, H-302\", \"date\": null, \"time\": null, \"text\": \"H-302\"}]}"
+        }
+      }
+    ],
+    "created": 1790364569,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 147,
+      "prompt_tokens": 620,
+      "total_tokens": 767
+    }
+  },
+  "latency_ms": 2257,
+  "created_at": "2026-09-25T19:29:29.221Z"
+}

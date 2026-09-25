@@ -1,0 +1,1042 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S09_v1_t0_muhcv8k30766",
+    "scenario_id": "S09",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.0",
+      "file_sha256": "1fa6dfa2d05893fa76aa1ecf957269aaf3f14a42eb24d3846abbd2e7b8bafdd7"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "3aae72f2ef09e235b020a21cba079606ee34bf224322cddfdc28cfd13d141b1f",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says a store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional. The never-promise rule still applies."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.0.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T19:30:18.003Z",
+    "ended_at": "2026-09-25T19:30:52.637Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 16,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Kevin Brooks, wants everything moved H-501 to H-502"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1209,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "a91818c94919f9e0d6360d0c1541693e5bdac60212d42f35fc20fed15847daca",
+        "cache_hit": true,
+        "latency_ms": 1209,
+        "usage": {
+          "input_tokens": 3806,
+          "output_tokens": 50
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "a91818c94919f9e0d6360d0c1541693e5bdac60212d42f35fc20fed15847daca",
+          "cache_hit": true,
+          "latency_ms": 1209,
+          "usage": {
+            "input_tokens": 3806,
+            "output_tokens": 50
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgFD9tQAYW9CshUtMYn",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?"
+            }
+          }
+        ],
+        "created": 1790363025,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_tokens": 3806,
+          "total_tokens": 3856
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1209,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "Kevin DOB 1982-08-30"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Kevin DOB 1982-08-30\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "37c9d6466356fa1e6dfdecddbcbdd7c8a992d0fb101dc04abaadcd9ec45c3c6b",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks for date of birth\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "79b883a1a44bbd9921d1235faecfee3806cc81ba739cb94b5809d4ec217b1e98",
+          "cache_hit": false,
+          "latency_ms": 2568,
+          "usage": {
+            "input_tokens": 757,
+            "output_tokens": 168
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1209,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "August 30th, 1982. So once that's confirmed, can we get all three of us switched over today?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "1b0ec2d9915eb73f6997259b9e19804f8ae4cfa8e906200a23d5e876c2539863",
+          "cache_hit": false,
+          "latency_ms": 1392,
+          "usage": {
+            "input_tokens": 1346,
+            "output_tokens": 45
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2167,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Kevin Brooks",
+        "dob": "08/30/1982"
+      },
+      "normalized": {
+        "patient": "Kevin Brooks"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2217,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Kevin Brooks",
+        "home_store": "H-501",
+        "default_store": "H-501",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 2217,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 3704,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Great, Kevin, you're verified. I can help with that. Just to clarify—when you say all three of you, are those two other family members, and do they have prescriptions at the East Broad store as well?",
+      "tool_call_ids": [
+        "c1"
+      ],
+      "llm": {
+        "cache_key": "7ade3d9ca306a9e46f4ac4f01471ba669d3629e984c84ff4fce9bc6e242243a7",
+        "cache_hit": false,
+        "latency_ms": 1487,
+        "usage": {
+          "input_tokens": 4012,
+          "output_tokens": 52
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "0d161eca521235237cc9b655ad2e5fc73dc774a237c4eef9e7da2f0780ed9888",
+          "cache_hit": false,
+          "latency_ms": 958,
+          "usage": {
+            "input_tokens": 3885,
+            "output_tokens": 78
+          }
+        },
+        {
+          "cache_key": "7ade3d9ca306a9e46f4ac4f01471ba669d3629e984c84ff4fce9bc6e242243a7",
+          "cache_hit": false,
+          "latency_ms": 1487,
+          "usage": {
+            "input_tokens": 4012,
+            "output_tokens": 52
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiH4znU1NCtpyHRxza2",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great, Kevin, you're verified. I can help with that. Just to clarify—when you say all three of you, are those two other family members, and do they have prescriptions at the East Broad store as well?"
+            }
+          }
+        ],
+        "created": 1790364624,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 52,
+          "prompt_tokens": 4012,
+          "total_tokens": 4064
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3704,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 3,
+          "fact": "The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_3] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "2f598276227969e53be9ca1468e9aca60b582b5e12e712eed987901bf15b7b30",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks if they have prescriptions at East Broad, matching this fact.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "21b953a0f3a09150ff056b7507b546558c32ccc639a22814ab9d264074d3d095",
+          "cache_hit": false,
+          "latency_ms": 4649,
+          "usage": {
+            "input_tokens": 822,
+            "output_tokens": 476
+          }
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "t_ms": 3704,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Right, three of us total. Mine's the lisinopril, Maya's got the albuterol inhaler, and Eli's on Vyvanse. All at East Broad right now.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "6b120051890004af90c8214e99a730eb0bba8fa5aa52a2fe02cd863bc07f8710",
+          "cache_hit": false,
+          "latency_ms": 1400,
+          "usage": {
+            "input_tokens": 1543,
+            "output_tokens": 70
+          }
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "t_ms": 4913,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Perfect. Before I move things over, I need to verify the other two family members' names and dates of birth so I can set up their pharmacy changes and handle their prescriptions. Can you give me Maya's full name and date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "57d1435f9e88dfab8d34dcf1f988fb79ef35ff8f51a2bfb51767cb409c79736c",
+        "cache_hit": false,
+        "latency_ms": 1209,
+        "usage": {
+          "input_tokens": 4111,
+          "output_tokens": 53
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "57d1435f9e88dfab8d34dcf1f988fb79ef35ff8f51a2bfb51767cb409c79736c",
+          "cache_hit": false,
+          "latency_ms": 1209,
+          "usage": {
+            "input_tokens": 4111,
+            "output_tokens": 53
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiHdLxqj6mhgF6axBgi",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect. Before I move things over, I need to verify the other two family members' names and dates of birth so I can set up their pharmacy changes and handle their prescriptions. Can you give me Maya's full name and date of birth?"
+            }
+          }
+        ],
+        "created": 1790364631,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 53,
+          "prompt_tokens": 4111,
+          "total_tokens": 4164
+        }
+      }
+    },
+    {
+      "seq": 12,
+      "t_ms": 4913,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 2,
+          "fact": "Maya DOB 2017-06-20; Eli DOB 2010-02-11"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_2] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Maya DOB 2017-06-20; Eli DOB 2010-02-11\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "4985128b91d7de7b6fb1b94cab48805d69ec157ad5cc8ab1192a1b4b62c0099a",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks for Maya's full name and date of birth.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "d6b0f6b52f0e8d5fa2d87f322a40da80f3bb1f939d85d8531a244d6adce11f78",
+          "cache_hit": false,
+          "latency_ms": 1859,
+          "usage": {
+            "input_tokens": 884,
+            "output_tokens": 139
+          }
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "t_ms": 4913,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Sure, Maya Brooks, June 20th, 2017. And Eli Brooks is February 11th, 2010.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "a992eb53d1a9f0ac3371ba4f0c6dbb7070afdb20001dd247a01e5520df49c694",
+          "cache_hit": false,
+          "latency_ms": 1331,
+          "usage": {
+            "input_tokens": 1728,
+            "output_tokens": 54
+          }
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "t_ms": 6445,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Maya Brooks",
+        "dob": "06/20/2017"
+      },
+      "normalized": {
+        "patient": "Maya Brooks"
+      }
+    },
+    {
+      "seq": 15,
+      "t_ms": 6495,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Maya Brooks",
+        "home_store": "H-501",
+        "default_store": "H-501",
+        "authorized_contacts": [
+          {
+            "name": "Kevin Brooks",
+            "relationship": "parent"
+          }
+        ],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 16,
+      "t_ms": 6495,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Eli Brooks",
+        "dob": "02/11/2010"
+      },
+      "normalized": {
+        "patient": "Eli Brooks"
+      }
+    },
+    {
+      "seq": 17,
+      "t_ms": 6545,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Eli Brooks",
+        "home_store": "H-501",
+        "default_store": "H-501",
+        "authorized_contacts": [
+          {
+            "name": "Kevin Brooks",
+            "relationship": "parent"
+          }
+        ],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 18,
+      "t_ms": 8127,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Kevin Brooks"
+      },
+      "normalized": {
+        "patient": "Kevin Brooks"
+      }
+    },
+    {
+      "seq": 19,
+      "t_ms": 8177,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Kevin Brooks",
+        "prescriptions": [
+          {
+            "rx_id": "RX-KB-LISI20",
+            "drug": "lisinopril 20 mg #90",
+            "schedule": null,
+            "status": "active",
+            "refills": 3,
+            "store_id": "H-501",
+            "prescriber": null,
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 20,
+      "t_ms": 8177,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c5",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Maya Brooks"
+      },
+      "normalized": {
+        "patient": "Maya Brooks"
+      }
+    },
+    {
+      "seq": 21,
+      "t_ms": 8227,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c5",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Maya Brooks",
+        "prescriptions": [
+          {
+            "rx_id": "RX-MB-ALBU90",
+            "drug": "albuterol HFA 90 mcg",
+            "schedule": null,
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-501",
+            "prescriber": "Dr. Sam Whitfield",
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 22,
+      "t_ms": 8227,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c6",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Eli Brooks"
+      },
+      "normalized": {
+        "patient": "Eli Brooks"
+      }
+    },
+    {
+      "seq": 23,
+      "t_ms": 8277,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c6",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Eli Brooks",
+        "prescriptions": [
+          {
+            "rx_id": "RX-EB-VYV30-F0829",
+            "drug": "Vyvanse (lisdexamfetamine) 30 mg #30",
+            "schedule": "C-II",
+            "status": "filled",
+            "refills": 0,
+            "store_id": "H-501",
+            "prescriber": "Dr. Lena Okafor",
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 24,
+      "t_ms": 10179,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c7",
+      "tool": "find_stores",
+      "args": {
+        "query": "Gahanna"
+      },
+      "normalized": {}
+    },
+    {
+      "seq": 25,
+      "t_ms": 10229,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c7",
+      "tool": "find_stores",
+      "result": {
+        "stores": [
+          {
+            "store_id": "H-502",
+            "name": "Harbor Pharmacy Gahanna",
+            "address": "85 Mill St, Gahanna, OH"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 26,
+      "t_ms": 12968,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Thanks. Let me verify Maya and Eli so we can get everyone switched over. Excellent, everyone's verified. Now let me pull up all your prescriptions so I can see what we're moving. Good news—I can move Kevin's lisinopril and Maya's albuterol right away. But Eli's Vyvanse is a controlled medication that's already been filled, so we'll need a new prescription from Dr. Okafor to move that one. Let me first find the Gahanna store and then get everything set up. Perfect. Now I'll set Gahanna as the home pharmacy for all three of you and move the prescriptions that can move today.",
+      "tool_call_ids": [
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7"
+      ],
+      "llm": {
+        "cache_key": "c6f8fbcd8a0f4d78f95d77866716d8c684a8f54fc7a9b8c37c460a4767502fe0",
+        "cache_hit": false,
+        "latency_ms": 2739,
+        "usage": {
+          "input_tokens": 5193,
+          "output_tokens": 400
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "676ed9a87cbf7ca683c3da4312d3d1b4d54a0641066542f4688b36fbca96ddce",
+          "cache_hit": false,
+          "latency_ms": 1532,
+          "usage": {
+            "input_tokens": 4195,
+            "output_tokens": 156
+          }
+        },
+        {
+          "cache_key": "bb8d23769d156ec6fe54dfabcb559913dec4e1b02492d22f1fe80d7e9e3fa3ee",
+          "cache_hit": false,
+          "latency_ms": 1582,
+          "usage": {
+            "input_tokens": 4511,
+            "output_tokens": 158
+          }
+        },
+        {
+          "cache_key": "78b208bda393e5c7194953cfe171a96e90123a50515ffbd5a29a5e0ce98c0e3d",
+          "cache_hit": false,
+          "latency_ms": 1902,
+          "usage": {
+            "input_tokens": 5010,
+            "output_tokens": 133
+          }
+        },
+        {
+          "cache_key": "c6f8fbcd8a0f4d78f95d77866716d8c684a8f54fc7a9b8c37c460a4767502fe0",
+          "cache_hit": false,
+          "latency_ms": 2739,
+          "usage": {
+            "input_tokens": 5193,
+            "output_tokens": 400
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiJKi6e9ymwpgk6zsax",
+        "choices": [
+          {
+            "finish_reason": "length",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect. Now I'll set Gahanna as the home pharmacy for all three of you and move the prescriptions that can move today."
+            }
+          }
+        ],
+        "created": 1790364642,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 400,
+          "prompt_tokens": 5193,
+          "total_tokens": 5593
+        }
+      }
+    },
+    {
+      "seq": 27,
+      "t_ms": 12968,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 0,
+        "say": "Wait, why not the Vyvanse? Okay, so what's the plan for Eli?"
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_0] the agent says the Vyvanse cannot be transferred",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "01d6f6645bb886caf9e9df45bab3d4fa4bbdddbaf149a186da726ccc83baf02e",
+          "raw_output": "{\"met\":true,\"why\":\"Agent says Vyvanse needs new prescription, can't be transferred directly.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "3f0e12140bc034cf6a67974d13916d2716c978ae8e1b29f85c8901b513572482",
+          "cache_hit": false,
+          "latency_ms": 3587,
+          "usage": {
+            "input_tokens": 1124,
+            "output_tokens": 290
+          }
+        }
+      ]
+    },
+    {
+      "seq": 28,
+      "t_ms": 12968,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "Wait, why not the Vyvanse? Okay, so what's the plan for Eli?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "0301c0bb68cadb620f96e7b4e6d7238517ea9bea5d973c0843712c3afc4802a2",
+          "cache_hit": false,
+          "latency_ms": 1322,
+          "usage": {
+            "input_tokens": 2052,
+            "output_tokens": 44
+          }
+        }
+      ]
+    },
+    {
+      "seq": 29,
+      "t_ms": 14828,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Good question. Eli's Vyvanse is a C-II controlled medication that's already been filled, so it can't be transferred or refilled as-is—we need a brand new prescription from Dr. Okafor to move it to Gahanna. Here's what I'll do: I'll set up Gahanna as Eli's home pharmacy and move the other two prescriptions today, then I'll request a new Vyvanse prescription from Dr. Okafor to send to Gahanna. Does that work for you?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "e4bdfd7da36870d1742053f0b21cd3eee3a105a5f91c291b4d084f21f39b0338",
+        "cache_hit": false,
+        "latency_ms": 1860,
+        "usage": {
+          "input_tokens": 5250,
+          "output_tokens": 123
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "e4bdfd7da36870d1742053f0b21cd3eee3a105a5f91c291b4d084f21f39b0338",
+          "cache_hit": false,
+          "latency_ms": 1860,
+          "usage": {
+            "input_tokens": 5250,
+            "output_tokens": 123
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiJtZXqZ4ntKHLJnq2e",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Good question. Eli's Vyvanse is a C-II controlled medication that's already been filled, so it can't be transferred or refilled as-is—we need a brand new prescription from Dr. Okafor to move it to Gahanna. Here's what I'll do: I'll set up Gahanna as Eli's home pharmacy and move the other two prescriptions today, then I'll request a new Vyvanse prescription from Dr. Okafor to send to Gahanna. Does that work for you?"
+            }
+          }
+        ],
+        "created": 1790364649,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 123,
+          "prompt_tokens": 5250,
+          "total_tokens": 5373
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "t_ms": 14828,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent recaps: two moved, defaults set, Vyvanse new-Rx request to Dr. Okafor.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "25e2bc0d833819c3033e84ddc423075fba21bdd5e776ed884a1b0ef7d4d46935",
+          "raw_output": "{\"met\":true,\"why\":\"Agent recapped moving two Rx, setting home pharmacy, and Vyvanse Rx request.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "8a6366159e5d53540b438e2605c6e485aca128b3d290b143dcf6474bb74b7fea",
+          "cache_hit": false,
+          "latency_ms": 1792,
+          "usage": {
+            "input_tokens": 1300,
+            "output_tokens": 85
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 14828,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Got it, that works. Thanks for sorting all that out, appreciate it. Bye.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "b3edd2f7287a2c7ec9cb8b3dc636566a3f7054aae34e9f8d81560efbea2e21f6",
+          "cache_hit": false,
+          "latency_ms": 1394,
+          "usage": {
+            "input_tokens": 2208,
+            "output_tokens": 44
+          }
+        }
+      ]
+    },
+    {
+      "seq": 32,
+      "t_ms": 14828,
+      "turn": 5,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent recaps: two moved, defaults set, Vyvanse new-Rx request to Dr. Okafor."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": []
+    },
+    "world_state": {
+      "prescriptions": {
+        "RX-KB-LISI20": {
+          "owner": "Kevin Brooks",
+          "refills": 3,
+          "store_id": "H-501",
+          "status": "active"
+        },
+        "RX-MB-ALBU90": {
+          "owner": "Maya Brooks",
+          "refills": 2,
+          "store_id": "H-501",
+          "status": "active"
+        },
+        "RX-EB-VYV30-F0829": {
+          "owner": "Eli Brooks",
+          "refills": 0,
+          "store_id": "H-501",
+          "status": "filled"
+        }
+      },
+      "default_stores": {
+        "Kevin Brooks": "H-501",
+        "Maya Brooks": "H-501",
+        "Eli Brooks": "H-501"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Kevin Brooks",
+          "dob": "08/30/1982"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 14,
+        "call_id": "c2",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Maya Brooks",
+          "dob": "06/20/2017"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 16,
+        "call_id": "c3",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Eli Brooks",
+          "dob": "02/11/2010"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 18,
+        "call_id": "c4",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Kevin Brooks"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 20,
+        "call_id": "c5",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Maya Brooks"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 22,
+        "call_id": "c6",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Eli Brooks"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 24,
+        "call_id": "c7",
+        "tool": "find_stores",
+        "args": {
+          "query": "Gahanna"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 6,
+      "caller_turns": 6,
+      "agent_turns": 5,
+      "tool_calls": 7,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T19:30:53.963Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

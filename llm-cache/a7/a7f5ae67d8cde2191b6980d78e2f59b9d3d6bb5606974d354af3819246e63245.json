@@ -1,0 +1,45 @@
+{
+  "key": "a7f5ae67d8cde2191b6980d78e2f59b9d3d6bb5606974d354af3819246e63245",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing. The pharmacy told her Dr. Patel must see her before renewing her lisinopril (0 refills); about a week of pills left.\nFacts:\n- Name; the pharmacy said Dr. Patel must see her before renewing her lisinopril [upfront]\n- DOB 1947-05-12 [only_if_asked, the agent asked at turn 2]\n- About a week of lisinopril left [only_if_asked, the agent NEVER asked]\n- Wants the soonest appointment [only_if_asked, the agent asked at turn 4]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello, honey, it's Gloria Hart. The pharmacy said Dr. Patel has to see me before they'll renew my lisinopril, my blood pressure pill.\n[turn 1] AGENT: Hi Gloria, thanks for calling Harbor Family Medicine. I can help you get that set up. Let me just verify your information first—what's your date of birth?\n[turn 2] CALLER: May 12th, 1947, honey.\n[turn 2] AGENT: Thank you. And just to confirm, is that May 12th, 1947?\n[turn 3] CALLER: Yes, honey, that's right. May 12th, 1947.\n[turn 3] AGENT: Perfect, Gloria. So you need to see Dr. Patel for a medication review so the pharmacy can renew your lisinopril. When would work best for you?\n[turn 4] CALLER: Oh, as soon as you can manage, honey. I'm running low on my pills.\n[turn 4] AGENT: I understand—let me find the next available slots with Dr. Patel for a medication review. How about this coming week, say Monday through Friday of next week?\n[turn 5] CALLER (scenario-scripted): Whatever's soonest, dear.\n[turn 5] AGENT: Let me search for the soonest openings starting tomorrow. Great news—I found two slots. The soonest is Monday, September 28th at eleven in the morning with Dr. Patel. Does that work for you?\n[turn 6] CALLER (scenario-scripted): What, honey? Say that again a little slower.\n[turn 6] AGENT: Monday, September 28th at eleven o'clock in the morning. Does that work?\n[turn 7] CALLER: Oh, Monday the 28th at eleven, that sounds just fine, honey. Thank you.\n[turn 7] AGENT: Perfect. Let me book that for you. All set, Gloria. You're booked with Dr. Patel on Monday, September 28th at eleven in the morning for your medication review. That should get your lisinopril renewed. Is there anything else I can help you with?\n[turn 8] CALLER: No, that's all, honey. Thank you so much for your help. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQi7ALyVeddMQNybJkD3",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 4, \"fact\": \"About a week of lisinopril left\", \"severity\": \"minor\", \"quote\": \"I'm running low on my pills.\", \"why\": \"Reveals supply-level info without being asked; agent only asked for preferred timing, not about remaining medication.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364496,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 589,
+      "prompt_tokens": 1574,
+      "total_tokens": 2163
+    }
+  },
+  "latency_ms": 8037,
+  "created_at": "2026-09-25T19:28:16.532Z"
+}

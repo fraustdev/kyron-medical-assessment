@@ -1,0 +1,45 @@
+{
+  "key": "5b3935832da2fd95345ef11600f19daab77b16f3e41bcdd873ab36b29318ad2a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Tess Morgan, patient. 52, heart failure and type 2 diabetes, stoic, wants no fuss.\nFacts:\n- Name Tess Morgan; wants Riverside store [upfront]\n- DOB 1974-01-19 [only_if_asked]\n- Wants all active prescriptions moved [only_if_asked]\n- Frequent urination in the mornings since taking the water pill [at_trigger, unlocked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi honey, this is Tess Morgan. I want to switch to the Riverside store, it's closer to my house.\n[turn 1] AGENT: Hi Tess! I'd be happy to help you switch to the Riverside store. Before I make that change, I need to verify your identity. Can you give me your date of birth?\n[turn 2] CALLER: Sure thing, honey. January 19th, 1974.\n[turn 2] AGENT: Thank you! Let me verify that for you. Great, Tess! I've verified your identity. Now let me find the Riverside store for you and set that as your home pharmacy. Perfect! I found Harbor Pharmacy Riverside at 900 Riverside Drive in Fairview. Let me set that as your home pharmacy now. All set, Tess! Your home pharmacy is now Harbor Pharmacy Riverside. Do you have any active prescriptions at your old store that you'd like me to move over to Riverside?\n[turn 3] CALLER: Yes, please move everything, all my active stuff. Oh, and honey, that water pill has me running to the bathroom all morning, but that's normal, right?\n[turn 3] AGENT: I'll move all your active prescriptions to Riverside for you. But first, let me pull up your prescription list so I know exactly what to transfer. Perfect! I have five active prescriptions to move. Now, about the water pill—that's a question for your doctor or our pharmacist, since it involves how your body is responding to your medication. I can have a pharmacist call you to discuss it if you'd like, or you can reach out to Dr. Rao. Let me go ahead and transfer all your prescriptions to Riverside now.\n[turn 4] CALLER: That sounds good, honey, have the pharmacist give me a ring. Go ahead and move all five, that's all I need.\n[turn 4] AGENT: (says nothing)\n[turn 5] CALLER: Great, thanks a bunch honey. You have a good one, bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgG8Mw4nXa3oY26mCTw",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363038,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 158,
+      "prompt_tokens": 1339,
+      "total_tokens": 1497
+    }
+  },
+  "latency_ms": 2426,
+  "created_at": "2026-09-25T19:03:58.890Z"
+}

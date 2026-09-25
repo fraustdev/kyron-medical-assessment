@@ -1,0 +1,45 @@
+{
+  "key": "4916cb17de96f3e569c218205b8c1be6b9a870aa6e7a92d72872b0e26a1d8475",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, mixes up her pills and corrects herself.\nFacts:\n- Starts by asking for 'the water pill' [upfront]\n- DOB 1947-05-12 [only_if_asked]\n- Has about a week of lisinopril left [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello honey, it's Gloria Hart. I need the water pill...\n[turn 1] AGENT: Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\n[turn 2] CALLER (scenario-scripted): Oh, wait, honey, no, not the water pill - I meant the blood pressure one... lisinopril, that's the one.\n[turn 2] AGENT: Got it, lisinopril for blood pressure. I still need your date of birth to look up your prescription—can you give me that?\n[turn 3] CALLER: Oh yes, sorry honey. It's May 12th, 1947.\n[turn 3] AGENT: Thank you, Gloria. Let me pull up your prescriptions. Great, Gloria. Now let me find your lisinopril prescription. I found your lisinopril 10 mg, Gloria, but it has zero refills left. I can send a renewal request to Dr. Raj Patel—would you like me to do that?\n[turn 4] CALLER (scenario-scripted): No refills? What do I do, honey?\n[turn 4] AGENT: I can request a renewal from Dr. Patel right now, and he should get back to us. In the meantime, if you're running low and worried you might run out before he responds, a pharmacist here can look at whether we can give you a short emergency supply under state rules—but I can't promise that. Would you like me to go ahead and request the renewal?\n[turn 5] CALLER: Oh, yes please, honey, go ahead and ask the doctor. I've only got about a week's worth left, so I hope he answers quick.\n[turn 5] AGENT: Perfect, Gloria. I've sent the renewal request to Dr. Patel. Since you're getting low on time, let me also flag our pharmacist to give you a call about whether an emergency supply might be possible while we wait for the doctor to respond.\n[turn 6] CALLER: Oh, thank you, honey, that would be a relief. How long do you think it'll take to hear back?\n[turn 6] AGENT: I wish I could say for sure, Gloria, but it depends on how quickly Dr. Patel's office processes it—could be a day or two, or sometimes longer. Our pharmacist will be calling you soon to talk about the emergency supply option, so that should help bridge the gap while we wait.\n[turn 7] CALLER: Alright honey, thank you so much for your help. I'll wait to hear from the pharmacist then. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhWn5aJjQ9nphh99qeu",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 5, \"fact\": \"Has about a week of lisinopril left\", \"severity\": \"major\", \"quote\": \"I've only got about a week's worth left\", \"why\": \"This only_if_asked fact was volunteered without the agent asking about remaining supply; it's directly relevant to whether an emergency supply is needed, which could change the agent's urgency/action.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364026,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 377,
+      "prompt_tokens": 1540,
+      "total_tokens": 1917
+    }
+  },
+  "latency_ms": 4483,
+  "created_at": "2026-09-25T19:20:26.568Z"
+}

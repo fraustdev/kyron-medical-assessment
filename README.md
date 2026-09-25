@@ -59,6 +59,57 @@ The validator detects which dataset it is checking. It verifies:
 - that cross-dataset links resolve (with identical caller-sim instructions);
 - that each expected end state passes its own checks and hits no forbidden state.
 
+## Simulation harness (Part 2, in progress)
+
+A TypeScript harness that runs an agent through the scenarios without real phone calls and records a trace of every run. It records; it does not grade. See [`HARNESS.md`](HARNESS.md). Requires Node 22+.
+
+```bash
+npm install
+npm run typecheck
+npm test            # 132 tests, no network: trace schema, mock tools and faults, turn loop, goldens, agent, director, evaluator
+```
+
+**Models.** The agent under test is Claude Haiku 4.5 and the simulated caller is Claude Sonnet 5, both through Anthropic's OpenAI-compatible endpoint. Live runs need a key: copy `.env.example` to `.env` (gitignored) and fill in `AGENT_API_KEY` / `CALLER_API_KEY`. **Replay needs no key**: every model response is in the committed `llm-cache/`.
+
+```bash
+npm run sim -- show runs/baseline-v1/S20.t0.json   # read a saved call: transcript, validity, grading
+npx tsx src/cli/smoke-sim.ts A02 live              # one new live call (needs .env)
+npx tsx src/cli/smoke-sim.ts A02 --human           # you play the caller, typing, against the live agent
+```
+
+**Evaluate** a saved trace (see [`EVALUATOR.md`](EVALUATOR.md)):
+
+```bash
+npx tsx src/cli/evaluate.ts runs/baseline-v1/S20.t0.json replay
+```
+
+### The app (Part 4)
+
+```bash
+npm run app        # builds the frontend, then serves http://localhost:5174
+```
+
+It loads every committed run under `runs/<batch>/` (plus its `.eval.json`) into SQLite on start, so there's nothing to set up. Pages:
+
+- **Runs**: every call, its verdict and headline numbers, filterable by batch and verdict.
+- **Run detail**: the transcript with tool calls, results, state changes and simulator decisions. Next to it, the evaluation, where every check links to the turn it's about. Mark any item, or the run itself, **Pass/Fail** to review or override it. Labels are saved to `labels/labels.json`.
+- **Compare**: two batches (e.g. agent v1 vs v2), metric deltas and per-scenario changes.
+- **Failure patterns**: failed checks grouped across runs, plus failure type, false-claim type, category and tag pass rates.
+- **Calibration**: evaluator vs. human agreement (Cohen's κ, too lenient / too strict) and every disagreement.
+
+For development, run `npm run serve` and `npm run web:dev` (Vite on :5173, proxying the API).
+
+### Running batches (the `sim` CLI)
+
+```bash
+npm run sim -- run  --batch baseline-v1                      # every active scenario against agent v1 (needs .env)
+npm run sim -- run  --batch baseline-v1 --mode replay --force # reproduce it from the committed cache, no key
+npm run sim -- list --batch baseline-v1                       # one line per call
+npm run sim -- show runs/baseline-v1/S20.t0.json              # transcript, validity checks and grading
+```
+
+Each call is run, checked for validity (did the simulated caller play fair?) and graded, then saved under `runs/<batch>/`. See [`HARNESS.md`](HARNESS.md) sections 6–8.
+
 ## Regenerate
 
 The datasets are generated. Edit the scripts, never the JSON by hand:

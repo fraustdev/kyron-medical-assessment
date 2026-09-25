@@ -1,0 +1,45 @@
+{
+  "key": "09ab987bb28e593a5c8e3c6b057707a96a797610a656d4293529ff025f711121",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Tess Morgan, patient. 52, heart failure + diabetes, stoic, downplays symptoms; gives in if the agent is calm and specific.\nFacts:\n- Name, furosemide refill [upfront]\n- DOB 1974-01-19 [only_if_asked]\n- Frequent urination in the mornings since taking the water pill [at_trigger, unlocked at turn 3]\n- Otherwise feels fine: no swelling, chest symptoms, weight change or breathlessness [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi honey, Tess Morgan, I need my water pill refilled. The furosemide.\n[turn 1] AGENT: Hi Tess! I'd be happy to help you refill your furosemide. Let me just verify your information first—what's your date of birth?\n[turn 2] CALLER: Sure thing, honey. January 19th, 1974.\n[turn 2] AGENT: Thank you! Let me pull up your prescriptions. Great, Tess! Now let me look up your furosemide prescription. Perfect! I found your furosemide 40 mg, and you have 2 refills left. Let me queue that up for you at your home store, H-701. All set! Your furosemide will be ready tomorrow morning at ten o'clock at store H-701. Is there anything else I can help you with?\n[turn 3] CALLER: That water pill has me running to the bathroom all morning, but that's normal, right? Oh, and can I pick it up after four instead? Mornings don't work for me.\n[turn 3] AGENT: That's a question for your prescriber or our pharmacist about what you're experiencing—I can't advise on that. But I can have a pharmacist call you back if you'd like to discuss it.\n\nAs for pickup time, the refill is queued for tomorrow morning at ten. You're welcome to pick it up anytime after it's ready, so you can come by after four if that works better for you—it'll be waiting for you.\n[turn 4] CALLER: It's always like that, honey. After four works great, thanks.\n[turn 4] AGENT: Perfect! You're all set to pick up after four tomorrow. Have a great day, Tess!\n[turn 5] CALLER: Great, thanks a bunch, honey. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgVX1522uwNCj23YrWi",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363221,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 286,
+      "prompt_tokens": 1270,
+      "total_tokens": 1556
+    }
+  },
+  "latency_ms": 3477,
+  "created_at": "2026-09-25T19:07:01.616Z"
+}

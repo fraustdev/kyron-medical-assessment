@@ -1,0 +1,557 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S04_v1_t0_muhcu9r51f37",
+    "scenario_id": "S04",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.0",
+      "file_sha256": "1fa6dfa2d05893fa76aa1ecf957269aaf3f14a42eb24d3846abbd2e7b8bafdd7"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "3aae72f2ef09e235b020a21cba079606ee34bf224322cddfdc28cfd13d141b1f",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says a store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional. The never-promise rule still applies."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.0.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T19:29:32.897Z",
+    "ended_at": "2026-09-25T19:29:43.587Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 8,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Patient Denise Carter, DOB 1962-07-02, drug lisinopril"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi, I'm calling to refill my mom's blood pressure med. Denise Carter, July 2nd, 1962. The lisinopril.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1823,
+      "turn": 0,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Denise Carter",
+        "dob": "July 2, 1962"
+      },
+      "normalized": {
+        "patient": "Denise Carter"
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1873,
+      "turn": 0,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Denise Carter",
+        "home_store": "H-302",
+        "default_store": "H-302",
+        "authorized_contacts": [
+          {
+            "name": "Jamal Carter",
+            "relationship": "son"
+          }
+        ],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 4,
+      "t_ms": 1873,
+      "turn": 0,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 5,
+      "t_ms": 1873,
+      "turn": 0,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Denise Carter"
+      },
+      "normalized": {
+        "patient": "Denise Carter"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 1923,
+      "turn": 0,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Denise Carter",
+        "prescriptions": [
+          {
+            "rx_id": "RX-DC-LISI10",
+            "drug": "lisinopril 10 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-302",
+            "prescriber": null,
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 3153,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "I'll verify your mom's information and pull up her prescriptions. Great! I found her lisinopril 10 mg with two refills available. Before I queue it up, are you calling as her son Jamal, or are you a different family member?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "5489b11a7364eb84cf46819940a87f4325851ddd03552728ab360a68d5b72c03",
+        "cache_hit": true,
+        "latency_ms": 1230,
+        "usage": {
+          "input_tokens": 4124,
+          "output_tokens": 46
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "4857576ca3c98407c1ca4e273fb7dea6784d2fe55c0ff55132406b6b561f1db3",
+          "cache_hit": true,
+          "latency_ms": 1823,
+          "usage": {
+            "input_tokens": 3800,
+            "output_tokens": 135
+          }
+        },
+        {
+          "cache_key": "5489b11a7364eb84cf46819940a87f4325851ddd03552728ab360a68d5b72c03",
+          "cache_hit": true,
+          "latency_ms": 1230,
+          "usage": {
+            "input_tokens": 4124,
+            "output_tokens": 46
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgCTN4rqEfkE2R5tZ6U",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great! I found her lisinopril 10 mg with two refills available. Before I queue it up, are you calling as her son Jamal, or are you a different family member?"
+            }
+          }
+        ],
+        "created": 1790362987,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 46,
+          "prompt_tokens": 4124,
+          "total_tokens": 4170
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "t_ms": 3153,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "Caller is her son Jamal Carter"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Caller is her son Jamal Carter\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "a9450fc43a5f90497361e0e5efcb46ebb1d1caf5ba2cf3ddc2204a7295a17be6",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks if caller is her son Jamal or different relative.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "a69441aca0795221da5b1b723d48aebeed375523c2f31be5d672ca3d71a31b36",
+          "cache_hit": false,
+          "latency_ms": 2051,
+          "usage": {
+            "input_tokens": 630,
+            "output_tokens": 128
+          }
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "t_ms": 3153,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "Yeah, it's me, Jamal, her son. I'm on her account as an authorized contact.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "9417165dcb4fc6fde3e1f1908ab8950b064677a9db887c36532ed52eeb7e0156",
+          "cache_hit": false,
+          "latency_ms": 2163,
+          "usage": {
+            "input_tokens": 1346,
+            "output_tokens": 46
+          }
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "t_ms": 4768,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "queue_refill",
+      "args": {
+        "rx": "RX-DC-LISI10",
+        "store": "H-302"
+      },
+      "normalized": {
+        "patient": "Denise Carter",
+        "rx_id": "RX-DC-LISI10",
+        "store_id": "H-302"
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 4888,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "queue_refill",
+      "result": {
+        "status": "queued",
+        "rx_id": "RX-DC-LISI10",
+        "store_id": "H-302",
+        "ready_time": "2026-09-25T10:00"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 12,
+      "t_ms": 4888,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "refills_queued",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-DC-LISI10",
+        "store_id": "H-302"
+      },
+      "call_id": "c3"
+    },
+    {
+      "seq": 13,
+      "t_ms": 4888,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-DC-LISI10",
+        "refills": 2
+      },
+      "after": {
+        "rx_id": "RX-DC-LISI10",
+        "refills": 1
+      },
+      "call_id": "c3"
+    },
+    {
+      "seq": 14,
+      "t_ms": 6148,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Perfect, thanks Jamal. I'll get that lisinopril refill queued up for pickup at her home store, Harbor Pharmacy H-302. All set! The lisinopril will be ready for pickup tomorrow morning at ten o'clock at H-302.",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "c4538b326438f122034bf2f3a674084e5470a81d40ebc9482b84b758981149a8",
+        "cache_hit": false,
+        "latency_ms": 1260,
+        "usage": {
+          "input_tokens": 4367,
+          "output_tokens": 28
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "ffc841ec9e8fcb6f62aa7cc06009d79410186542cfa4eba658f0c032e1b2cf2b",
+          "cache_hit": false,
+          "latency_ms": 1615,
+          "usage": {
+            "input_tokens": 4196,
+            "output_tokens": 116
+          }
+        },
+        {
+          "cache_key": "c4538b326438f122034bf2f3a674084e5470a81d40ebc9482b84b758981149a8",
+          "cache_hit": false,
+          "latency_ms": 1260,
+          "usage": {
+            "input_tokens": 4367,
+            "output_tokens": 28
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiDpCTfg4trwMHChKxw",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "All set! The lisinopril will be ready for pickup tomorrow morning at ten o'clock at H-302."
+            }
+          }
+        ],
+        "created": 1790364579,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_tokens": 4367,
+          "total_tokens": 4395
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "t_ms": 6148,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms the refill and a ready time.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "cbce729ed27e6b5792acb88db31fe9a6ee48cf62ad6834b9b4a1b72dec041663",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed refill queued and ready tomorrow at ten\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "6347387c294375332309a9df968f9d9acc585ba82ef783b47a188e37f58bce71",
+          "cache_hit": false,
+          "latency_ms": 2215,
+          "usage": {
+            "input_tokens": 724,
+            "output_tokens": 109
+          }
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "t_ms": 6148,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Great, I'll swing by tomorrow morning. Thanks a lot, bye.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "227835c92b70d7fed8452774ebb33aa1ae790f6fe74082c77d6b5f0fd92b5b95",
+          "cache_hit": false,
+          "latency_ms": 1368,
+          "usage": {
+            "input_tokens": 1469,
+            "output_tokens": 43
+          }
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "t_ms": 6148,
+      "turn": 2,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent confirms the refill and a ready time."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [
+        {
+          "rx_id": "RX-DC-LISI10",
+          "store_id": "H-302"
+        }
+      ],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": []
+    },
+    "world_state": {
+      "prescriptions": {
+        "7004512": {
+          "owner": "Jamal Carter",
+          "refills": 4,
+          "store_id": "H-302",
+          "status": "active"
+        },
+        "RX-DC-LISI10": {
+          "owner": "Denise Carter",
+          "refills": 1,
+          "store_id": "H-302",
+          "status": "active"
+        }
+      },
+      "default_stores": {
+        "Denise Carter": "H-302",
+        "Jamal Carter": "H-302"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 2,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Denise Carter",
+          "dob": "July 2, 1962"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 5,
+        "call_id": "c2",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Denise Carter"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 10,
+        "call_id": "c3",
+        "tool": "queue_refill",
+        "args": {
+          "rx": "RX-DC-LISI10",
+          "store": "H-302"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 3,
+      "caller_turns": 3,
+      "agent_turns": 2,
+      "tool_calls": 3,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T19:29:46.535Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "no scripted move fired in this call"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

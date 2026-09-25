@@ -1,0 +1,45 @@
+{
+  "key": "6347387c294375332309a9df968f9d9acc585ba82ef783b47a188e37f58bce71",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, I'm calling to refill my mom's blood pressure med. Denise Carter, July 2nd, 1962. The lisinopril.\nAGENT: I'll verify your mom's information and pull up her prescriptions. Great! I found her lisinopril 10 mg with two refills available. Before I queue it up, are you calling as her son Jamal, or are you a different family member?  [system actions: verify_identity, list_prescriptions]\nCALLER: Yeah, it's me, Jamal, her son. I'm on her account as an authorized contact.\nAGENT (LATEST): Perfect, thanks Jamal. I'll get that lisinopril refill queued up for pickup at her home store, Harbor Pharmacy H-302. All set! The lisinopril will be ready for pickup tomorrow morning at ten o'clock at H-302.  [system actions: queue_refill]\n\nCONDITIONS:\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Store is H-302\"\nstop_0: Agent confirms the refill and a ready time.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiDvicvsFNYR9hskAc2",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"asked_2\": {\"met\": false, \"why\": \"Agent stated store H-302, did not ask about it\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent confirmed refill queued and ready tomorrow at ten\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790364582,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 109,
+      "prompt_tokens": 724,
+      "total_tokens": 833
+    }
+  },
+  "latency_ms": 2215,
+  "created_at": "2026-09-25T19:29:42.215Z"
+}

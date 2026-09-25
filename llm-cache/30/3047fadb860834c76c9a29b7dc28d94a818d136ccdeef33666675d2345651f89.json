@@ -1,0 +1,45 @@
+{
+  "key": "3047fadb860834c76c9a29b7dc28d94a818d136ccdeef33666675d2345651f89",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for Irene. Doesn't remember that an old 2023 profile at Oak St still holds her metformin.\nFacts:\n- Patient Irene Kowalski; wants Maple Ave for everything [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked]\n- Unaware that metformin is still at Oak St [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I'm calling for my mother, Irene Kowalski. I want Maple Ave to be her pharmacy for everything.\n[turn 1] AGENT: Hi! I'd be happy to help set up Maple Ave as your mother's pharmacy. Let me start by verifying her identity. What's Irene Kowalski's date of birth?\n[turn 2] CALLER: March 3rd, 1942. I'm her son Walt, I'm authorized on her account.\n[turn 2] AGENT: Thank you, Walt. Let me verify that information and check your authorization. Great, Walt! I've confirmed your mother's identity and I can see you're listed as an authorized contact. Now, which Harbor Pharmacy location is Maple Ave? Can you give me the full address or the store number if you have it?\n[turn 3] CALLER: I don't have the store number on me, but it's the Maple Ave location, the one near downtown. Can't you look it up?\n[turn 3] AGENT: Of course, let me find that for you. I'm not finding a Harbor Pharmacy on Maple Ave near downtown. Can you give me any other details—like the city, or a cross street nearby? That'll help me track down the right location.\n[turn 4] CALLER: I don't know the cross street offhand. It's just the Maple Ave Harbor Pharmacy, near downtown. You gotta have it in your system somewhere.\n[turn 4] AGENT: I understand, but my search isn't pulling up a Maple Ave location. Do you happen to know what city it's in, or any nearby streets or landmarks? That would help me find the right store. Alternatively, if you have the store number handy, that would work too.\n[turn 5] CALLER: I don't know the city off the top of my head, it's just the Maple Ave one we always drop her prescriptions at. Look, can't you just search Harbor Pharmacy locations and find the Maple Ave one? There can't be that many.\n[turn 5] AGENT: I wish I could do a broad search like that, but my system only finds stores when I search by specific details like a street name, city, or cross street. Without those details, I'm stuck. Do you have any way to look it up—maybe a receipt from the pharmacy, or could you call your mom to ask what city it's in? Once I have that, I can find the store number and get her set up right away.\n[turn 6] CALLER: Fine, hold on, let me think... I don't have a receipt handy. Can't you just pull up all the Harbor locations in the state or something? I know it's Maple Ave, that's not nothing.\n[turn 6] AGENT: I understand your frustration, but unfortunately my search tool only works with specific location details—I can't pull up a full list. Here's what I can do: if you can remember the city, or even just a nearby street or landmark, I can search for it. Or if your mom happens to have a prescription bottle or paperwork from that pharmacy, the store number is usually on it. Do either of those sound doable?\n[turn 7] CALLER: Alright, alright, let me think... it's near that big shopping center off Route 9, if that helps at all. Just Maple Ave, Harbor Pharmacy, that's all I got right now.\n[turn 7] AGENT: That helps! Let me search for that. Still not coming up with that combination. Let me try just the main details. I'm still not finding it. Is it possible the pharmacy might be under a different street name, or could it be a different pharmacy chain? Or do you remember what town or city it's closest to?\n[turn 8] CALLER: No, it's Harbor Pharmacy, Maple Ave, that's what I've always known it as. Look, just get it set up, I'll figure out the exact address later if I gotta.\n[turn 8] AGENT: I understand you want to move forward, but I need the store number or location to set this up—I can't complete the change without knowing which Harbor store you mean. Here's what I suggest: give your mom a quick call and ask her what city the Maple Ave location is in, or have her check a prescription bottle or receipt. Once you have that, I can get her switched over right away. It'll just take a minute.\n[turn 9] CALLER: Fine, fine, I'll call her and check a bottle. Just don't go moving anything else around while I do that.\n[turn 9] AGENT: Sounds good, Walt. I'll be right here waiting for you. Take your time, and just call back when you have the city or store details.\n[turn 10] CALLER: Yeah, alright. I'll call you back once I got it.\n[turn 10] AGENT: Perfect. We'll get your mom all set up at Maple Ave once you have those details. Talk to you soon!\n[turn 11] CALLER: Yeah, yeah, I'll call you back. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhWRwMtLBFVJ5xAqr23",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 2, \"fact\": \"caller is son Walt, authorized caregiver\", \"severity\": \"minor\", \"quote\": \"I'm her son Walt, I'm authorized on her account.\", \"why\": \"This fact is marked only_if_asked, but the agent only asked for DOB, not about the caller's relationship or authorization; volunteering it slightly anticipates the verification step, though it's low-impact since the agent needed it anyway.\"}], \"invented\": [{\"turn\": 7, \"severity\": \"minor\", \"quote\": \"it's near that big shopping center off Route 9, if that helps at all.\", \"why\": \"The caller invents a specific landmark/location detail not present in the brief, which is a fabricated fact used to help the agent search, though it doesn't materially change the eventual outcome.\"}]}"
+        }
+      }
+    ],
+    "created": 1790364028,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 939,
+      "prompt_tokens": 2314,
+      "total_tokens": 3253
+    }
+  },
+  "latency_ms": 11257,
+  "created_at": "2026-09-25T19:20:28.615Z"
+}

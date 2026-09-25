@@ -1,0 +1,45 @@
+{
+  "key": "f2722943c8b9b2b1ed176ee5fa439b542788653ec6377f8c8e0179d1af5fae33",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\nAGENT (LATEST): Hi Gloria, thanks for calling Harbor Pharmacy. I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?\n\nCONDITIONS:\nmove_0: the first time the agent gives a ready time or a read-back\nstop_0: Agent has confirmed the amlodipine refill and a ready time she understood.\nstop_1: Agent has refused or failed to act after two clear requests.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1200
+    }
+  },
+  "response": {
+    "id": "msg_011CfQg2Zd5PnCg2scZBouAN",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"No ready time or read-back given yet.\"}, \"stop_0\": {\"met\": false, \"why\": \"No confirmation or ready time provided yet.\"}, \"stop_1\": {\"met\": false, \"why\": \"Only one request made, agent is assisting.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790362854,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 125,
+      "prompt_tokens": 562,
+      "total_tokens": 687
+    }
+  },
+  "latency_ms": 2443,
+  "created_at": "2026-09-25T19:00:54.934Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "16e742fd5e26f7d37b177563b23819fce6b2e2f117eff0fa263680800b52388b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\nAGENT (LATEST): Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. Can you give me your date of birth?\n\nCONDITIONS:\nmove_0: the agent says the Vyvanse cannot be transferred\nstop_0: Agent recaps: two moved, defaults set, Vyvanse new-Rx request to Dr. Okafor.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhT2GjcPqzc7ANJDWWa",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"No mention of Vyvanse in this turn\"}, \"stop_0\": {\"met\": false, \"why\": \"No recap given yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790363972,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 90,
+      "prompt_tokens": 570,
+      "total_tokens": 660
+    }
+  },
+  "latency_ms": 1559,
+  "created_at": "2026-09-25T19:19:32.672Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "14c2ea05423aa7e6712dfa2ee3d50eb749c799273df2d60b054299d423a7ae08",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing. The pharmacy told her Dr. Patel must see her before renewing her lisinopril (0 refills); about a week of pills left.\nFacts:\n- Name; the pharmacy said Dr. Patel must see her before renewing her lisinopril [upfront]\n- DOB 1947-05-12 [only_if_asked]\n- About a week of lisinopril left [only_if_asked]\n- Wants the soonest appointment [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hello, honey, it's Gloria Hart. The pharmacy said Dr. Patel has to see me before they'll renew my lisinopril, my blood pressure pill.\n[turn 1] AGENT: Hi Gloria, thanks for calling Harbor Family Medicine. I can help you get that set up. Let me just verify your information first—what's your date of birth?\n[turn 2] CALLER: May 12th, 1947, honey.\n[turn 2] AGENT: Thank you. And just to confirm, is that May 12th, 1947?\n[turn 3] CALLER: Yes, that's right, honey. May 12th, 1947.\n[turn 3] AGENT: Perfect, Gloria. So you need to see Dr. Patel for a medication review so the pharmacy can renew your lisinopril. When would work best for you?\n[turn 4] CALLER: Whatever's soonest, dear. I've only got about a week of my pills left.\n[turn 4] AGENT: Let me find the earliest openings for you with Dr. Patel. I'll search for the next week or so. Great news—I found two openings with Dr. Patel. The soonest is Monday, September 28th at eleven in the morning. Or if that doesn't work, there's Tuesday, September 29th at two twenty in the afternoon. Which would you prefer?\n[turn 5] CALLER: Whatever's soonest, dear. Let's do that Monday one.\n[turn 5] AGENT: Perfect, I'll book you for Monday, September 28th at eleven a.m. with Dr. Patel. You're all set, Gloria. Your appointment is Monday, September 28th at eleven a.m. with Dr. Patel for your medication review. That should get you sorted with the pharmacy for your lisinopril refill.\n[turn 6] CALLER: What, honey? Say that again a little slower.\n[turn 6] AGENT: Your appointment is Monday, September 28th at eleven in the morning with Dr. Patel.\n[turn 7] CALLER: Oh, Monday the 28th at eleven, with Dr. Patel. Thank you, honey, that's just fine.\n[turn 7] AGENT: You're welcome, Gloria. Take care, and we'll see you Monday!\n[turn 8] CALLER: Okay, honey, thank you so much. Bye-bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgbVrHDEDbxv972iT5U",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363300,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1483,
+      "total_tokens": 1499
+    }
+  },
+  "latency_ms": 1500,
+  "created_at": "2026-09-25T19:08:20.778Z"
+}

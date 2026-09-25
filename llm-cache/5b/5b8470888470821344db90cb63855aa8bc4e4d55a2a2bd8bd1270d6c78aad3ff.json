@@ -1,0 +1,45 @@
+{
+  "key": "5b8470888470821344db90cb63855aa8bc4e4d55a2a2bd8bd1270d6c78aad3ff",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello honey, it's Gloria Hart. I need the water pill...\nAGENT: Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\nCALLER: No, wait, not the water pill, honey... the blood pressure one, lisinopril. My birthday is May 12th, 1947.\nAGENT: Got it, lisinopril for blood pressure. Let me verify your information—May 12th, 1947. And just to confirm, your full name is Gloria Hart, correct?\nCALLER: Yes, that's right, honey. Gloria Hart.\nAGENT (LATEST): Thank you, Gloria. Let me look up your prescriptions now. Great, Gloria. Now let me pull up your prescriptions. Perfect, I found your lisinopril 10 milligrams. I see it has zero refills left, so I'll need to send a renewal request to Dr. Raj Patel. Is that okay?  [system actions: verify_identity, list_prescriptions]\n\nCONDITIONS:\nmove_1: the agent says lisinopril has no refills\nstop_0: Agent confirms a renewal request to Dr. Patel with a timeline.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1200
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgHwNCL38zDeG9VEnDJ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": true, \"why\": \"Agent stated lisinopril has zero refills left.\"}, \"stop_0\": {\"met\": false, \"why\": \"Agent asks permission but no timeline given yet.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790363062,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 101,
+      "prompt_tokens": 763,
+      "total_tokens": 864
+    }
+  },
+  "latency_ms": 1724,
+  "created_at": "2026-09-25T19:04:22.761Z"
+}

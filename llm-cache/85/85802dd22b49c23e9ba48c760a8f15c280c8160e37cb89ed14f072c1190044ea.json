@@ -1,0 +1,45 @@
+{
+  "key": "85802dd22b49c23e9ba48c760a8f15c280c8160e37cb89ed14f072c1190044ea",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\nAGENT (LATEST): Hi Gloria! I'd be happy to help you with those medications. Before I look them up, I need to verify your information. Can you give me your date of birth?\n\nCONDITIONS:\nmove_0: the agent says no potassium is on file\nmove_1: before the agent ends the call, if it has not summarized\nstop_0: Agent has summarized the three queued refills and the potassium follow-up.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhRUaiha9hEnN9L3gVC",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent hasn't looked up medications yet, just asking for DOB\"}, \"move_1\": {\"met\": false, \"why\": \"Call is not ending; agent is still verifying identity\"}, \"stop_0\": {\"met\": false, \"why\": \"No summary given yet; agent only requested date of birth\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790363952,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 142,
+      "prompt_tokens": 543,
+      "total_tokens": 685
+    }
+  },
+  "latency_ms": 2013,
+  "created_at": "2026-09-25T19:19:12.167Z"
+}

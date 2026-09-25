@@ -1,0 +1,45 @@
+{
+  "key": "a69441aca0795221da5b1b723d48aebeed375523c2f31be5d672ca3d71a31b36",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, I'm calling to refill my mom's blood pressure med. Denise Carter, July 2nd, 1962. The lisinopril.\nAGENT (LATEST): I'll verify your mom's information and pull up her prescriptions. Great! I found her lisinopril 10 mg with two refills available. Before I queue it up, are you calling as her son Jamal, or are you a different family member?  [system actions: verify_identity, list_prescriptions]\n\nCONDITIONS:\nasked_1: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Caller is her son Jamal Carter\"\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Store is H-302\"\nstop_0: Agent confirms the refill and a ready time.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiDP48649WXWN7W4rdd",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"asked_1\": {\"met\": true, \"why\": \"Agent asks if caller is her son Jamal or different relative.\"}, \"asked_2\": {\"met\": false, \"why\": \"No question about store location asked.\"}, \"stop_0\": {\"met\": false, \"why\": \"No refill confirmation or ready time given.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790364574,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 630,
+      "total_tokens": 758
+    }
+  },
+  "latency_ms": 2051,
+  "created_at": "2026-09-25T19:29:34.950Z"
+}

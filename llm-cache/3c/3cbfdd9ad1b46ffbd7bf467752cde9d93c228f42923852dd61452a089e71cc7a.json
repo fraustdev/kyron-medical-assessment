@@ -1,0 +1,45 @@
+{
+  "key": "3cbfdd9ad1b46ffbd7bf467752cde9d93c228f42923852dd61452a089e71cc7a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, unlocked at turn 2]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 3]\n- Does not know the address [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity first, then help with those transfers. Great, Jamal. I can help with that. Let me find the Harbor store on Main in Lakeview to confirm the right location. I'm not finding a Harbor store on Main in Lakeview. Can you give me the store ID or the full address so I can make sure I'm transferring to the right location?\n[turn 2] CALLER: Uh, I don't have the ID. It's the one by my apartment, near Oak.\n[turn 2] AGENT: Let me search for that. Perfect, that's Harbor Pharmacy Main St University at 2250 Main Street in Lakeview, near Oak. Is that the one?\n[turn 3] CALLER: Yeah, near Oak. That's the one.\n[turn 3] AGENT: Great. Now let me pull up your prescriptions at Brightway to get the details for the albuterol and sertraline. I'm not seeing any prescriptions in our system for you. Those medications are at Brightway, which is a different pharmacy chain. To transfer them to Harbor, Brightway will need to send them to us, or we can request them from Brightway. Do you want me to request the transfer from our end?\n[turn 4] CALLER: I don't know the address, I just moved. Can't you just tell me which ones there are?\n[turn 4] AGENT: I understand, but I can only see prescriptions that are already in the Harbor system. Since your albuterol and sertraline are at Brightway right now, I don't have access to their records. You'd need to either call Brightway to get those details, or ask them to transfer the prescriptions to Harbor. Once they send them over, I can help you from there.\n[turn 5] CALLER: Okay yeah, just go ahead and request it from Brightway then, from your end. Number 4471.\n[turn 5] AGENT: I can request the transfer, but I need the prescription IDs or at least the drug names and strengths to send the request to Brightway. Do you know the strength of your albuterol inhaler and your sertraline dose?\n[turn 6] CALLER: I don't know the exact strengths off the top of my head, just albuterol inhaler and sertraline. Can't you look it up with my name and birthday on your end?\n[turn 6] AGENT: I wish I could, but since those prescriptions are at Brightway, they're not in our system yet—I can only see what's already here at Harbor. You'll need to contact Brightway directly with your name and date of birth, and ask them to transfer the albuterol inhaler and sertraline to Harbor Pharmacy Main St University in Lakeview. They'll have all the strength details and can send them right over.\n[turn 7] CALLER: Alright, fine, I'll call Brightway myself then. Thanks for the help.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgNUX3rzdfy9tp7ZW5q",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 2, \"fact\": \"cross street is 'near Oak'\", \"severity\": \"minor\", \"quote\": \"It's the one by my apartment, near Oak.\", \"why\": \"This fact was only unlocked at turn 3, but was revealed one turn early; it aided store lookup but didn't dramatically change agent's actions.\"}, {\"turn\": 4, \"fact\": \"does not know the address\", \"severity\": \"minor\", \"quote\": \"I don't know the address, I just moved.\", \"why\": \"This only_if_asked fact was volunteered without the agent's preceding turn asking about the address.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363134,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 987,
+      "prompt_tokens": 1682,
+      "total_tokens": 2669
+    }
+  },
+  "latency_ms": 12577,
+  "created_at": "2026-09-25T19:05:35.104Z"
+}

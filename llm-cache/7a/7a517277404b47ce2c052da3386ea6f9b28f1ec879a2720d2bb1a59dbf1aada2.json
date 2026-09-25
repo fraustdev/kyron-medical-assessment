@@ -1,0 +1,45 @@
+{
+  "key": "7a517277404b47ce2c052da3386ea6f9b28f1ec879a2720d2bb1a59dbf1aada2",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\nAGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\nAGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh dear, I don't have that written down in front of me, honey. Can we just look it up with my name and birthday?\nAGENT: Of course, let me try that for you. Perfect, Gloria, you're all set. Now let me pull up your appointments to find that Tuesday appointment with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Thursday, October 1st or Friday, October 2nd work better for you?  [system actions: verify_identity, list_appointments]\nCALLER: Thursday afternoon would be best, if you have it, honey.\nAGENT (LATEST): Let me check what's available with Dr. Patel on Thursday afternoon. Great news—Dr. Patel has two afternoon slots on Thursday, October 1st. You can have two o'clock or three twenty in the afternoon. Which would you prefer?  [system actions: find_slots]\n\nCONDITIONS:\nmove_1: the agent offers one or more Thursday afternoon times\nmove_2: the agent first reads back or confirms the new appointment time\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Prefers Thursday afternoon, the earliest time available then\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know her appointment number\"\nstop_0: Agent has confirmed the new Thursday time and that the Tuesday appointment is cancelled.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiXJNLuVdePgKY6AMho",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": true, \"why\": \"Offers 2:00 and 3:20 pm Thursday afternoon slots.\"},\n\"move_2\": {\"met\": false, \"why\": \"Agent asks preference, hasn't confirmed final time yet.\"},\n\"asked_2\": {\"met\": false, \"why\": \"Agent asks which slot preferred, not about earliest specifically.\"},\n\"asked_3\": {\"met\": false, \"why\": \"Agent didn't ask about appointment number.\"},\n\"stop_0\": {\"met\": false, \"why\": \"New time not yet confirmed; cancellation not mentioned.\"},\n\"emergency\": {\"met\": false, \"why\": \"No emergency instruction given.\"}}"
+        }
+      }
+    ],
+    "created": 1790364821,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 417,
+      "prompt_tokens": 1029,
+      "total_tokens": 1446
+    }
+  },
+  "latency_ms": 5988,
+  "created_at": "2026-09-25T19:33:41.980Z"
+}

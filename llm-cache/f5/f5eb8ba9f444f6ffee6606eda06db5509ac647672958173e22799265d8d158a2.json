@@ -1,0 +1,45 @@
+{
+  "key": "f5eb8ba9f444f6ffee6606eda06db5509ac647672958173e22799265d8d158a2",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, organized dad on vacation; Dr. Okafor already sent next month's Vyvanse, which hasn't been filled.\nFacts:\n- Unfilled e-Rx at H-501; destination Coastal Hwy / Route 1 store [upfront]\n- Eli DOB 2010-02-11; Kevin is his father [only_if_asked]\n- Strength 30 mg; prescriber Dr. Okafor [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. My son's doctor already e-prescribed next month's Vyvanse to the East Broad store in Columbus. It hasn't been filled. Can you move it to the Harbor on Coastal Highway, Route 1, in Rehoboth?\n[turn 1] AGENT: I'd be happy to help move that prescription. First, let me verify your son's information so I can access his account. What's his full name and date of birth?\n[turn 2] CALLER: Eli Brooks, February 11th, 2010.\n[turn 2] AGENT: Thanks. And just to confirm—you're his parent and authorized to manage his prescriptions, correct? Perfect, you're verified. I can see Eli's account and you're listed as an authorized contact. Now, the Vyvanse is a C-II controlled medication, so I need to handle this a bit differently. Since it's an unfilled electronic prescription at another pharmacy, I'll need to request that the Rehoboth store call the Columbus store to transfer it over. Let me flag our pharmacist to make that call and confirm the transfer can happen. Great. I've flagged our pharmacist to call the Columbus store and request the transfer to the Rehoboth location. They'll handle the pharmacist-to-pharmacist coordination. You should expect to hear from us once it's arranged, or you can call the Rehoboth store to check on it.\n[turn 3] CALLER (scenario-scripted): Okay, that works. So when can he pick it up?\n[turn 3] AGENT: I don't have a ready time yet—the pharmacist still needs to complete the transfer call with Columbus and then fill it. Once that's done, the Rehoboth store will let you know when it's ready. You can call them to check, or they may reach out to you directly.\n[turn 4] CALLER: Alright, I'll check back with them then. Thanks for getting that started.\n[turn 4] AGENT: You're welcome! We'll get that sorted for you. Have a good day.\n[turn 5] CALLER: Alright, thanks for the help. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhe3EauF2advVesMUV7",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364124,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 252,
+      "prompt_tokens": 1449,
+      "total_tokens": 1701
+    }
+  },
+  "latency_ms": 4009,
+  "created_at": "2026-09-25T19:22:04.571Z"
+}

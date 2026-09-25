@@ -1,0 +1,45 @@
+{
+  "key": "3e3f6654e1504608f11cb8cc13aa9fd078a798c14ba6cc48d7ca7fa4fc395644",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, busy and impatient; gives everything in one breath and uses casual relative dates.\nFacts:\n- Name, DOB 1995-03-14, annual physical with Dr. Patel, 'next Friday', morning [upfront]\n- By 'next Friday' he means Friday, October 2, not tomorrow (Friday, September 25) [only_if_asked]\n- Wants the earliest morning time that day [only_if_asked]\n- Phone 555-0177 [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.\n[turn 1] AGENT: I'd be happy to help you book that physical with Dr. Patel. Just to confirm the date—next Friday would be October 3rd, correct?\n[turn 2] CALLER: No, it's the 2nd, not the 3rd. Friday, October 2nd.\n[turn 2] AGENT: Got it, Friday, October 2nd. Let me verify your identity first and then search for morning slots with Dr. Patel that day. Perfect, you're all set. I found two morning slots with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which would work better for you?\n[turn 3] CALLER (scenario-scripted): The earliest one's fine.\n[turn 3] AGENT: Great! You're booked with Dr. Patel for your annual physical on Friday, October 2nd at nine o'clock in the morning. Is there anything else I can help you with?\n[turn 4] CALLER: Cool, thanks, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhnMb7ymNToK9KmX6rX",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364236,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 207,
+      "prompt_tokens": 1149,
+      "total_tokens": 1356
+    }
+  },
+  "latency_ms": 2982,
+  "created_at": "2026-09-25T19:23:56.360Z"
+}

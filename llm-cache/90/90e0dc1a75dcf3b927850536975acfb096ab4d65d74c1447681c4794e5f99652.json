@@ -1,0 +1,45 @@
+{
+  "key": "90e0dc1a75dcf3b927850536975acfb096ab4d65d74c1447681c4794e5f99652",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for his mother Irene (84, dementia); juggling her appointments; tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; wants to cancel 'her appointment' [upfront]\n- DOB 1942-03-03 [only_if_asked, the agent asked at turn 2]\n- Caller is her son Walt, on her account [only_if_asked, the agent asked at turn 3]\n- Means the appointment with the memory doctor, Dr. Brandt (Thu 10/8); she still needs the Dr. Hughes follow-up [only_if_asked, the agent asked at turn 4]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Yeah, hi, I need to cancel my mother's appointment. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help cancel your mother's appointment. To get started, I need to verify her identity. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Thank you. And just to confirm, what's your name?\n[turn 3] CALLER: Walt Kowalski, I'm her son. I'm on her account, been handling her appointments for a while now.\n[turn 3] AGENT: Got it, Walt. Let me pull up Irene's appointments so we can see which one you'd like to cancel. Perfect, Walt. You're all set as an authorized contact. Let me get her upcoming appointments. Irene has two upcoming appointments. One is with Dr. Thomas Hughes on Tuesday, October 6th at ten in the morning, and the other is with Dr. Helen Brandt on Thursday, October 8th at two in the afternoon. Which one would you like to cancel?\n[turn 4] CALLER (scenario-scripted): The one with the memory doctor, Brandt. She still needs the Hughes one.\n[turn 4] AGENT: Got it, I'll cancel the appointment with Dr. Brandt on October 8th at two in the afternoon. All set, Walt. The appointment with Dr. Brandt on Thursday, October 8th has been cancelled. Irene's appointment with Dr. Hughes on Tuesday, October 6th is still on the books.\n[turn 5] CALLER: Alright, good. Thanks for the help.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiYjBNBXnwgHiwF4tyW",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364836,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1432,
+      "total_tokens": 1448
+    }
+  },
+  "latency_ms": 1239,
+  "created_at": "2026-09-25T19:33:56.620Z"
+}

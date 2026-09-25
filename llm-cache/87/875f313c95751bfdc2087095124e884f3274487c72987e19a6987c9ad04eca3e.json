@@ -1,0 +1,45 @@
+{
+  "key": "875f313c95751bfdc2087095124e884f3274487c72987e19a6987c9ad04eca3e",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\n[#9] AGENT: I'll verify your identity and then queue that refill for you. Great, Jamal. I'm queuing that sertraline refill at the Main St University store now. Perfect. Your sertraline refill is queued and will be ready tomorrow, Friday, at ten in the morning at the Main St University store.\nCALLER: Great, thanks, got it.\n\nCLAIMS:\nS02.claim.1: Agent says the sertraline refill is placed/queued/ready.\nS02.claim.2 (WITH VALUE): Agent states a ready/pickup time.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiBtrTEUyvgkQDCaTXh",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S02.claim.1\": [{\"turn\": 9, \"quote\": \"Your sertraline refill is queued\", \"date\": null, \"time\": null, \"text\": null}], \"S02.claim.2\": [{\"turn\": 9, \"quote\": \"ready tomorrow, Friday, at ten in the morning\", \"date\": \"2026-09-25\", \"time\": \"10:00\", \"text\": \"tomorrow, Friday, at ten in the morning\"}]}"
+        }
+      }
+    ],
+    "created": 1790364554,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 141,
+      "prompt_tokens": 685,
+      "total_tokens": 826
+    }
+  },
+  "latency_ms": 1946,
+  "created_at": "2026-09-25T19:29:14.674Z"
+}

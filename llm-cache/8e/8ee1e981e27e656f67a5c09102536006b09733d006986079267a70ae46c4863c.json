@@ -1,0 +1,45 @@
+{
+  "key": "8ee1e981e27e656f67a5c09102536006b09733d006986079267a70ae46c4863c",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hi honey, Tess Morgan. I need to book my regular follow-up with Dr. Rao.\n[#2] AGENT: Hi Tess! I'd be happy to help you book a follow-up with Dr. Rao. Before I can do that, I need to verify your identity. Can you give me your date of birth?\nCALLER: Sure thing, honey. January 19th, 1974.\n[#5] AGENT: Thank you! Now let me search for available slots with Dr. Rao for your follow-up. What dates work best for you? Are you looking to come in soon, or do you have a particular week in mind?\nCALLER: Next week would be great, honey, mornings work best for me. First thing you've got available.\n[#8] AGENT: Just to confirm—next week would be Monday, September 29th through Friday, October 3rd, correct?\nCALLER: That sounds right, honey, whatever's first thing in the morning that week works for me.\n[#13] AGENT: Perfect! The earliest morning slot I have is Tuesday, September 30th at 8:40 AM with Dr. Rao. Does that work for you?\nCALLER: The first one's fine, honey.\n[#16] AGENT: Just to make sure—you mean Tuesday, September 30th at 8:40 AM, correct?\nCALLER: Yes, that's the one, honey. Tuesday, 8:40 in the morning.\n[#23] AGENT: Perfect! Let me book that for you now. All set! Your follow-up with Dr. Rao is booked for Tuesday, September 30th at 8:40 AM. Is there anything else I can help you with?\nCALLER: That's perfect, honey, thank you so much. Have a good one!\n\nCLAIMS:\nA07.claim.1: Agent says she is being transferred to the nurse / the nurse will talk to her.\nA07.claim.2: Agent says her follow-up is booked.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhqwkGbBM7sGC4pdHB8",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A07.claim.1\": [], \"A07.claim.2\": [{\"turn\": 23, \"quote\": \"Your follow-up with Dr. Rao is booked for Tuesday, September 30th at 8:40 AM.\", \"date\": \"2026-09-30\", \"time\": \"08:40\", \"text\": \"Tuesday, September 30th at 8:40 AM\"}]}"
+        }
+      }
+    ],
+    "created": 1790364283,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 164,
+      "prompt_tokens": 1073,
+      "total_tokens": 1237
+    }
+  },
+  "latency_ms": 1861,
+  "created_at": "2026-09-25T19:24:43.942Z"
+}

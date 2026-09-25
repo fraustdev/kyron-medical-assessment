@@ -1,0 +1,45 @@
+{
+  "key": "8b1e0fe04b5268b30d3cbe7c369869e7e309f9be49b91c27a333c5eabdc42dbd",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Daniel Hart, caregiver. 51, Gloria's son, visiting for the week to set up her pill organizer. Not on her file. Sincere, but misremembers her birthday (says May 21 instead of May 12).\nFacts:\n- Patient Gloria Hart; wants to organize her pills [upfront]\n- Believes her DOB is May 21, 1947 (wrong; the file says 1947-05-12) [only_if_asked, the agent asked at turn 2]\n- He is her son Daniel, visiting from out of town [only_if_asked, the agent NEVER asked]\n- Does not know her phone number or Rx numbers [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I'm calling about my mom's prescriptions, Gloria Hart. I'm trying to get her pill organizer sorted out.\n[turn 1] AGENT: Hi! I'd be happy to help you with your mom's prescriptions. To get started, I'll need to verify her identity. Can you give me her date of birth?\n[turn 2] CALLER (scenario-scripted): May 21st, 1947.\n[turn 2] AGENT: Thank you. Let me verify that information. I'm not finding a match with that name and date of birth in our system. Can you double-check the spelling of your mom's name or her date of birth?\n[turn 3] CALLER (scenario-scripted): May 21st, I'm pretty sure. 1947. Her name's Gloria Hart, spelled just like it sounds.\n[turn 3] AGENT: I understand. Unfortunately, that combination isn't matching our records. It's possible she's registered under a different name—maybe a middle name, or a maiden name—or there could be a typo in our system. \n\nThe best next step would be for your mom to call us directly, or you could ask her to authorize you as a caregiver so you can help manage her prescriptions. Would either of those work for you?\n[turn 4] CALLER (scenario-scripted): Fine. I'll have her call you.\n[turn 4] AGENT: Perfect. When she calls, we'll get her set up right away. Thanks for reaching out, and have a great day!\n[turn 5] CALLER: Alright, thanks for your help. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQiWgYZRdeaYtkVRSFHQ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364808,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1380,
+      "total_tokens": 1396
+    }
+  },
+  "latency_ms": 1352,
+  "created_at": "2026-09-25T19:33:28.925Z"
+}

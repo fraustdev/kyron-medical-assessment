@@ -1,0 +1,1105 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_A06_v1_t0_muhd0al6c4ee",
+    "scenario_id": "A06",
+    "dataset": {
+      "name": "harbor-clinic-scheduling-scenarios",
+      "version": "1.0.0",
+      "file_sha256": "1e6878d58f6ecf06d9fd9df56be69f3d851d0676430bdd1a6a9b29ddef365818"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "15041b22fa8215fbddfdf788f0fbeb0191703385f8913dda23e20f6012d1ec3d",
+      "prompt_text": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.0.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T19:34:13.914Z",
+    "ended_at": "2026-09-25T19:34:52.880Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 12,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name; needs a Dr. Rao medication review within five days after a water-pill change"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi honey, Tess Morgan. Dr. Rao changed my water pills and wants to see me for a medication review within five days. What do you have?",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 879,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Tess! I'd be happy to help you find a medication review appointment. Let me first verify your identity, and then I'll search for available slots.\n\nWhat's your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "623f2ce01ff10c806a80743ccd9b4c464eecc549392d2b4b79164bfb4081102d",
+        "cache_hit": true,
+        "latency_ms": 879,
+        "usage": {
+          "input_tokens": 2635,
+          "output_tokens": 45
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "623f2ce01ff10c806a80743ccd9b4c464eecc549392d2b4b79164bfb4081102d",
+          "cache_hit": true,
+          "latency_ms": 879,
+          "usage": {
+            "input_tokens": 2635,
+            "output_tokens": 45
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgX3fKduRj3qJd4TdQo",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Tess! I'd be happy to help you find a medication review appointment. Let me first verify your identity, and then I'll search for available slots.\n\nWhat's your date of birth?"
+            }
+          }
+        ],
+        "created": 1790363239,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 45,
+          "prompt_tokens": 2635,
+          "total_tokens": 2680
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 879,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1974-01-19"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1974-01-19\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "97753ed3b764740b580a3e7bde4e062c26666307f6f0bcf43f9a0f95ea8813fd",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asked for date of birth\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "c325a3956f0508b1e69e3a41416e9ddaef1441ff048753605c779f0585236a34",
+          "cache_hit": false,
+          "latency_ms": 2642,
+          "usage": {
+            "input_tokens": 779,
+            "output_tokens": 266
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 879,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "January 19th, 1974, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "d9ddbfe49e23a9186240526d2dba324ab59bea31222d295c4a9e03634d53071f",
+          "cache_hit": false,
+          "latency_ms": 1303,
+          "usage": {
+            "input_tokens": 1287,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2515,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Tess Morgan",
+        "dob": "1974-01-19"
+      },
+      "normalized": {
+        "patient": "Tess Morgan"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2565,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Tess Morgan",
+        "provider_of_record": "Dr. Anita Rao",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 2565,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 2565,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "med_review",
+        "date_range": "2026-09-24..2026-09-29"
+      },
+      "normalized": {
+        "provider": null,
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 2615,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "med_review",
+        "slots": [
+          {
+            "slot_id": "HUG-20260929-0900",
+            "provider": "Dr. Thomas Hughes",
+            "start": "2026-09-29T09:00"
+          },
+          {
+            "slot_id": "PAT-20260928-1000",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-09-28T10:00"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 3562,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you. Let me search for medication review appointments within the next five days for you. Great! I found two medication review slots for you. You have Tuesday, September 28th at ten in the morning with Dr. Patel, or Tuesday, September 29th at nine in the morning with Dr. Hughes. Which works better for you?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "9fab54c1c1bcadb8a4832a45e7d13ec500fc7af68c4a0fec02fd9f0c1d467581",
+        "cache_hit": false,
+        "latency_ms": 947,
+        "usage": {
+          "input_tokens": 3051,
+          "output_tokens": 57
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "8787abaf5d889cc965ab0fe9e626d91619fa08e7126d5e7c8c1f91f48ad1da76",
+          "cache_hit": false,
+          "latency_ms": 1636,
+          "usage": {
+            "input_tokens": 2694,
+            "output_tokens": 169
+          }
+        },
+        {
+          "cache_key": "9fab54c1c1bcadb8a4832a45e7d13ec500fc7af68c4a0fec02fd9f0c1d467581",
+          "cache_hit": false,
+          "latency_ms": 947,
+          "usage": {
+            "input_tokens": 3051,
+            "output_tokens": 57
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiaWSThaQQmZcFQ6eg9",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great! I found two medication review slots for you. You have Tuesday, September 28th at ten in the morning with Dr. Patel, or Tuesday, September 29th at nine in the morning with Dr. Hughes. Which works better for you?"
+            }
+          }
+        ],
+        "created": 1790364860,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 57,
+          "prompt_tokens": 3051,
+          "total_tokens": 3108
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 3562,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "5379f17db5ba74e3ff666d355a387b772386f25db30c37fcf44d2c5ef948c7ca",
+          "cache_hit": false,
+          "latency_ms": 2754,
+          "usage": {
+            "input_tokens": 876,
+            "output_tokens": 257
+          }
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "t_ms": 3562,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Oh, hold on honey, I need to see Dr. Rao specifically, he's the one who changed my water pills. Do you have anything with him?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "a7a301c6940238f275db35d633ab6f81692e1898b9d2fed7008a7da96c61b0fc",
+          "cache_hit": false,
+          "latency_ms": 1441,
+          "usage": {
+            "input_tokens": 1412,
+            "output_tokens": 61
+          }
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "t_ms": 4855,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "med_review",
+        "date_range": "2026-09-24..2026-09-29",
+        "provider": "Dr. Anita Rao"
+      },
+      "normalized": {
+        "provider": "Dr. Anita Rao",
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 4905,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "med_review",
+        "slots": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 15,
+      "t_ms": 5996,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Let me search for medication review slots specifically with Dr. Rao within the next five days. Unfortunately, Dr. Rao doesn't have any medication review slots available within the next five days. Would you like me to add you to the waitlist for Dr. Rao, or would you consider seeing Dr. Patel or Dr. Hughes instead?",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "f8deedcbd9f55ed82c9e420f76b93757588b1a3c7ef5ba8a89f0fa62c485d918",
+        "cache_hit": false,
+        "latency_ms": 1091,
+        "usage": {
+          "input_tokens": 3302,
+          "output_tokens": 58
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "80195bd1f19f2c6e253568e637f4c4b28d1bd44dc8ef4891c962468d61fe226e",
+          "cache_hit": false,
+          "latency_ms": 1293,
+          "usage": {
+            "input_tokens": 3145,
+            "output_tokens": 133
+          }
+        },
+        {
+          "cache_key": "f8deedcbd9f55ed82c9e420f76b93757588b1a3c7ef5ba8a89f0fa62c485d918",
+          "cache_hit": false,
+          "latency_ms": 1091,
+          "usage": {
+            "input_tokens": 3302,
+            "output_tokens": 58
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiaywgZYAnxghs4Ce1i",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Unfortunately, Dr. Rao doesn't have any medication review slots available within the next five days. Would you like me to add you to the waitlist for Dr. Rao, or would you consider seeing Dr. Patel or Dr. Hughes instead?"
+            }
+          }
+        ],
+        "created": 1790364866,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 58,
+          "prompt_tokens": 3302,
+          "total_tokens": 3360
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "t_ms": 5996,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 0,
+        "say": "Can't you squeeze me in? She said five days."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_0] the agent says nothing is available with Dr. Rao in that window",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "f57846d4448a44e819eb4ae1dcfc0a415b8dd6c7127c5fb9cc0b8d1e9057ed7c",
+          "raw_output": "{\"met\":true,\"why\":\"Agent stated no Dr. Rao slots within five days\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[move_1] the agent offers the waitlist",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "f57846d4448a44e819eb4ae1dcfc0a415b8dd6c7127c5fb9cc0b8d1e9057ed7c",
+          "raw_output": "{\"met\":true,\"why\":\"Agent offers to add her to Dr. Rao's waitlist\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "move 1 waits: move 0 fires this turn (one scripted line per turn, lowest-numbered first)"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "fd67c61b60375cac44f45654768f22d4f6807a25d7f975633a51a7730a888d3e",
+          "cache_hit": false,
+          "latency_ms": 4268,
+          "usage": {
+            "input_tokens": 1054,
+            "output_tokens": 427
+          }
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "t_ms": 5996,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Can't you squeeze me in, honey? She said five days, I really shouldn't wait longer than that.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "b556c3e33db12490307b4a755c235873a6042e3840d73778b575fd14b273b02d",
+          "cache_hit": false,
+          "latency_ms": 1311,
+          "usage": {
+            "input_tokens": 1614,
+            "output_tokens": 47
+          }
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "t_ms": 7474,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "I understand—Dr. Rao's schedule is fully booked for medication reviews in that window, and I can't create slots that aren't there. But I can add you to the waitlist for Dr. Rao so if something opens up, you'll be first in line. Would you like me to do that, or would you be open to one of the other doctors this week?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "0bba6212729da0f5c043ff1dab125a92b0692c2c6494a1bc02b6ae290342f0fa",
+        "cache_hit": false,
+        "latency_ms": 1478,
+        "usage": {
+          "input_tokens": 3386,
+          "output_tokens": 85
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "0bba6212729da0f5c043ff1dab125a92b0692c2c6494a1bc02b6ae290342f0fa",
+          "cache_hit": false,
+          "latency_ms": 1478,
+          "usage": {
+            "input_tokens": 3386,
+            "output_tokens": 85
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQibUWtnJmGapz4wVwuC",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I understand—Dr. Rao's schedule is fully booked for medication reviews in that window, and I can't create slots that aren't there. But I can add you to the waitlist for Dr. Rao so if something opens up, you'll be first in line. Would you like me to do that, or would you be open to one of the other doctors this week?"
+            }
+          }
+        ],
+        "created": 1790364873,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 85,
+          "prompt_tokens": 3386,
+          "total_tokens": 3471
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "t_ms": 7474,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 1,
+        "say": "Okay, put me on the list."
+      },
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "ad1c0720dfc8ceb808b557469274728e30a151b9e9cadc980faf34f8c8bab8a8",
+          "cache_hit": false,
+          "latency_ms": 2424,
+          "usage": {
+            "input_tokens": 1161,
+            "output_tokens": 216
+          }
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "t_ms": 7474,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "Okay, put me on the list, honey. But if nothing opens up soon, book me with Dr. Patel just in case.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "4f593438474450a014f3391d8b3d34b625f3c9111856d37ab8cce583b4de730e",
+          "cache_hit": false,
+          "latency_ms": 1430,
+          "usage": {
+            "input_tokens": 1767,
+            "output_tokens": 53
+          }
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "t_ms": 8884,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "add_to_waitlist",
+      "args": {
+        "patient": "Tess Morgan",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "med_review",
+        "window": "2026-09-24..2026-09-29"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 22,
+      "t_ms": 9004,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "add_to_waitlist",
+      "result": {
+        "status": "added",
+        "patient": "Tess Morgan",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "med_review",
+        "window_start": "2026-09-24",
+        "window_end": "2026-09-29"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 23,
+      "t_ms": 9004,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "waitlist_entries",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Tess Morgan",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "med_review",
+        "window_start": "2026-09-24",
+        "window_end": "2026-09-29"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 24,
+      "t_ms": 10356,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c5",
+      "tool": "book_appointment",
+      "args": {
+        "patient": "Tess Morgan",
+        "slot_id": "PAT-20260928-1000",
+        "visit_type": "med_review"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "slot_id": "PAT-20260928-1000",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 25,
+      "t_ms": 10476,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c5",
+      "tool": "book_appointment",
+      "result": {
+        "status": "booked",
+        "appointment_id": "APT-NEW-PAT-20260928-1000",
+        "provider": "Dr. Raj Patel",
+        "start": "2026-09-28T10:00",
+        "visit_type": "med_review"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 26,
+      "t_ms": 10476,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "bookings",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Tess Morgan",
+        "slot_id": "PAT-20260928-1000",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "med_review"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 27,
+      "t_ms": 10476,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-NEW-PAT-20260928-1000",
+        "patient": "Tess Morgan",
+        "provider": "Dr. Raj Patel",
+        "slot_id": "PAT-20260928-1000",
+        "start": "2026-09-28T10:00",
+        "visit_type": "med_review",
+        "status": "booked"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 28,
+      "t_ms": 11606,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Perfect. Let me add you to the waitlist for Dr. Rao first. Great, you're on the waitlist for Dr. Rao. Now let me book you with Dr. Patel on Tuesday, September 28th at ten in the morning as your backup. All set! You're on the waitlist for Dr. Rao, and I've booked you with Dr. Patel on Tuesday, September 28th at ten in the morning. If Dr. Rao has an opening, the clinic will call you. Otherwise, you're all set with Dr. Patel.",
+      "tool_call_ids": [
+        "c4",
+        "c5"
+      ],
+      "llm": {
+        "cache_key": "327858aee6558d4701899e6857e24c47100fc383ca9742104ff682d95bb965e1",
+        "cache_hit": false,
+        "latency_ms": 1130,
+        "usage": {
+          "input_tokens": 3936,
+          "output_tokens": 73
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "d0bd1ece50ac42e94ed7536661ae88da95d569444467f243a682ce7ba861bbe4",
+          "cache_hit": false,
+          "latency_ms": 1410,
+          "usage": {
+            "input_tokens": 3504,
+            "output_tokens": 152
+          }
+        },
+        {
+          "cache_key": "56f39c2bbd413975e7578d309c8a0e7f07bfbc653d7708b758ca0f0c4f390aa1",
+          "cache_hit": false,
+          "latency_ms": 1352,
+          "usage": {
+            "input_tokens": 3721,
+            "output_tokens": 147
+          }
+        },
+        {
+          "cache_key": "327858aee6558d4701899e6857e24c47100fc383ca9742104ff682d95bb965e1",
+          "cache_hit": false,
+          "latency_ms": 1130,
+          "usage": {
+            "input_tokens": 3936,
+            "output_tokens": 73
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQic5LQHzB3BUcphvJFa",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "All set! You're on the waitlist for Dr. Rao, and I've booked you with Dr. Patel on Tuesday, September 28th at ten in the morning. If Dr. Rao has an opening, the clinic will call you. Otherwise, you're all set with Dr. Patel."
+            }
+          }
+        ],
+        "created": 1790364881,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 73,
+          "prompt_tokens": 3936,
+          "total_tokens": 4009
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "t_ms": 11606,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "Okay, that's fine."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent offers to have Dr. Rao's team call her",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "e2d4c9e562223852a44cf47555eae65618d23f9a0f5eb369c759ea3fb5a7b8d9",
+          "raw_output": "{\"met\":true,\"why\":\"Agent says clinic will call if Dr. Rao opens up.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent has explained there is no opening in the window and set up the waitlist and/or a call back.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "e2d4c9e562223852a44cf47555eae65618d23f9a0f5eb369c759ea3fb5a7b8d9",
+          "raw_output": "{\"met\":true,\"why\":\"Waitlist added and backup appointment booked, explained clearly.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "stop condition met (\"Agent has explained there is no opening in the window and set up the waitlist and/or a call back.\") but a scripted move is due, so the move comes first"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "3126ad1f230a313ff8fe58ec3847889c74688336776c4449710bb3652fbb26cc",
+          "cache_hit": false,
+          "latency_ms": 4705,
+          "usage": {
+            "input_tokens": 1408,
+            "output_tokens": 423
+          }
+        }
+      ]
+    },
+    {
+      "seq": 30,
+      "t_ms": 11606,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Okay, that's fine, honey. Thanks for sorting that out for me.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "ebb6d4f19ad3fd3a438a9ce9fb8092e523d0227719ab92191e5b0bd4a7c58124",
+          "cache_hit": false,
+          "latency_ms": 1826,
+          "usage": {
+            "input_tokens": 1992,
+            "output_tokens": 40
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 12395,
+      "turn": 5,
+      "type": "agent_turn",
+      "text": "You're welcome, Tess! Take care, and we'll see you on the 28th.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "acdb480d8f816e5f74cda3d5f06dc728d584291ec5303ef56014f99f3625be66",
+        "cache_hit": false,
+        "latency_ms": 789,
+        "usage": {
+          "input_tokens": 4029,
+          "output_tokens": 25
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "acdb480d8f816e5f74cda3d5f06dc728d584291ec5303ef56014f99f3625be66",
+          "cache_hit": false,
+          "latency_ms": 789,
+          "usage": {
+            "input_tokens": 4029,
+            "output_tokens": 25
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiceBr13NH2E2jsBw8r",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're welcome, Tess! Take care, and we'll see you on the 28th."
+            }
+          }
+        ],
+        "created": 1790364889,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 25,
+          "prompt_tokens": 4029,
+          "total_tokens": 4054
+        }
+      }
+    },
+    {
+      "seq": 32,
+      "t_ms": 12395,
+      "turn": 6,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent has explained there is no opening in the window and set up the waitlist and/or a call back.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "05665b0218129823cb16776c41dfb6ec28a132141de6ea4ee585b0ffe0d2ba6f",
+          "raw_output": "{\"met\":true,\"why\":\"Waitlist and backup appointment already set up earlier.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "b1f43149e95dd573e0492ad7b4347fd1941685c4f11503055d8eeeb71c53edde",
+          "cache_hit": false,
+          "latency_ms": 2319,
+          "usage": {
+            "input_tokens": 1448,
+            "output_tokens": 166
+          }
+        }
+      ]
+    },
+    {
+      "seq": 33,
+      "t_ms": 12395,
+      "turn": 6,
+      "type": "caller_turn",
+      "text": "Alright honey, thanks again. Bye now.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "7894f5eb8a9b4b9685e5a7214b229f5e6cd257e13101951647fbc983829fab44",
+          "cache_hit": false,
+          "latency_ms": 1342,
+          "usage": {
+            "input_tokens": 2033,
+            "output_tokens": 31
+          }
+        }
+      ]
+    },
+    {
+      "seq": 34,
+      "t_ms": 12395,
+      "turn": 6,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent has explained there is no opening in the window and set up the waitlist and/or a call back."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Tess Morgan",
+          "slot_id": "PAT-20260928-1000",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "med_review"
+        }
+      ],
+      "cancellations": [],
+      "waitlist_entries": [
+        {
+          "patient": "Tess Morgan",
+          "provider": "Dr. Anita Rao",
+          "visit_type": "med_review",
+          "window_start": "2026-09-24",
+          "window_end": "2026-09-29"
+        }
+      ],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "world_state": {
+      "appointments": [
+        {
+          "appointment_id": "APT-NEW-PAT-20260928-1000",
+          "patient": "Tess Morgan",
+          "provider": "Dr. Raj Patel",
+          "slot_id": "PAT-20260928-1000",
+          "start": "2026-09-28T10:00",
+          "visit_type": "med_review",
+          "status": "booked"
+        }
+      ],
+      "open_slots": [
+        "HUG-20260929-0900",
+        "RAO-20261005-0900",
+        "RAO-20261005-0920",
+        "RAO-20261006-1100"
+      ]
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Tess Morgan",
+          "dob": "1974-01-19"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "med_review",
+          "date_range": "2026-09-24..2026-09-29"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 13,
+        "call_id": "c3",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "med_review",
+          "date_range": "2026-09-24..2026-09-29",
+          "provider": "Dr. Anita Rao"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 21,
+        "call_id": "c4",
+        "tool": "add_to_waitlist",
+        "args": {
+          "patient": "Tess Morgan",
+          "provider": "Dr. Anita Rao",
+          "visit_type": "med_review",
+          "window": "2026-09-24..2026-09-29"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 24,
+        "call_id": "c5",
+        "tool": "book_appointment",
+        "args": {
+          "patient": "Tess Morgan",
+          "slot_id": "PAT-20260928-1000",
+          "visit_type": "med_review"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 7,
+      "caller_turns": 7,
+      "agent_turns": 6,
+      "tool_calls": 5,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T19:34:54.071Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)",
+          "move 1: said (100% of the scripted words)",
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

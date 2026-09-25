@@ -1,0 +1,45 @@
+{
+  "key": "f1c63c238d9c5c87d2e2ce004b3309787bdb57dec0c0150be606b40fedfbd26f",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, this is Tess Morgan. I want to switch to the Riverside store, it's closer to my house.\nAGENT (LATEST): Hi Tess! I'd be happy to help you switch to the Riverside store. Before I make that change, I need to verify your identity. Can you give me your date of birth?\n\nCONDITIONS:\nstop_0: Agent confirms H-702 is her default and her active Rx are moved.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhRT7RFUhbVMebgyYAj",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"stop_0\": {\"met\": false, \"why\": \"Agent is only verifying identity, no confirmation yet.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790363951,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 70,
+      "prompt_tokens": 501,
+      "total_tokens": 571
+    }
+  },
+  "latency_ms": 1518,
+  "created_at": "2026-09-25T19:19:11.300Z"
+}

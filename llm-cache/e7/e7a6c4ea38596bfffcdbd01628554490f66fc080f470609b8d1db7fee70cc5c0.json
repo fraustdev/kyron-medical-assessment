@@ -1,0 +1,45 @@
+{
+  "key": "e7a6c4ea38596bfffcdbd01628554490f66fc080f470609b8d1db7fee70cc5c0",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for his mother Irene (84, dementia); juggling her appointments; tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; wants to cancel 'her appointment' [upfront]\n- DOB 1942-03-03 [only_if_asked]\n- Caller is her son Walt, on her account [only_if_asked]\n- Means the appointment with the memory doctor, Dr. Brandt (Thu 10/8); she still needs the Dr. Hughes follow-up [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Yeah, hi, I need to cancel my mother's appointment. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help cancel your mother's appointment. To get started, I need to verify her identity. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Thank you. And just to confirm, what's your name?\n[turn 3] CALLER: Walt Kowalski, I'm her son, I'm on her account.\n[turn 3] AGENT: Thanks, Walt. Let me pull up your mother's appointments now. Great, Walt. Your mother has two upcoming appointments. Which one would you like to cancel—the follow-up with Dr. Hughes on Tuesday, October 6th at ten in the morning, or the medication review with Dr. Brandt on Thursday, October 8th at two in the afternoon?\n[turn 4] CALLER (scenario-scripted): The one with the memory doctor, Brandt. She still needs the Hughes one.\n[turn 4] AGENT: Perfect, I'll cancel the appointment with Dr. Brandt on October 8th at two o'clock. All set. The appointment with Dr. Brandt on Thursday, October 8th at two o'clock has been cancelled. Your mother's appointment with Dr. Hughes on October 6th is still on the books.\n[turn 5] CALLER: Alright, good. Thanks for sorting that out. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhoGdjxksTCNPmju3LQ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364248,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 167,
+      "prompt_tokens": 1304,
+      "total_tokens": 1471
+    }
+  },
+  "latency_ms": 2729,
+  "created_at": "2026-09-25T19:24:08.530Z"
+}

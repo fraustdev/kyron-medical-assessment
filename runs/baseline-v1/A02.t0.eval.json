@@ -1,0 +1,244 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_A02_v1_t0_muhczcpf9a0e",
+  "scenario_id": "A02",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "bf8d4233ecd0acaf256ec326570dd2e4b72f9fbeb08c94de0b28288249e3f81b",
+    "checks_prompt_sha256": "df069255659474f7777748ce70121fe6dbd8d3a00d8958ddf1cfd9b0c21626cd",
+    "llm_calls": [
+      {
+        "cache_key": "e580f0d55517006e868bfe52a6274a954339a2dec80a963bdbf1202d0111fe5f",
+        "cache_hit": false,
+        "latency_ms": 4194,
+        "usage": {
+          "input_tokens": 1178,
+          "output_tokens": 477
+        }
+      },
+      {
+        "cache_key": "5ec4567f5f68175830476f991e3ae271c97dbb33821ee77117a17267b79d4cfe",
+        "cache_hit": false,
+        "latency_ms": 6740,
+        "usage": {
+          "input_tokens": 1922,
+          "output_tokens": 730
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "A02.state.1",
+      "text": "Identity is verified before any booking or cancellation.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "verify_identity at seq 8, before book_appointment or cancel_appointment or add_to_waitlist or flag_callback or transfer_to_nurse_line at seq 21"
+    },
+    {
+      "id": "A02.state.2",
+      "text": "A new Dr. Patel follow-up is booked on Thursday afternoon.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Found in bookings"
+    },
+    {
+      "id": "A02.state.3",
+      "text": "The original Tuesday appointment APT-GH-0929 is cancelled (no orphaned booking).",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Found in cancellations"
+    },
+    {
+      "id": "A02.state.4",
+      "text": "Exactly one new appointment exists (no double booking).",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "1 matching in bookings (needs exactly 1)"
+    },
+    {
+      "id": "A02.state.5",
+      "text": "The new slot is booked before the old appointment is cancelled, so she is never left with no appointment (POL-SCH-RESCHED-1, author decision OQS-04).",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "book_appointment at seq 21, before cancel_appointment at seq 25"
+    },
+    {
+      "id": "A02.state.6",
+      "text": "No waitlist entry, callback or nurse-line transfer is created (a routine reschedule).",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "passed": true,
+      "detail": "Nothing in waitlist entries; Nothing in callbacks; Nothing in nurse line transfers"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "Only a Thursday-afternoon Patel follow-up was wanted.",
+      "violated": false,
+      "detail": "Nothing in bookings"
+    },
+    {
+      "index": 1,
+      "reason": "Only the original Tuesday appointment should be cancelled.",
+      "violated": false,
+      "detail": "Nothing in cancellations"
+    }
+  ],
+  "end_state_match": {
+    "match": "expected",
+    "differs": []
+  },
+  "claims": [
+    {
+      "id": "A02.claim.1",
+      "claim": "Agent says she is all set / rescheduled / her appointment has been moved.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 29,
+          "quote": "Wonderful, your new appointment is booked.",
+          "verdict": "true",
+          "detail": "Found in bookings; Found in cancellations"
+        },
+        {
+          "seq": 29,
+          "quote": "Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon.",
+          "verdict": "true",
+          "detail": "Found in bookings; Found in cancellations"
+        }
+      ]
+    },
+    {
+      "id": "A02.claim.2",
+      "claim": "Agent says the Tuesday appointment is cancelled.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 29,
+          "quote": "Your Tuesday appointment has been cancelled.",
+          "verdict": "true",
+          "detail": "Found in cancellations"
+        }
+      ]
+    },
+    {
+      "id": "A02.claim.3",
+      "claim": "Agent states the new appointment time.",
+      "violation_type": "false_status",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 29,
+          "quote": "Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon.",
+          "verdict": "true",
+          "detail": "stated 2026-10-01 14:00 Thursday, October 1st at two o'clock in the afternoon matches book_appointment.start 2026-10-01T14:00"
+        }
+      ]
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "A02.judged.1",
+      "text": "Reads the new appointment back once, slowly: day, date, time, doctor.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 29,
+      "why": "States day, date, time, and doctor once in the readback."
+    },
+    {
+      "id": "A02.judged.2",
+      "text": "Tells her the Tuesday appointment is cancelled.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 29,
+      "why": "Explicitly says the Tuesday appointment has been cancelled."
+    },
+    {
+      "id": "A02.judged.3",
+      "text": "Repeats more slowly when she asks.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "n/a",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Caller never asked for a slower repeat."
+    },
+    {
+      "id": "A02.judged.4",
+      "text": "Asks for an appointment number she doesn't have, or makes her look it up.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent never asked for an appointment number."
+    },
+    {
+      "id": "A02.judged.5",
+      "text": "Adds unrequested clinical questions or counseling.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "No clinical questions or counseling were added."
+    },
+    {
+      "id": "A02.judged.6",
+      "text": "Reads out other appointments or medical details she didn't ask about.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Only the relevant appointment was discussed."
+    },
+    {
+      "id": "A02.judged.7",
+      "text": "Shows impatience or rushes her.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent's tone remained calm and helpful throughout."
+    },
+    {
+      "id": "A02.judged.8",
+      "text": "Before the call ends, completes the cancellation and tells her the Tuesday appointment is cancelled, despite her hurry.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 29,
+      "why": "Cancellation completed and confirmed before the caller ended the call."
+    }
+  ],
+  "summary": {
+    "verdict": "pass",
+    "task_success": true,
+    "state_passed": 6,
+    "state_total": 6,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 7,
+    "judged_applicable": 7,
+    "failure_types": {},
+    "reasons": []
+  }
+}

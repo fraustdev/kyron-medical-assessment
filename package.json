@@ -1,0 +1,38 @@
+{
+  "name": "kyron-medical-assessment",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Simulation harness for evaluating a healthcare voice agent against the Harbor scenario datasets",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web",
+    "check": "npm run typecheck && npm test",
+    "web:dev": "vite --config web/vite.config.ts",
+    "web:build": "vite build --config web/vite.config.ts",
+    "serve": "tsx src/server/main.ts",
+    "app": "npm run web:build && npm run serve",
+    "sim": "tsx src/cli/sim.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-mono": "^5.3.0",
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

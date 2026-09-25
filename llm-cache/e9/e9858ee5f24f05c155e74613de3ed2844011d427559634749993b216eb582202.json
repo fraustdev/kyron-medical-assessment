@@ -1,0 +1,45 @@
+{
+  "key": "e9858ee5f24f05c155e74613de3ed2844011d427559634749993b216eb582202",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, polite. Her follow-up with Dr. Patel on Tuesday 9/29 clashes with her granddaughter's visit.\nFacts:\n- Name Gloria Hart; has a Dr. Patel appointment on Tuesday; wants it moved later that week [upfront]\n- DOB 1947-05-12 [only_if_asked]\n- Prefers Thursday afternoon, the earliest time available then [only_if_asked]\n- Does not know her appointment number [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[turn 1] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\n[turn 2] CALLER: May 12th, 1947, honey.\n[turn 2] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\n[turn 3] CALLER: Oh dear, I don't have that written down in front of me. Can you look it up with my name and birthday, honey?\n[turn 3] AGENT: I understand, but I do need to verify your identity with either your address or phone number before I can make changes to your appointment. Could you give me either one of those?\n[turn 4] CALLER: Oh dear, I'm not sure I have that with me right now, honey. Could we try with just my name and birthday? I really do want to get that Tuesday appointment moved.\n[turn 4] AGENT: I wish I could help with just that, Gloria, but our clinic policy requires either your address or phone number along with your name and birthday before I can access your appointment details. Do you have a phone number you could share, or would it be easier to call back when you have your address handy?\n[turn 5] CALLER: Oh dear, I really don't have it handy, honey. Maybe I should just call back later when I find it. Sorry for the trouble.\n[turn 5] AGENT: No trouble at all, Gloria. Just give us a call back whenever you have that information ready, and we'll get that appointment rescheduled for you right away. Take care!\n[turn 6] CALLER: Alright then, thank you honey. I'll find that number and call back. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgW3mkGPR2udPbzuYf2",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363226,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1306,
+      "total_tokens": 1322
+    }
+  },
+  "latency_ms": 1533,
+  "created_at": "2026-09-25T19:07:06.815Z"
+}

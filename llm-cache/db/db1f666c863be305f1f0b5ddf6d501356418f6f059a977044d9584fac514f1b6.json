@@ -1,0 +1,45 @@
+{
+  "key": "db1f666c863be305f1f0b5ddf6d501356418f6f059a977044d9584fac514f1b6",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver; didn't know the amlodipine was out of refills; only 3 pills left.\nFacts:\n- Patient Irene; amlodipine [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked]\n- Only 3 pills left [at_trigger, unlocked at turn 4]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I need to refill my mother's blood pressure pill, the amlodipine. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help you refill your mother's amlodipine. To get started, I need to verify her identity. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Great, I've verified Irene's information. Before I pull up her prescriptions, are you Walter, her son?\n[turn 3] CALLER: Yeah, that's me, Walt. Now can we get this refill sorted? She's down to three pills.\n[turn 3] AGENT: I found her amlodipine, but it has zero refills left. I can send a renewal request to Dr. Thomas Hughes right now. Which Harbor store would you like us to send it to—is H-101 still the best location for her?\n[turn 4] CALLER (scenario-scripted): No refills? She's only got three left. Yeah, H-101's fine, just get it moving.\n[turn 4] AGENT: Perfect, I've sent the renewal request to Dr. Hughes. Since your mom is running low, a pharmacist can also look into whether a short emergency supply is possible while we wait for the doctor to respond. Would you like me to have a pharmacist give you a call about that?\n[turn 5] CALLER (scenario-scripted): Yeah, sure, have them call. But so what happens if the doctor doesn't answer by then?\n[turn 5] AGENT: I'll flag a pharmacist to call you right now about the emergency supply option. As for the doctor—we'll follow up with Dr. Hughes's office, and they typically get back to us pretty quickly on renewals like this. If there's any delay, the pharmacist can discuss what options might be available when they call. All set. A pharmacist will call you today to talk through the emergency supply and the renewal status. Is there anything else I can help with?\n[turn 6] CALLER: Alright, that'll do. Thanks for getting it moving. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhd6vKKVNeHwP2jCXXS",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 3, \"fact\": \"Only 3 pills left\", \"severity\": \"major\", \"quote\": \"She's down to three pills.\", \"why\": \"This at_trigger fact was unlocked at turn 4 but was stated one turn early, in turn 3.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364112,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 322,
+      "prompt_tokens": 1412,
+      "total_tokens": 1734
+    }
+  },
+  "latency_ms": 4856,
+  "created_at": "2026-09-25T19:21:52.538Z"
+}

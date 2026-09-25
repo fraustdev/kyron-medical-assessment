@@ -5,3 +5,16 @@ docs/plans/pharmacy-scenarios/variants/
 __pycache__/
 *.pyc
 .venv/
+
+node_modules/
+*.db
+*.db-journal
+
+# API keys live here; never commit. See .env.example.
+.env
+web/dist/
+
+# Local run logs and the derived database
+runs-*.log
+data/
+app-server.log

@@ -1,0 +1,45 @@
+{
+  "key": "a7fa81a7f39254c255de01ac28ec7c4b9e0af395b2cea09cbd08f8b751f1dae4",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.\nAGENT: I'd be happy to help you book that physical with Dr. Patel. Just to confirm the date—next Friday would be October 3rd, correct?\nCALLER: No, October 2nd, that's the Friday after tomorrow. Morning, earliest you got.\nAGENT: Got it, Friday, October 2nd in the morning. Let me check what's available with Dr. Patel for your annual physical. Perfect, I found a couple of morning slots with Dr. Patel on Friday, October 2nd. The earliest is 9 a.m., or there's also 9:20 a.m. Which works better for you?  [system actions: verify_identity, find_slots]\nCALLER: The earliest one's fine.\nAGENT (LATEST): You're all set. Your annual physical with Dr. Patel is booked for Friday, October 2nd at 9 a.m. Is there anything else I can help you with?  [system actions: book_appointment]\n\nCONDITIONS:\nmove_0: the agent asks which Friday he means, or offers both Friday dates\nmove_1: the agent proposes, reads back or books a time on Friday, September 25 (tomorrow)\nmove_3: the agent asks him to confirm Friday, October 2 (e.g. 'Friday, October 2nd, correct?')\nstop_0: Agent confirms a morning physical on Friday, October 2.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1200
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgXcm9H3B6x6UR5xbt9",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Not asked in latest turn\"}, \"move_1\": {\"met\": false, \"why\": \"No September 25 date mentioned\"}, \"move_3\": {\"met\": false, \"why\": \"Confirmation happened in earlier turn, not now\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent confirmed booking morning physical Oct 2\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency\"}}"
+        }
+      }
+    ],
+    "created": 1790363248,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 158,
+      "prompt_tokens": 855,
+      "total_tokens": 1013
+    }
+  },
+  "latency_ms": 2095,
+  "created_at": "2026-09-25T19:07:28.740Z"
+}

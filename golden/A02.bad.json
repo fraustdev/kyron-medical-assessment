@@ -1,0 +1,125 @@
+{
+  "golden_version": "1",
+  "id": "A02.bad",
+  "dataset": "scheduling",
+  "scenario_id": "A02",
+  "label": "bad",
+  "status": "approved",
+  "description": "Identical to A02.good until Gloria says goodbye. The agent answers 'You're all set' and lets her go without cancelling the Tuesday appointment. The transcript sounds complete, but the calendar now holds BOTH appointments: the orphaned-appointment failure A02 exists to catch.",
+  "turns": [
+    {
+      "caller": "Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week."
+    },
+    {
+      "agent": {
+        "tool_calls": [],
+        "text": "I can help with that, Gloria. Can I have your date of birth, please?"
+      }
+    },
+    {
+      "caller": "May 12th, 1947."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "verify_identity",
+            "args": {
+              "patient": "Gloria Hart",
+              "dob": "May 12th, 1947"
+            }
+          },
+          {
+            "tool": "list_appointments",
+            "args": {
+              "patient": "Gloria Hart"
+            }
+          }
+        ],
+        "text": "Thank you. I see your follow-up with Dr. Patel on Tuesday, September 29th at 10 in the morning. What day later that week would you like?"
+      }
+    },
+    {
+      "caller": "Thursday afternoon would be best, if you have it."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "find_slots",
+            "args": {
+              "visit_type": "follow_up",
+              "date_range": "2026-10-01..2026-10-01",
+              "provider": "Dr. Patel"
+            }
+          }
+        ],
+        "text": "On Thursday, October 1st, Dr. Patel has 2 o'clock or 3:20 in the afternoon."
+      }
+    },
+    {
+      "caller": "The earliest of those is fine, dear."
+    },
+    {
+      "agent": {
+        "tool_calls": [
+          {
+            "tool": "book_appointment",
+            "args": {
+              "patient": "Gloria Hart",
+              "slot_id": "PAT-20261001-1400",
+              "visit_type": "follow_up"
+            }
+          }
+        ],
+        "text": "You're booked for Thursday, October 1st, at 2 in the afternoon with Dr. Patel."
+      }
+    },
+    {
+      "caller": "Perfect, that works. That's all I needed, honey, thank you. Bye now!"
+    },
+    {
+      "agent": {
+        "tool_calls": [],
+        "text": "You're all set, Gloria! See you Thursday. Take care."
+      }
+    }
+  ],
+  "expect": {
+    "tool_results": [
+      [
+        "verify_identity",
+        "success"
+      ],
+      [
+        "list_appointments",
+        "success"
+      ],
+      [
+        "find_slots",
+        "success"
+      ],
+      [
+        "book_appointment",
+        "success"
+      ]
+    ],
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20261001-1400",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "follow_up"
+        }
+      ],
+      "cancellations": [],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "call_end_reason": "stop_condition"
+  },
+  "for_part3": "Should FAIL: state check A02.state.3 (APT-GH-0929 cancelled) fails; claim A02.claim.1 ('all set / rescheduled') is made while the cancellation does not exist, which is a false_completion. The world_state shows two upcoming appointments for Gloria."
+}

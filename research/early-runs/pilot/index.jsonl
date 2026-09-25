@@ -1,0 +1,1 @@
+{"run_id":"run_S01_v1_t0_muhbv0puf0b9","scenario_id":"S01","trial":0,"file":"runs/pilot/S01.t0.json","run_status":"completed","verdict":"fail","state":"6/6","false_claims":0,"judged":"5/6","validity":"disclosure_leak:needs_review","tokens":{"claude-haiku-4-5-20251001":{"input":25063,"output":451,"calls":6},"claude-sonnet-5":{"input":13377,"output":1924,"calls":11}}}

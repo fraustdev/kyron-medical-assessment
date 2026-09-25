@@ -1,0 +1,45 @@
+{
+  "key": "32d380ec71dbe10313a422efdf2b11a1a511c2ac4ca5957d9d4a0bf949a8775c",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for his mother Irene (84, dementia); juggling her appointments; tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; wants to cancel 'her appointment' [upfront]\n- DOB 1942-03-03 [only_if_asked]\n- Caller is her son Walt, on her account [only_if_asked]\n- Means the appointment with the memory doctor, Dr. Brandt (Thu 10/8); she still needs the Dr. Hughes follow-up [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Yeah, hi, I need to cancel my mother's appointment. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help cancel your mother's appointment. To get started, I need to verify her identity. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Thank you. And just to confirm, what's your name?\n[turn 3] CALLER: I'm her son, Walt Kowalski. I'm on her account.\n[turn 3] AGENT: Thanks, Walt. Let me pull up Irene's appointments so we can see which one you'd like to cancel. Great, I've verified Irene's identity. Now let me look up her appointments. Irene has two upcoming appointments. One is with Dr. Thomas Hughes on Tuesday, October 6th at ten in the morning, and the other is with Dr. Helen Brandt on Thursday, October 8th at two in the afternoon. Which one would you like to cancel?\n[turn 4] CALLER: The one with the memory doctor, Brandt. She still needs to keep that Hughes one, don't touch that.\n[turn 4] AGENT: Got it—I'll cancel the appointment with Dr. Brandt on October 8th at two in the afternoon, and leave the Hughes appointment as is. All set—the appointment with Dr. Brandt on October 8th has been cancelled. Irene's appointment with Dr. Hughes on October 6th is still on the books.\n[turn 5] CALLER: Okay, good. Appreciate it. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgY74FDBZ4urjvvf28u",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363256,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 209,
+      "prompt_tokens": 1268,
+      "total_tokens": 1477
+    }
+  },
+  "latency_ms": 3603,
+  "created_at": "2026-09-25T19:07:36.811Z"
+}

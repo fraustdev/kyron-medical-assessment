@@ -1,0 +1,45 @@
+{
+  "key": "0c2d6e108928ca33020f17b7c87b0dd5a41cf36d9dfa6897b62f9f06fc702ab8",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\nAGENT: Hi Gloria! I'd be happy to help you with those medications. Before I look them up, I need to verify your information. Can you give me your date of birth?\nCALLER: Sure thing, honey, it's May 12th, 1947.\nAGENT: Thank you! Let me pull up your prescriptions. Great, Gloria! Now let me get your prescription list. Perfect! I found your Eliquis, metformin, and levothyroxine for your thyroid. I see you also have furosemide and lisinopril on file. I don't see a potassium prescription though—do you mean the furosemide, or is there a potassium supplement you take that might be at a different pharmacy?  [system actions: verify_identity, list_prescriptions]\nCALLER: Are you sure, honey? I thought I had one. The big pill, the potassium. Maybe it's at another pharmacy, I don't know.\nAGENT: It's possible it's at another pharmacy, or it might be under a different name than you remember. For now, let me get your Eliquis, metformin, and levothyroxine ready for you. Which store would you like to pick them up from—is H-110 still your home pharmacy?\nCALLER: Yes honey, H-110, that's my usual one. That's the one near the grocery store.\nAGENT (LATEST): Perfect, that's your home store. Let me queue those three refills for you at H-110. Wonderful! Your Eliquis, metformin, and levothyroxine will all be ready for pickup tomorrow morning at ten o'clock at H-110. If you do find out about that potassium prescription, just give us a call back and we can help you with that too.  [system actions: queue_refill, queue_refill, queue_refill]\n\nCONDITIONS:\nmove_1: before the agent ends the call, if it has not summarized\nstop_0: Agent has summarized the three queued refills and the potassium follow-up.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhT4B6C4kaQBkAbMKBw",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": false, \"why\": \"Agent already summarized the refills before ending call\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent stated the three refills and mentioned potassium follow-up\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790363973,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 105,
+      "prompt_tokens": 1026,
+      "total_tokens": 1131
+    }
+  },
+  "latency_ms": 2320,
+  "created_at": "2026-09-25T19:19:33.840Z"
+}

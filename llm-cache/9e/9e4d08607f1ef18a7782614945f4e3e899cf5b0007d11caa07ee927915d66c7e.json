@@ -1,0 +1,45 @@
+{
+  "key": "9e4d08607f1ef18a7782614945f4e3e899cf5b0007d11caa07ee927915d66c7e",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\nAGENT (LATEST): I'll verify your identity and then queue that refill for you. Great, Jamal. I'm queuing that sertraline refill at the Main St University store now. Perfect. Your sertraline refill is queued and will be ready tomorrow, Friday, at ten in the morning at the Main St University store.  [system actions: verify_identity, queue_refill]\n\nCONDITIONS:\nmove_0: the agent asks again for any detail he already gave in the opening line\nstop_0: Agent confirms the refill and a ready time.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1200
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgBa867gQQYUU6JgGTA",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent did not re-ask for any already-given details\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent confirmed refill queued with ready time Friday 10am\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790362976,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 106,
+      "prompt_tokens": 585,
+      "total_tokens": 691
+    }
+  },
+  "latency_ms": 1503,
+  "created_at": "2026-09-25T19:02:56.160Z"
+}

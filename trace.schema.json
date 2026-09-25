@@ -1,0 +1,1087 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/harbor/trace.schema.json",
+  "title": "Harbor harness run trace",
+  "description": "One harness run: metadata + ordered events + final snapshot (+ run-validity checks). Mirrors src/trace/types.ts; enum values are checked against the TS constants by test/trace.schema.test.ts. Records only; never grades the agent.",
+  "type": "object",
+  "required": [
+    "trace_version",
+    "metadata",
+    "events",
+    "final"
+  ],
+  "properties": {
+    "trace_version": {
+      "const": "1.0.0"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "final": {
+      "$ref": "#/$defs/final"
+    },
+    "validity": {
+      "$ref": "#/$defs/validity"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "iso_datetime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result_code": {
+      "type": "string",
+      "pattern": "^(success|timeout|error:[a-z0-9_]+)$"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "scenario_id",
+        "dataset",
+        "agent",
+        "caller",
+        "seed",
+        "trial_index",
+        "mode",
+        "started_at",
+        "ended_at",
+        "run_status",
+        "harness_version",
+        "turn_cap",
+        "simulated_now"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^run_[0-9A-Za-z_-]+$"
+        },
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^[SA]\\d{2}(-F\\d+)?$"
+        },
+        "dataset": {
+          "type": "object",
+          "required": [
+            "name",
+            "version",
+            "file_sha256"
+          ],
+          "properties": {
+            "name": {
+              "enum": [
+                "harbor-pharmacy-call-scenarios",
+                "harbor-clinic-scheduling-scenarios"
+              ]
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            },
+            "file_sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          },
+          "additionalProperties": false
+        },
+        "agent": {
+          "type": "object",
+          "required": [
+            "id",
+            "version",
+            "provider",
+            "model",
+            "prompt_sha256",
+            "prompt_text"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provider": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "prompt_sha256": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/sha256"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "prompt_text": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "caller": {
+          "type": "object",
+          "required": [
+            "type",
+            "provider",
+            "model",
+            "director_version"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "scripted",
+                "simulated",
+                "human"
+              ]
+            },
+            "provider": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "director_version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "trial_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mode": {
+          "enum": [
+            "live",
+            "replay",
+            "scripted"
+          ]
+        },
+        "started_at": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "ended_at": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "run_status": {
+          "enum": [
+            "completed",
+            "turn_cap_hit",
+            "agent_error",
+            "harness_error",
+            "sim_untrustworthy"
+          ]
+        },
+        "harness_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "turn_cap": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "simulated_now": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "event_base": {
+      "type": "object",
+      "required": [
+        "seq",
+        "t_ms",
+        "turn",
+        "type"
+      ],
+      "properties": {
+        "seq": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "t_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "turn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "type": true
+      }
+    },
+    "event": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "caller_turn",
+            "agent_turn",
+            "tool_call",
+            "tool_result",
+            "state_change",
+            "director_decision",
+            "error",
+            "call_end"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/event_base"
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "caller_turn"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/caller_turn"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "agent_turn"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/agent_turn"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "tool_call"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/tool_call"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "tool_result"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/tool_result"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "state_change"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/state_change"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "director_decision"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/director_decision"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "error"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/error"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "call_end"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/$defs/call_end"
+          }
+        }
+      ]
+    },
+    "caller_turn": {
+      "type": "object",
+      "required": [
+        "text",
+        "source"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "text": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "scripted",
+            "simulated",
+            "human"
+          ]
+        },
+        "llm_calls": {
+          "type": "array",
+          "description": "Every LLM call made for this event, in order (for cost and replay audits).",
+          "items": {
+            "$ref": "#/$defs/llm_call"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "agent_turn": {
+      "type": "object",
+      "required": [
+        "text",
+        "tool_call_ids"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "text": {
+          "type": "string"
+        },
+        "tool_call_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "llm": {
+          "$ref": "#/$defs/llm_call",
+          "description": "The last LLM call of the turn (the one that produced the spoken text)."
+        },
+        "raw": true,
+        "llm_calls": {
+          "type": "array",
+          "description": "Every LLM call made for this event, in order (for cost and replay audits).",
+          "items": {
+            "$ref": "#/$defs/llm_call"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "normalized": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "patient",
+          "rx_id",
+          "store_id",
+          "from_store",
+          "to_store",
+          "prescriber",
+          "slot_id",
+          "appointment_id",
+          "provider",
+          "visit_type"
+        ]
+      },
+      "additionalProperties": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "tool_call": {
+      "type": "object",
+      "required": [
+        "call_id",
+        "tool",
+        "args",
+        "normalized"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "call_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool": {
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        },
+        "args": {
+          "type": "object"
+        },
+        "normalized": {
+          "$ref": "#/$defs/normalized"
+        }
+      },
+      "additionalProperties": false
+    },
+    "handoff": {
+      "type": "object",
+      "required": [
+        "to",
+        "reason",
+        "context_passed",
+        "via_tool"
+      ],
+      "properties": {
+        "to": {
+          "enum": [
+            "nurse_line",
+            "pharmacist",
+            "clinic_staff",
+            "prescriber",
+            "emergency_services"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "context_passed": {
+          "type": "object"
+        },
+        "via_tool": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "applied_fault": {
+      "type": "object",
+      "required": [
+        "fault_index",
+        "behavior"
+      ],
+      "properties": {
+        "fault_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "behavior": {
+          "enum": [
+            "timeout",
+            "error",
+            "returns_pending",
+            "silent_noop",
+            "latency_ms",
+            "returns_empty"
+          ]
+        },
+        "value": true,
+        "committed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tool_result": {
+      "type": "object",
+      "required": [
+        "call_id",
+        "tool",
+        "result",
+        "result_code",
+        "fault_applied",
+        "latency_ms"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "call_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tool": {
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        },
+        "result": true,
+        "result_code": {
+          "$ref": "#/$defs/result_code"
+        },
+        "fault_applied": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/applied_fault"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "handoff": {
+          "$ref": "#/$defs/handoff"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "tool": {
+            "enum": [
+              "transfer_to_nurse_line",
+              "flag_callback",
+              "flag_pharmacist_callback"
+            ]
+          },
+          "result_code": {
+            "const": "success"
+          }
+        },
+        "required": [
+          "tool",
+          "result_code"
+        ]
+      },
+      "then": {
+        "properties": {
+          "handoff": true
+        },
+        "required": [
+          "handoff"
+        ]
+      }
+    },
+    "state_change": {
+      "type": "object",
+      "required": [
+        "collection",
+        "op",
+        "before",
+        "after",
+        "call_id"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "collection": {
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        },
+        "op": {
+          "enum": [
+            "add",
+            "remove",
+            "update",
+            "set"
+          ]
+        },
+        "before": true,
+        "after": true,
+        "call_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "trigger_evidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "seq",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "const": "tool_event"
+            },
+            "seq": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "question",
+            "model",
+            "prompt_sha256",
+            "raw_output",
+            "verdict"
+          ],
+          "properties": {
+            "kind": {
+              "const": "llm_check"
+            },
+            "question": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "prompt_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "raw_output": {
+              "type": "string"
+            },
+            "verdict": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "const": "turn_count"
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "const": "rule"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "director_decision": {
+      "type": "object",
+      "required": [
+        "unlocked_disclosures",
+        "move_fired",
+        "trigger_evidence"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "unlocked_disclosures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "index",
+              "fact"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "fact": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "move_fired": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "required": [
+                "index",
+                "say"
+              ],
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "say": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "trigger_evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trigger_evidence"
+          }
+        },
+        "llm_calls": {
+          "type": "array",
+          "description": "Every LLM call made for this event, in order (for cost and replay audits).",
+          "items": {
+            "$ref": "#/$defs/llm_call"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "source",
+        "message",
+        "fatal"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "source": {
+          "enum": [
+            "agent",
+            "tool",
+            "caller",
+            "llm",
+            "harness"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fatal": {
+          "type": "boolean"
+        },
+        "detail": true
+      },
+      "additionalProperties": false
+    },
+    "call_end": {
+      "type": "object",
+      "required": [
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "seq": true,
+        "t_ms": true,
+        "turn": true,
+        "type": true,
+        "reason": {
+          "enum": [
+            "stop_condition",
+            "turn_cap",
+            "agent_hangup",
+            "transfer",
+            "emergency_instruction"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "handoff": {
+          "$ref": "#/$defs/handoff"
+        }
+      },
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "reason": {
+            "const": "transfer"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "then": {
+        "properties": {
+          "handoff": true
+        },
+        "required": [
+          "handoff"
+        ]
+      }
+    },
+    "final": {
+      "type": "object",
+      "required": [
+        "end_state",
+        "world_state",
+        "tool_calls",
+        "counts"
+      ],
+      "properties": {
+        "end_state": {
+          "type": "object",
+          "required": [
+            "identity_verified"
+          ],
+          "properties": {
+            "identity_verified": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "world_state": {
+          "type": "object"
+        },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "seq",
+              "call_id",
+              "tool",
+              "args",
+              "result_code"
+            ],
+            "properties": {
+              "seq": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "call_id": {
+                "type": "string"
+              },
+              "tool": {
+                "type": "string"
+              },
+              "args": {
+                "type": "object"
+              },
+              "result_code": {
+                "$ref": "#/$defs/result_code"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "counts": {
+          "type": "object",
+          "required": [
+            "turns",
+            "caller_turns",
+            "agent_turns",
+            "tool_calls",
+            "errors"
+          ],
+          "properties": {
+            "turns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "caller_turns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "agent_turns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tool_calls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "errors": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "validity": {
+      "type": "object",
+      "required": [
+        "computed_at",
+        "checks"
+      ],
+      "properties": {
+        "computed_at": {
+          "$ref": "#/$defs/iso_datetime"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "status",
+              "details"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "disclosure_leak",
+                  "move_fidelity",
+                  "invented_fact",
+                  "trace_integrity"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "pass",
+                  "fail",
+                  "needs_review"
+                ]
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "llm_call": {
+      "type": "object",
+      "required": [
+        "cache_key",
+        "cache_hit",
+        "latency_ms"
+      ],
+      "properties": {
+        "cache_key": {
+          "$ref": "#/$defs/sha256"
+        },
+        "cache_hit": {
+          "type": "boolean"
+        },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "usage": {
+          "type": "object",
+          "properties": {
+            "input_tokens": {
+              "type": "integer"
+            },
+            "output_tokens": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "One LLM request. Keyed into the committed LLM cache; usage gives cost."
+    }
+  }
+}

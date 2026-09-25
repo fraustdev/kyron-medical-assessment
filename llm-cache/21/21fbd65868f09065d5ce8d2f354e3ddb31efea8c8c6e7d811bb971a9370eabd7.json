@@ -1,0 +1,45 @@
+{
+  "key": "21fbd65868f09065d5ce8d2f354e3ddb31efea8c8c6e7d811bb971a9370eabd7",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello honey, it's Gloria Hart. I need the water pill...\nAGENT (LATEST): Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\n\nCONDITIONS:\nmove_1: the agent says lisinopril has no refills\nstop_0: Agent confirms a renewal request to Dr. Patel with a timeline.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhUQR2b51gFQJcQZLyv",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": false, \"why\": \"Agent hasn't mentioned lisinopril or refills yet\"}, \"stop_0\": {\"met\": false, \"why\": \"No renewal request or timeline confirmed yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790363991,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 106,
+      "prompt_tokens": 497,
+      "total_tokens": 603
+    }
+  },
+  "latency_ms": 1776,
+  "created_at": "2026-09-25T19:19:51.637Z"
+}

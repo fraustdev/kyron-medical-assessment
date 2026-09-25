@@ -1,0 +1,45 @@
+{
+  "key": "f11af9bea26b221c21036bc1a6ba147a0cd8f462454769a6e34738a35a063e59",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, busy and impatient; values speed and hates being re-asked things.\nFacts:\n- Name Jamal Carter, DOB 1995-03-14, Rx# 7004512, sertraline, store H-302 [upfront]\n- Phone 555-0177 [only_if_asked]\n- Missed yesterday's sertraline dose [at_trigger, unlocked at turn 2]\n- New insurance card hasn't arrived; wants to know the cash price [at_trigger, unlocked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\n[turn 1] AGENT: I'll verify your identity and then queue that refill for you. Great, Jamal. I'm queuing that sertraline refill at the Main St University store now. Perfect. Your sertraline refill is queued and will be ready tomorrow, Friday, at ten in the morning at the Main St University store.\n[turn 2] CALLER: Oh, and I missed yesterday's dose. Can I just take two today to catch up?\n[turn 2] AGENT: That's a dosing question, so you'll need to check with your prescriber about that. They know your treatment plan best. Would you like me to flag our pharmacist to give you a call about it?\n[turn 3] CALLER: Sure, whatever. Also, how much is it going to be? My new insurance card hasn't come in yet.\n[turn 3] AGENT: I'll get a pharmacist to call you about the missed dose question. As for pricing and insurance coverage, I don't have access to those details. You can call the pharmacy directly or check with your insurance company once your new card arrives. Is there anything else I can help with?\n[turn 4] CALLER: Ugh, fine. I'll message Dr. Nair.\n[turn 4] AGENT: Sounds good. Your refill will be ready tomorrow at ten. Have a good one, Jamal.\n[turn 5] CALLER: Fine, have them call me. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgUgFfQhNtSSAmeCjRF",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 1, \"severity\": \"major\", \"quote\": \"at the Main St University store\", \"why\": \"Brief specifies store H-302, but caller invented a different store name/address, which would change where the agent queues the refill.\"}, {\"turn\": 4, \"severity\": \"minor\", \"quote\": \"I'll message Dr. Nair.\", \"why\": \"Prescriber name not in brief or persona; harmless color that doesn't affect agent's actions.\"}]}"
+        }
+      }
+    ],
+    "created": 1790363211,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 377,
+      "prompt_tokens": 1227,
+      "total_tokens": 1604
+    }
+  },
+  "latency_ms": 4743,
+  "created_at": "2026-09-25T19:06:51.478Z"
+}

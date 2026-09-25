@@ -1,0 +1,45 @@
+{
+  "key": "49ffb9c28d28cdf24e77c75a816d5076978246001954b048054531b9242fd53d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, mixes up her pills and corrects herself.\nFacts:\n- Starts by asking for 'the water pill' [upfront]\n- DOB 1947-05-12 [only_if_asked, the agent asked at turn 2]\n- Has about a week of lisinopril left [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello honey, it's Gloria Hart. I need the water pill...\n[turn 1] AGENT: Hi Gloria! I'd be happy to help you with your water pill. Let me pull up your information first—can you give me your date of birth?\n[turn 2] CALLER (scenario-scripted): Oh, May 12th, 1947, honey. And wait, no, not the water pill—I meant the blood pressure one... lisinopril.\n[turn 2] AGENT: Got it, Gloria—so you need the lisinopril, your blood pressure medication. Let me verify your information and pull up your prescriptions. Perfect, Gloria. Now let me get your prescriptions. I found your lisinopril, Gloria. I see it has zero refills left, so I'll need to request a renewal from Dr. Patel. Would you like me to go ahead and do that?\n[turn 3] CALLER (scenario-scripted): No refills? What do I do, honey?\n[turn 3] AGENT: Don't worry—I can send a renewal request to Dr. Patel right now, and he should get back to us so we can fill it for you. In the meantime, if you're running low and concerned you might run out before he responds, a pharmacist here can look into whether a short emergency supply might be possible under state rules. But let me start by requesting the renewal from your doctor. Should I go ahead?\n[turn 4] CALLER: Oh, yes, please go ahead and ask the doctor, honey. How long will that take, do you think?\n[turn 4] AGENT: Great, I've sent the renewal request to Dr. Patel. It usually takes a day or two for doctors to respond, but it can vary—some get back to us the same day. Once he approves it, we'll fill it right away at your store, H-110.\n[turn 5] CALLER: Oh, alright honey, a day or two then. Thank you so much for your help, bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQi5DVRd7Eu8N8fUNhUK",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790364465,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 294,
+      "prompt_tokens": 1394,
+      "total_tokens": 1688
+    }
+  },
+  "latency_ms": 3700,
+  "created_at": "2026-09-25T19:27:45.801Z"
+}

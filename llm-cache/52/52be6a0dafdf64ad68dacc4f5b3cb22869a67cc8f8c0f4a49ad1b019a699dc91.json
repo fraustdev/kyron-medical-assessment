@@ -1,0 +1,45 @@
+{
+  "key": "52be6a0dafdf64ad68dacc4f5b3cb22869a67cc8f8c0f4a49ad1b019a699dc91",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, nine meds, hard of hearing, sure she takes potassium.\nFacts:\n- Wants Eliquis, metformin, thyroid pill, potassium [upfront]\n- DOB 1947-05-12; phone 555-0142 [only_if_asked]\n- Believes she takes a potassium pill; unsure who prescribed it [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\n[turn 1] AGENT: Hi Gloria! I'd be happy to help you with those medications. Before I look them up, I need to verify your information. Can you give me your date of birth?\n[turn 2] CALLER: Sure thing, honey, it's May 12th, 1947.\n[turn 2] AGENT: Thank you! Let me pull up your prescriptions. Great, Gloria! Now let me get your prescription list. Perfect! I found your Eliquis, metformin, and levothyroxine for your thyroid. I see you also have furosemide and lisinopril on file. I don't see a potassium prescription though—do you mean the furosemide, or is there a potassium supplement you take that might be at a different pharmacy?\n[turn 3] CALLER (scenario-scripted): Are you sure, honey? I thought I had one. The big pill, the potassium. Maybe it's at another pharmacy, I don't know.\n[turn 3] AGENT: It's possible it's at another pharmacy, or it might be under a different name than you remember. For now, let me get your Eliquis, metformin, and levothyroxine ready for you. Which store would you like to pick them up from—is H-110 still your home pharmacy?\n[turn 4] CALLER: Yes honey, H-110, that's my usual one. That's the one near the grocery store.\n[turn 4] AGENT: Perfect, that's your home store. Let me queue those three refills for you at H-110. Wonderful! Your Eliquis, metformin, and levothyroxine will all be ready for pickup tomorrow morning at ten o'clock at H-110. If you do find out about that potassium prescription, just give us a call back and we can help you with that too.\n[turn 5] CALLER: Okay honey, thank you so much for your help. I'll ask Dr. Patel about that potassium. Bye now!\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhTKow1GGFB9ZPcuoL2",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 5, \"severity\": \"minor\", \"quote\": \"I'll ask Dr. Patel about that potassium.\", \"why\": \"Introduces a specific prescriber name not in brief, which contradicts the persona's stated uncertainty about who prescribed the potassium; doesn't change agent's actions since call is ending.\"}]}"
+        }
+      }
+    ],
+    "created": 1790363979,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 340,
+      "prompt_tokens": 1393,
+      "total_tokens": 1733
+    }
+  },
+  "latency_ms": 4155,
+  "created_at": "2026-09-25T19:19:39.385Z"
+}

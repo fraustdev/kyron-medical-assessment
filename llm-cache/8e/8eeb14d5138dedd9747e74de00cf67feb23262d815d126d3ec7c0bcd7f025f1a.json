@@ -1,0 +1,45 @@
+{
+  "key": "8eeb14d5138dedd9747e74de00cf67feb23262d815d126d3ec7c0bcd7f025f1a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, takes nine medications, hard of hearing, polite and a little anxious about getting pills mixed up.\nFacts:\n- Full name Gloria Hart; drug amlodipine [upfront]\n- DOB May 12, 1947 [only_if_asked]\n- Phone 555-0142 [only_if_asked]\n- Store is Harbor Pharmacy on Main St, Springfield [only_if_asked]\n- Does not know her Rx number [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\n[turn 1] AGENT: Hi Gloria, thanks for calling Harbor Pharmacy. I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?\n[turn 2] CALLER: Oh, sure honey, it's May 12th, 1947.\n[turn 2] AGENT: Thank you. Let me pull up your account now. Great, Gloria. Now let me look up your prescriptions to find that amlodipine. Perfect, I found your amlodipine five milligram. You have three refills left on it. Would you like me to queue it up for pickup at your home store, Harbor Pharmacy H-110?\n[turn 3] CALLER: Yes, that's my Main Street store, isn't it, honey? Please go ahead and queue it up.\n[turn 3] AGENT: I'm sorry, Gloria—the system timed out just now, so I'm not sure if the refill went through. Let me have our pharmacy staff at the Main Street store check on that for you and give you a call back to confirm. Is the best number to reach you the one you're calling from?\n[turn 4] CALLER: Oh, that's alright, honey. Yes, this is the number, 555-0142. I'll just wait for the call back then.\n[turn 4] AGENT: Perfect, Gloria. We'll have someone call you back at five five five, zero one four two to confirm your amlodipine refill. Thanks for calling Harbor Pharmacy, and have a great day!\n[turn 5] CALLER (scenario-scripted): What, honey? Say that again a little slower.\n[turn 5] AGENT: We'll call you back at five five five, zero one four two to confirm your refill. Have a great day!\n[turn 6] CALLER: Oh, alright honey, thank you. I'll be waiting to hear from the Main Street store then. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQhQBv63P52mdXcrg5gV",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 3, \"fact\": \"Store is Harbor Pharmacy on Main St, Springfield\", \"severity\": \"minor\", \"quote\": \"Yes, that's my Main Street store, isn't it, honey?\", \"why\": \"Caller volunteered the street name detail before the agent directly asked for the store location; agent had only named the store code, not asked her to confirm the street.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363939,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 551,
+      "prompt_tokens": 1433,
+      "total_tokens": 1984
+    }
+  },
+  "latency_ms": 6549,
+  "created_at": "2026-09-25T19:18:59.143Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "5e436be6edb7113ea4180eec8df878271a315f2c08a6b7c18c952fd8f3087e4d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, caregiver for his mother Irene (84, dementia). On file as an authorized caregiver. Tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; drug is 'the memory pill, the Aricept one' [upfront]\n- DOB March 3, 1942 [only_if_asked]\n- Caller is her son Walt [only_if_asked]\n- Does not have the Rx number [only_if_asked]\n- Store is Harbor Maple Ave [only_if_asked]\n\nTRANSCRIPT:\n[turn 1] CALLER: Yeah, hi, I need to refill my mother's memory pill. The Aricept one. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help with your mother's Aricept refill. Let me verify her information first. What's her date of birth?\n[turn 2] CALLER: She was born March 3rd, 1942.\n[turn 2] AGENT: Great, I've verified her information. Before I pull up her prescriptions, are you Walter, her son?\n[turn 3] CALLER: Yeah, that's me, Walt. I'm her son, I'm on her account.\n[turn 3] AGENT: Perfect, Walt. Let me pull up her prescriptions now. I found her Aricept—that's the donepezil 10 mg. She has three refills left on that one. Which store would you like to pick it up from, or should I send it to her home store, H-101?\n[turn 4] CALLER: Just send it to the Maple Ave one, same as always.\n[turn 4] AGENT: I want to make sure I have the right store. Is that H-101 on Maple Avenue, or a different Harbor location?\n[turn 5] CALLER: Yeah, that's the one, H-101, Harbor on Maple Ave. Same place we always go.\n[turn 5] AGENT: Perfect. Let me queue that refill for you now. All set, Walt. Her Aricept refill is queued and will be ready tomorrow morning at ten o'clock at H-101 on Maple Avenue.\n[turn 6] CALLER: Alright, ten o'clock tomorrow, got it. Thanks for the help.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 1500
+    }
+  },
+  "response": {
+    "id": "msg_011CfQgEYLGi7C9nfae82KpE",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790363018,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 271,
+      "prompt_tokens": 1256,
+      "total_tokens": 1527
+    }
+  },
+  "latency_ms": 3850,
+  "created_at": "2026-09-25T19:03:38.781Z"
+}
