@@ -15,7 +15,7 @@ A lab that runs an AI pharmacy/clinic phone agent through realistic test calls, 
 | 5 | Manual labels and comparison artifacts | `labels/labels.json` (168 finding labels + 16 call verdicts), [CALIBRATION.md](CALIBRATION.md), [EXPERIMENT.md](EXPERIMENT.md) |
 | 6 | Output from completed evaluation runs | `runs/baseline-v1`, `runs/exp-v1`, `runs/exp-v2` (38 calls each: trace + evaluation + `index.jsonl`) |
 | 7 | Product findings and production notes | [RECOMMENDATION.md](RECOMMENDATION.md), [PRODUCTION.md](PRODUCTION.md) |
-| 8 | Walkthrough video | *(link)* |
+| 8 | Walkthrough video | [Google Drive](https://drive.google.com/file/d/1eadM9c-RS6Qd6zIgQ8a1GLlp6YxM897Q/view?usp=sharing) |
 
 Every decision I made is logged, with a reason, in [NOTES.md](NOTES.md).
 
