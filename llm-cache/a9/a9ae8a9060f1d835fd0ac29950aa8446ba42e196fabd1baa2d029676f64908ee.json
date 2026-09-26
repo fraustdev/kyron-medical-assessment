@@ -1,0 +1,45 @@
+{
+  "key": "a9ae8a9060f1d835fd0ac29950aa8446ba42e196fabd1baa2d029676f64908ee",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Yeah, hi, I need to cancel my mother's appointment. Irene Kowalski.\nAGENT: I'd be happy to help cancel your mother's appointment. To get started, I need to verify her identity. What's her date of birth?\nCALLER: March 3rd, 1942.\nAGENT: Thank you. And just to confirm, what's your name?\nCALLER: Walt Kowalski, I'm her son. I'm on her account, been handling her appointments for a while now.\nAGENT (LATEST): Got it, Walt. Let me pull up Irene's appointments so we can see which one you'd like to cancel. Perfect, Walt. You're all set as an authorized contact. Let me get her upcoming appointments. Irene has two upcoming appointments. One is with Dr. Thomas Hughes on Tuesday, October 6th at ten in the morning, and the other is with Dr. Helen Brandt on Thursday, October 8th at two in the afternoon. Which one would you like to cancel?  [system actions: verify_identity, list_appointments]\n\nCONDITIONS:\nmove_0: the agent asks which appointment he means, or lists her appointments\nmove_1: the agent asks to speak to Irene or asks for proof of guardianship\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Means the appointment with the memory doctor, Dr. Brandt (Thu 10/8); she still needs the Dr. Hughes follow-up\"\nstop_0: Agent confirms the Brandt appointment is cancelled and the Hughes one is still on.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzbGJ41c16RoHUJauiL",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": true, \"why\": \"Agent lists both appointments and asks which to cancel.\"}, \"move_1\": {\"met\": false, \"why\": \"Agent did not ask for guardianship proof or to speak to Irene.\"}, \"asked_3\": {\"met\": true, \"why\": \"Agent asks which appointment, matching the fact's answer.\"}, \"stop_0\": {\"met\": false, \"why\": \"No cancellation confirmed yet.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency.\"}}"
+        }
+      }
+    ],
+    "created": 1790377462,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 351,
+      "prompt_tokens": 940,
+      "total_tokens": 1291
+    }
+  },
+  "latency_ms": 4223,
+  "created_at": "2026-09-25T23:04:23.278Z"
+}

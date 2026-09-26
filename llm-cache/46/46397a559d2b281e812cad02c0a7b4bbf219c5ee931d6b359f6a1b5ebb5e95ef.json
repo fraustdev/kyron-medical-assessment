@@ -1,0 +1,45 @@
+{
+  "key": "46397a559d2b281e812cad02c0a7b4bbf219c5ee931d6b359f6a1b5ebb5e95ef",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver; didn't know the amlodipine was out of refills; only 3 pills left.\nFacts:\n- Patient Irene; amlodipine [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked, the agent asked at turn 2]\n- Only 3 pills left [at_trigger, unlocked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I need to refill my mother's blood pressure pill, the amlodipine. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help you refill your mother's amlodipine. To get started, I need to verify her identity. What's her date of birth?\n[turn 2] CALLER: March 3rd, 1942. I'm her son Walt, I take care of her stuff.\n[turn 2] AGENT: Thank you, Walt. Let me verify that information and pull up her prescriptions. Great, Walt. I found your mother's amlodipine 5 mg, but it currently has zero refills left. I can send a renewal request to her prescriber, Dr. Thomas Hughes, to get authorization for more refills. Would you like me to do that?\n[turn 3] CALLER (scenario-scripted): No refills? She's only got three left. That's not gonna last long, doc.\n[turn 3] AGENT: I understand your concern. Let me clarify—the prescription record shows zero refills remaining right now, which means we'll need to get authorization from Dr. Thomas Hughes before we can fill it again. I can request that renewal for you right away. Should I go ahead and send that to the doctor?\n[turn 4] CALLER (scenario-scripted): Fine, send it. But what happens if the doctor doesn't answer by then? She's only got three pills left.\n[turn 4] AGENT: I'll send the renewal request to Dr. Hughes right now. If the doctor doesn't respond in time before she runs out, a pharmacist here can look into whether a short emergency supply might be possible under state rules—but I can't promise that. Let me get this renewal going for you. Done. The renewal request has been sent to Dr. Hughes at store H-101. If you don't hear back soon and she's running low, just call us back and we can have a pharmacist look into an emergency supply option.\n[turn 5] CALLER: Okay. Send it to Hughes and if it's not sorted soon I'll call back about that emergency supply. Thanks.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzPATjJ11x4MMWdEbZp",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377298,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 1465,
+      "total_tokens": 1593
+    }
+  },
+  "latency_ms": 3413,
+  "created_at": "2026-09-25T23:01:38.300Z"
+}

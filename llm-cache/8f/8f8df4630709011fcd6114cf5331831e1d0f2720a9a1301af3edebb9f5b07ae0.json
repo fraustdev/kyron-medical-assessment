@@ -1,0 +1,45 @@
+{
+  "key": "8f8df4630709011fcd6114cf5331831e1d0f2720a9a1301af3edebb9f5b07ae0",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nFacts:\n- Kevin Brooks, wants everything moved H-501 to H-502 [upfront]\n- Kevin DOB 1982-08-30 [only_if_asked, the agent asked at turn 2]\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11 [only_if_asked, the agent asked at turn 3]\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[turn 1] AGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. What's your date of birth?\n[turn 2] CALLER: August 30th, 1982. So can we get all three of us switched over today?\n[turn 2] AGENT: Thanks. Let me verify your information and pull up your family's prescriptions. Great, Kevin, you're verified. I found the Gahanna store at 85 Mill Street. Before I move everyone's prescriptions, I need the full names and dates of birth for the other two family members so I can pull up their records and move theirs as well. Who are they?\n[turn 3] CALLER: Sure. Maya Brooks, DOB June 20th, 2017. Eli Brooks, DOB February 11th, 2010. So we're all set to switch over today, right?\n[turn 3] AGENT: Perfect. Let me pull up Maya and Eli's records and their prescriptions so we can move everything to Gahanna. Good news—all three of you are verified. Here's what I found: you have lisinopril with three refills, Maya has an albuterol inhaler with two refills, and Eli has a filled Vyvanse with no refills remaining. Let me set Gahanna as your home pharmacy and transfer the prescriptions. Eli's Vyvanse is a controlled medication that's already filled, so that one needs special handling—I'll flag our pharmacist to coordinate the transfer with you. Perfect! All set. Your lisinopril and Maya's albuterol are now moved to the Gahanna store at 85 Mill Street, and all three of you are switched to that as your home pharmacy. For Eli's Vyvanse, our pharmacist will reach out to coordinate the transfer of that controlled medication—that's standard procedure. You're all good to go!\n[turn 4] CALLER: Okay, that works. So my lisinopril and Maya's inhaler are done, and someone will call me about Eli's Vyvanse - do you know when that'll be, roughly?\n[turn 4] AGENT: The pharmacist will reach out to you, but I don't have a specific timeframe—it depends on their schedule. They'll call to coordinate the transfer of Eli's Vyvanse. Is there anything else I can help with today?\n[turn 5] CALLER: Okay, no specific window, got it. Can you at least make sure it's soon, not weeks out? Eli needs that refill.\n[turn 5] AGENT: I understand—Eli needs that medication. I flagged it as routine, but let me bump that up to same-day priority so the pharmacist calls you sooner today. Done. The pharmacist will prioritize calling you today about Eli's transfer and refill. Anything else?\n[turn 6] CALLER: Okay, today works. So to recap - lisinopril and the inhaler are done, Gahanna's our home pharmacy now, and I get a call today on Eli's Vyvanse. That's the plan?\n[turn 6] AGENT: That's exactly right. Your lisinopril and Maya's inhaler are moved to Gahanna and ready to go, Gahanna is now your home pharmacy for all three of you, and the pharmacist will call you today about Eli's Vyvanse transfer and refill. You're all set!\n[turn 7] CALLER: Great, that works. Thanks for getting it all sorted. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQztG2QD6rrpiCc8GuhX",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377694,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 344,
+      "prompt_tokens": 2077,
+      "total_tokens": 2421
+    }
+  },
+  "latency_ms": 4955,
+  "created_at": "2026-09-25T23:08:14.569Z"
+}

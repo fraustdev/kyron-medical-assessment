@@ -1,0 +1,45 @@
+{
+  "key": "b95675ab02a11d2c826f96e105ac95c17c8f5255ed5ce444f1b99dde1049a462",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, organized dad on vacation; Dr. Okafor already sent next month's Vyvanse, which hasn't been filled.\nFacts:\n- Unfilled e-Rx at H-501; destination Coastal Hwy / Route 1 store [upfront]\n- Eli DOB 2010-02-11; Kevin is his father [only_if_asked, the agent asked at turn 2]\n- Strength 30 mg; prescriber Dr. Okafor [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. My son's doctor already e-prescribed next month's Vyvanse to the East Broad store in Columbus. It hasn't been filled. Can you move it to the Harbor on Coastal Highway, Route 1, in Rehoboth?\n[turn 1] AGENT: I'd be happy to help move that prescription. Let me first verify your son's information so I can look up the Vyvanse and process the transfer.\n\nWhat's your son's date of birth?\n[turn 2] CALLER: Eli Brooks, February 11th, 2010. I'm his father, Kevin Brooks.\n[turn 2] AGENT: Thanks. Let me look up Eli's prescriptions at the East Broad store in Columbus. Great, I've got Eli's record. Now let me pull up his prescriptions. I see Eli has an unfilled electronic Vyvanse prescription at our H-501 store (Harbor on Coastal Highway in Rehoboth), which is already his home pharmacy. The e-prescription from his doctor is showing there, not at the East Broad store in Columbus.\n\nIs it possible the prescription was sent to our Rehoboth location instead, or do you want me to check with a pharmacist to confirm where it actually is?\n[turn 3] CALLER: No, that's backwards. The prescription is sitting unfilled at store H-501, the East Broad one in Columbus. I need it moved to H-602, the Harbor on Coastal Highway in Rehoboth.\n[turn 3] AGENT: I understand—you need the unfilled Vyvanse moved from the East Broad store in Columbus to the Coastal Highway store in Rehoboth. Let me request that transfer now. The transfer is pending with our pharmacist. Because Vyvanse is a controlled medication, a pharmacist needs to handle it. Our pharmacy staff will complete this after we hang up, and then it'll be ready to fill at the Coastal Highway store in Rehoboth.\n\nTo recap: Vyvanse 30 mg for Eli, moving from Columbus to Rehoboth, pending pharmacist approval.\n[turn 4] CALLER (scenario-scripted): Okay, good. So when can he pick it up?\n[turn 4] AGENT: The pharmacist will complete the transfer after this call ends, and then it can be filled at the Rehoboth store. The earliest fill date on the prescription is Monday, September 28th, so it'll be ready sometime that day or shortly after. I'd suggest calling the Rehoboth store on Monday to confirm it's ready, since I can't see their exact fill schedule from here.\n[turn 5] CALLER: Okay, that works, he's got enough till then. Thanks for sorting it out.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzN5BCtxJdBSGFMVCrb",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 3, \"severity\": \"minor\", \"quote\": \"I need it moved to H-602, the Harbor on Coastal Highway in Rehoboth.\", \"why\": \"The caller introduces a specific store number (H-602) for the destination that isn't part of the brief, which only specifies 'Coastal Hwy/Route 1 store' without a number.\"}]}"
+        }
+      }
+    ],
+    "created": 1790377292,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 1201,
+      "prompt_tokens": 1739,
+      "total_tokens": 2940
+    }
+  },
+  "latency_ms": 12204,
+  "created_at": "2026-09-25T23:01:32.299Z"
+}

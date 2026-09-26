@@ -1,0 +1,45 @@
+{
+  "key": "0598d2546b104d57dfb9923114b988e7747f1fa0bfa0cd7e460a8957baf1a6bf",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver for Irene. Doesn't remember that an old 2023 profile at Oak St still holds her metformin.\nFacts:\n- Patient Irene Kowalski; wants Maple Ave for everything [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked, the agent asked at turn 2]\n- Unaware that metformin is still at Oak St [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I'm calling for my mother, Irene Kowalski. I want Maple Ave to be her pharmacy for everything.\n[turn 1] AGENT: Hi there! I'd be happy to help set up Maple Ave as your mother's pharmacy. Let me verify her identity first—what's her date of birth?\n[turn 2] CALLER: March 3rd, 1942. I'm her son Walt, I'm on her account.\n[turn 2] AGENT: Thanks Walt. Let me verify that information and check your authorization. Great, I've verified your mother's information and confirmed you're listed as an authorized contact. Now, which Maple Ave location would you like to set as her home pharmacy—do you have the store number, or can you tell me the city or neighborhood?\n[turn 3] CALLER: I don't have a store number on me, just Maple Ave. Isn't there only one? Whatever's closest to her house.\n[turn 3] AGENT: Let me search for the Maple Ave location for you. Perfect—there's one Harbor Pharmacy on Maple Ave at 88 Maple Ave in Brookfield. Is that the one closest to your mother's house?\n[turn 4] CALLER: Yeah, that sounds right, Brookfield. Set that one as her pharmacy for everything.\n[turn 4] AGENT: I need to let you know that your mother's home pharmacy is already set to that Maple Ave location in Brookfield—it's her current default store. Is there anything else you'd like me to help with for her account?\n[turn 5] CALLER: Oh, already set? Fine, good. Thanks for checking, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz8FQTtZWDkXEkdoFD2",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377093,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1362,
+      "total_tokens": 1378
+    }
+  },
+  "latency_ms": 1116,
+  "created_at": "2026-09-25T22:58:13.689Z"
+}

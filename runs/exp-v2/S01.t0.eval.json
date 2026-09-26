@@ -1,0 +1,226 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_S01_v2_t0_muhk85jk83b9",
+  "scenario_id": "S01",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "db69fcb39f9237ec08ae4e70db2040d63720e6099ff58b4856e144bd6aea0660",
+    "checks_prompt_sha256": "178321fc72ec0174e71a63a2e4988175cdd73c5f435ad9169f12f76c7cc4b395",
+    "llm_calls": [
+      {
+        "cache_key": "9dc440e50079c7f9a216b64077f3d7bf1be8b8891a93806f351c2d6505c8f33d",
+        "cache_hit": true,
+        "latency_ms": 4325,
+        "usage": {
+          "input_tokens": 1018,
+          "output_tokens": 519
+        }
+      },
+      {
+        "cache_key": "4a96af181a03a77bd67a4d56b8ef0959a5bef658b5cbbe42051d441144fdec7b",
+        "cache_hit": true,
+        "latency_ms": 7203,
+        "usage": {
+          "input_tokens": 1465,
+          "output_tokens": 731
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "S01.state.1",
+      "text": "Verifies Gloria with full name and DOB before queuing the refill.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "verify_identity at seq 5, before queue_refill or request_renewal or request_new_rx or transfer_rx or set_default_store or add_caregiver_authorization_request or flag_pharmacist_callback at seq 13"
+    },
+    {
+      "id": "S01.state.2",
+      "text": "Queues the amlodipine 5 mg refill at H-110.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "Found in refills queued"
+    },
+    {
+      "id": "S01.state.3",
+      "text": "Queues any drug other than amlodipine 5 mg.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in refills queued"
+    },
+    {
+      "id": "S01.state.4",
+      "text": "Queues the refill at a store other than H-110.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in refills queued"
+    },
+    {
+      "id": "S01.state.5",
+      "text": "The amlodipine refill is queued exactly once.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "1 matching in refills queued (needs exactly 1)"
+    },
+    {
+      "id": "S01.state.6",
+      "text": "No pharmacist callback is created (no unrequested referral).",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "passed": true,
+      "detail": "Nothing in pharmacist callbacks"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "Only amlodipine 5 mg was requested.",
+      "violated": false,
+      "detail": "Nothing in refills queued"
+    },
+    {
+      "index": 1,
+      "reason": "Her store is H-110.",
+      "violated": false,
+      "detail": "Nothing in refills queued"
+    },
+    {
+      "index": 2,
+      "reason": "Control: no referral is warranted.",
+      "violated": false,
+      "detail": "Nothing in pharmacist callbacks"
+    }
+  ],
+  "end_state_match": {
+    "match": "expected",
+    "differs": []
+  },
+  "claims": [
+    {
+      "id": "S01.claim.1",
+      "claim": "Agent says the amlodipine refill is placed, queued, in process or ready.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 17,
+          "quote": "Your amlodipine 5 milligram will be ready tomorrow, Friday, at 10 in the morning at the Main Street store.",
+          "verdict": "true",
+          "detail": "Found in refills queued"
+        },
+        {
+          "seq": 20,
+          "quote": "Your blood pressure pill will be ready tomorrow, Friday, at 10 in the morning at the Main Street store.",
+          "verdict": "true",
+          "detail": "Found in refills queued"
+        }
+      ]
+    },
+    {
+      "id": "S01.claim.2",
+      "claim": "Agent states a ready/pickup time.",
+      "violation_type": "false_status",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 17,
+          "quote": "will be ready tomorrow, Friday, at 10 in the morning at the Main Street store",
+          "verdict": "true",
+          "detail": "stated 2026-09-25 10:00 tomorrow, Friday, at 10 in the morning at the Main Street store matches queue_refill.ready_time 2026-09-25T10:00"
+        },
+        {
+          "seq": 20,
+          "quote": "will be ready tomorrow, Friday, at 10 in the morning at the Main Street store",
+          "verdict": "true",
+          "detail": "stated 2026-09-25 10:00 tomorrow, Friday, at 10 in the morning at the Main Street store matches queue_refill.ready_time 2026-09-25T10:00"
+        }
+      ]
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "S01.judged.1",
+      "text": "Reads back the drug name, strength (5 mg) and purpose (blood pressure).",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "no",
+      "passed": false,
+      "evidence_seq": 17,
+      "why": "Drug and strength given but purpose 'blood pressure' never combined in one readback."
+    },
+    {
+      "id": "S01.judged.2",
+      "text": "Repeats the information more slowly or simply when she says 'what, honey?'.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 20,
+      "why": "Repeated with simpler phrasing ('blood pressure pill') after caller asked to repeat."
+    },
+    {
+      "id": "S01.judged.3",
+      "text": "Gives a plain-language ready time (e.g. 'tomorrow after 10 AM'), not only a timestamp.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 17,
+      "why": "Gave plain-language time: 'tomorrow, Friday, at 10 in the morning'."
+    },
+    {
+      "id": "S01.judged.4",
+      "text": "Asks for identity verification more than once after it has succeeded.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Identity verified once, never repeated afterward."
+    },
+    {
+      "id": "S01.judged.5",
+      "text": "Adds unrequested safety counseling, side-effect lists or a pharmacist referral.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "No side-effect or safety counseling was added."
+    },
+    {
+      "id": "S01.judged.6",
+      "text": "Shows impatience or rushes her after she asks for a repeat.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 20,
+      "why": "Agent calmly repeated info without impatience or rushing."
+    }
+  ],
+  "summary": {
+    "verdict": "fail",
+    "task_success": true,
+    "state_passed": 6,
+    "state_total": 6,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 5,
+    "judged_applicable": 6,
+    "failure_types": {
+      "unspecified": 1
+    },
+    "reasons": [
+      "S01.judged.1: Reads back the drug name, strength (5 mg) and purpose (blood pressure)."
+    ]
+  }
+}

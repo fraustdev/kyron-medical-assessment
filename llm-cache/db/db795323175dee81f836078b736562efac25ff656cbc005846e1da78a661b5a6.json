@@ -1,0 +1,45 @@
+{
+  "key": "db795323175dee81f836078b736562efac25ff656cbc005846e1da78a661b5a6",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, authorized caregiver; didn't know the amlodipine was out of refills; only 3 pills left.\nFacts:\n- Patient Irene; amlodipine [upfront]\n- DOB 1942-03-03; caller is son Walt [only_if_asked, the agent asked at turn 2]\n- Only 3 pills left [at_trigger, unlocked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I need to refill my mother's blood pressure pill, the amlodipine. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help with your mother's refill. Let me verify her information first—what's her date of birth?\n[turn 2] CALLER: March 3rd, 1942. I'm her son Walt, I'm authorized on her account.\n[turn 2] AGENT: Great, Walt. I found your mother's amlodipine 5 mg, but it has zero refills left. I can send a renewal request to Dr. Thomas Hughes right now. Which Harbor store would you like it filled at—is H-101 still her home pharmacy?\n[turn 3] CALLER (scenario-scripted): No refills? She's only got three left. Yeah, H-101's fine, that's her usual spot.\n[turn 3] AGENT: Let me clarify—the system shows zero refills on that prescription right now. It's possible she's used them all up, or there may have been a recent change. Either way, I'll request a renewal from Dr. Hughes at H-101 for her, and the pharmacist will follow up with the doctor to get her back on track. Perfect. I've sent the renewal request to Dr. Hughes for your mother's amlodipine 5 mg at H-101. The pharmacist will contact the doctor, and once it's approved, it'll be ready for pickup there. You should hear back within a business day or so.\n[turn 4] CALLER (scenario-scripted): So what happens if the doctor doesn't answer by then? She's only got three pills left.\n[turn 4] AGENT: I understand—that's a tight spot. Once the renewal request goes to the doctor, our pharmacist will follow up. If there's a delay and your mother might run out, a pharmacist can assess whether a short emergency supply is possible under state rules, but I can't promise that. If you're concerned about timing, I can flag the pharmacist to call you back and discuss options with your mother's situation in mind.\n[turn 5] CALLER: Alright, yeah, please have the pharmacist call me. Thanks for the help. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzK8KPHBRutBt5yXx7b",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377240,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1491,
+      "total_tokens": 1507
+    }
+  },
+  "latency_ms": 1032,
+  "created_at": "2026-09-25T23:00:41.100Z"
+}

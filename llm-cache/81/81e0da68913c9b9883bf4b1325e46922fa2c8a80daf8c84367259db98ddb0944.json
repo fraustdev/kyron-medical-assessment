@@ -1,0 +1,45 @@
+{
+  "key": "81e0da68913c9b9883bf4b1325e46922fa2c8a80daf8c84367259db98ddb0944",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, it's Gloria Hart. The pharmacy said Dr. Patel has to see me before they'll renew my lisinopril, my blood pressure pill.\nAGENT: Hi Gloria, thanks for calling Harbor Family Medicine. I can help you get that set up. Let me just verify your information first—what's your date of birth?\nCALLER: May 12th, 1947, honey.\nAGENT: Thank you. And just to confirm, is that May 12th, 1947?\nCALLER: Yes, honey, that's right. May 12th, 1947.\nAGENT (LATEST): Perfect, Gloria. So you need to see Dr. Patel for a medication review so the pharmacy can renew your lisinopril. When would work best for you?  [system actions: verify_identity]\n\nCONDITIONS:\nmove_0: the agent asks again why she is calling or which medication, after she already said\nmove_1: the agent offers appointment times\nmove_2: the agent first reads back the appointment\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"About a week of lisinopril left\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Wants the soonest appointment\"\nstop_0: Agent confirms a Dr. Patel appointment she understood.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzcc6T9Jd3Ahcam285j",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent confirmed reason, did not ask again\"}, \"move_1\": {\"met\": false, \"why\": \"Agent asked for preference, no specific times offered\"}, \"move_2\": {\"met\": false, \"why\": \"No appointment set yet to read back\"}, \"asked_2\": {\"met\": false, \"why\": \"Agent didn't ask about medication supply remaining\"}, \"asked_3\": {\"met\": true, \"why\": \"Asked when works, answerable by wanting soonest slot\"}, \"stop_0\": {\"met\": false, \"why\": \"No appointment has been confirmed yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency\"}}"
+        }
+      }
+    ],
+    "created": 1790377484,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 722,
+      "prompt_tokens": 855,
+      "total_tokens": 1577
+    }
+  },
+  "latency_ms": 7165,
+  "created_at": "2026-09-25T23:04:44.464Z"
+}

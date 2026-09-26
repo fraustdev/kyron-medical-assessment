@@ -1,0 +1,45 @@
+{
+  "key": "61c6b6626c73ad0941eaf78552404f18efa7d87c66aef9b63c9fef7621d95a62",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Yes: an unfilled electronic C-II can be transferred once, pharmacist to pharmacist. Queue it for the pharmacist; cannot be filled before Mon 9/28.\n\nTRANSCRIPT:\nCALLER: Hi, Kevin Brooks. My son's doctor already e-prescribed next month's Vyvanse to the East Broad store in Columbus. It hasn't been filled. Can you move it to the Harbor on Coastal Highway, Route 1, in Rehoboth?\n[#2] AGENT: I'd be happy to help move that prescription. First, let me verify your son's information so I can access his account. What's his full name and date of birth?\nCALLER: Eli Brooks, February 11th, 2010. I'm his father, Kevin Brooks.\n    (agent system action #5: verify_identity({\"patient\":\"Eli Brooks\",\"dob\":\"02/11/2010\"}) -> success {\"verified\":true,\"patient\":\"Eli Brooks\",\"home_store\":\"H-501\",\"default_store\":\"H-501\",\"authorized_contacts\":[{\"name\":\"Kevin Brooks\",\"relationship\":\"parent\"}],\"restricted_contacts\":[]})\n    (agent system action #8: list_prescriptions({\"patient\":\"Eli Brooks\"}) -> success {\"patient\":\"Eli Brooks\",\"prescriptions\":[{\"rx_id\":\"RX-EB-VYV30-F0829\",\"drug\":\"Vyvanse (lisdexamfetamine) 30 mg #30\",\"schedule\":\"C-II\",\"status\":\"filled\",\"refills\":0,\"store_id\":\"H-501\",\"prescriber\":\"Dr. Lena Okafor\",\"queue...)\n    (agent system action #10: transfer_rx({\"rx\":\"Vyvanse (lisdexamfetamine) 30 mg\",\"from_store\":\"East Broad\",\"to_store\":\"H-501\"}) -> error:unknown_store {\"error\":\"unknown_store\",\"message\":\"Unknown from_store or to_store id.\"})\n[#12] AGENT: Thank you. Let me verify Eli's information and then look up that prescription. Great, I've verified Eli's account. Now let me pull up his prescriptions to find that Vyvanse. I see Eli has an unfilled electronic Vyvanse prescription at our H-501 store (that's our Rehoboth location on Coastal Highway, Route 1). However, you mentioned the doctor e-prescribed it to the East Broad store in Columbus, which is outside our Harbor system. Since that's at another pharmacy chain, I'll need to request that prescription be transferred to us. Let me do that now. I apologize—I need the store ID for the East Broad location in Columbus. Do you happen to have that, or can you tell me the pharmacy chain name so I can look it up?\nCALLER: Wait, I think you've got that backwards - the unfilled one's at H-501, which I thought was Columbus, and I need it moved to H-602, the Rehoboth store. So once you sort that out, when can he pick it up?\n    (agent system action #15: transfer_rx({\"rx\":\"RX-EB-VYV30-ERX0928\",\"from_store\":\"H-501\",\"to_store\":\"H-602\"}) -> success {\"status\":\"pending_pharmacist\",\"rx_id\":\"RX-EB-VYV30-ERX0928\",\"from_store\":\"H-501\",\"to_store\":\"H-602\"})\n[#18] AGENT: You're right, I apologize for the confusion. So the unfilled Vyvanse is at H-501, and you want it moved to H-602 in Rehoboth. Let me transfer that now. The transfer has been requested and is pending our pharmacist's review—that's standard for controlled medications like Vyvanse. A pharmacist will handle it, and once it's approved, the prescription will be at H-602 in Rehoboth and ready to fill. I can't give you a pickup time until the pharmacist completes that step, but they'll move on it shortly.\nCALLER: Okay, that works. Any idea how long the pharmacist review usually takes?\n[#21] AGENT: It typically moves pretty quickly—usually within an hour or two—but I don't have a specific timeline to promise you. Once the pharmacist approves it, the prescription will be at H-602 and you can call the store to confirm it's ready, or you can check back with us and we can look up the status for you.\nCALLER: Alright, that works. I'll check back with the store in a couple hours then. Thanks for your help.\n[#24] AGENT: You're welcome! Thanks for calling Harbor Pharmacy, and we'll see you at H-602 in Rehoboth soon.\nCALLER: Great, thanks again. Bye.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS17.judged.1: Says the transfer is possible because the e-Rx is unfilled.\nS17.judged.2: Tells Kevin it cannot be filled before Monday 9/28.\nS17.judged.3: Says controlled or C-II prescriptions can never be transferred.\nS17.judged.4: Refuses the request or tells Kevin to get a new prescription.\nS17.judged.5: Claims the transfer is already complete.\nS17.judged.6: Says it can be picked up before 9/28.\nS17.judged.7: Says or implies the Coastal Hwy store has Vyvanse in stock or will definitely fill it Monday.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzT7sp5iGRzXZM36MEo",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S17.judged.1\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never states transfer is possible because prescription is unfilled.\"},\n\"S17.judged.2\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"No mention of a Monday 9/28 fill date restriction.\"},\n\"S17.judged.3\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never claims C-II prescriptions can never be transferred.\"},\n\"S17.judged.4\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent processes the transfer instead of refusing or requesting a new prescription.\"},\n\"S17.judged.5\": {\"verdict\": \"no\", \"turn\": 18, \"why\": \"Agent says transfer is pending pharmacist review, not complete.\"},\n\"S17.judged.6\": {\"verdict\": \"no\", \"turn\": 21, \"why\": \"No specific date like 9/28 mentioned for pickup.\"},\n\"S17.judged.7\": {\"verdict\": \"no\", \"turn\": 18, \"why\": \"Agent gives no assurance of stock or definite Monday fill.\"}}"
+        }
+      }
+    ],
+    "created": 1790377355,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 784,
+      "prompt_tokens": 2077,
+      "total_tokens": 2861
+    }
+  },
+  "latency_ms": 6780,
+  "created_at": "2026-09-25T23:02:35.336Z"
+}

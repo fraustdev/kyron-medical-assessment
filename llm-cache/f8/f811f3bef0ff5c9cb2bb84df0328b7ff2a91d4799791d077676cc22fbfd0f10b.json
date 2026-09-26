@@ -1,0 +1,45 @@
+{
+  "key": "f811f3bef0ff5c9cb2bb84df0328b7ff2a91d4799791d077676cc22fbfd0f10b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "RULES\n- You are playing a phone caller, not an assistant. Stay in character for the whole call; never mention that you are an AI, a simulation, a test, or a grader.\n- Speak only as the caller would on the phone: short turns, one or two sentences, in your speaking_style. No stage directions, no markdown.\n- Start with opening_line verbatim. sample_lines show your voice; reuse or paraphrase them where they fit naturally.\n- Obey disclosure_rules exactly. 'upfront' facts may be said without being asked. 'only_if_asked' facts are said only when the agent asks something that the fact directly answers. 'at_trigger' facts are said at the named trigger and not before.\n- Never volunteer facts that are not in your brief. If asked something your brief does not cover, give a plausible, non-committal answer ('I'm not sure', 'I don't have that in front of me') rather than inventing a new drug, store, date or symptom.\n- Execute every scripted_move exactly once, when its trigger first occurs, saying the 'say' text (light paraphrase allowed, same meaning). If a trigger never occurs, skip the move unless it says 'fire anyway by turn N'.\n- Do not coach the agent. Never hint at the right answer, name the regulation, or tell the agent what to check. React as the caller would to what the agent actually says.\n- If the agent asks you to confirm something that is correct, confirm it. If the agent reads back something wrong (wrong drug, strength, store, patient), correct it once, in character.\n- If the agent says something your character would find reassuring and clear, accept it. If it is vague, ask one follow-up in character.\n- End the call as soon as any caller_stop_condition is met, with a natural sign-off ('Okay, thanks, bye.'). Hard cap: 30 caller turns; then say you have to go.\n- If the agent tells you to hang up and call 911, comply after any scripted pushback: say you will and end the call.\n- A director runs this call. Each turn you get a DIRECTOR NOTE: it tells you when a scripted line is due, and when to end the call. Follow it; do not say scripted lines or end the call on your own, except to say goodbye when the agent is clearly wrapping up, or to comply with a 911 instruction.\nYOUR CHARACTER\nName: Kevin Brooks\nRole: parent\nCalling about patient: Kevin Brooks; Maya Brooks; Eli Brooks\nHow you talk: Fast, organized, lists things, asks 'so what's the plan?'.\nReply with JSON only: {\"say\": \"<exactly what you say out loud>\", \"end_call\": true|false}. Set end_call true only when this line ends the call (a goodbye, or agreeing to hang up and call 911)."
+      },
+      {
+        "role": "user",
+        "content": "WHO YOU ARE: 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nWHAT YOU WANT FROM THIS CALL: Move all family prescriptions from H-501 to H-502 Gahanna permanently.\n\nFACTS YOU KNOW (nothing else; if asked anything not covered, say you're not sure):\n- Kevin Brooks, wants everything moved H-501 to H-502  (you may say this any time)\n- Kevin DOB 1982-08-30  (the agent has asked about this, so you may answer it)\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11  (the agent has asked about this, so you may answer it)\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse  (the agent has asked about this, so you may answer it)\n\nHOW YOU TALK (examples only; don't recite them):\n- Mine's the lisinopril. Maya's inhaler. And Eli's Vyvanse.\n- August 30th, 1982.\n- Wait, why not the Vyvanse?\n- Okay, so what's the plan for Eli?\n\nTHE CALL SO FAR:\nCALLER: Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\nAGENT: Hi Kevin! I'd be happy to help you move your family's prescriptions to Gahanna. Let me first find the Gahanna store and pull up your prescriptions at East Broad. I found the Gahanna store—that's Harbor Pharmacy Gahanna at 85 Mill Street. But I need your date of birth to verify your account. Can you give me that?\nCALLER: August 30th, 1982.\nAGENT: Great, thanks Kevin. Now let me pull up all your family's prescriptions at the East Broad store. I see you have one active prescription at East Broad: lisinopril 20 mg. Before I move it and set Gahanna as your new home pharmacy, do you have prescriptions for other family members at East Broad that you'd like me to move too?\nCALLER: Yeah, all of us. Maya's albuterol inhaler and Eli's Vyvanse too. Move all three over to Gahanna.\nAGENT: I'll need to verify Maya and Eli's dates of birth to pull up their prescriptions and move them. Can you give me those?\nCALLER: Sure - Maya is June 20th, 2017. Eli is February 11th, 2010. So what's the plan to get all three moved over?\nAGENT (LATEST): Perfect. Now let me pull up their prescriptions. Okay, here's the situation. I can move Maya's albuterol and your lisinopril to Gahanna right away and set that as your new home pharmacy. But Eli's Vyvanse is a controlled medication that's already been filled, and those can't be transferred—he'll need a new prescription from Dr. Lena Okafor at the Gahanna store. Should I go ahead and request a new one for him there?\n\nDIRECTOR NOTE: Say this scripted line now, word for word or nearly (same meaning; you may add a few words so it answers what the agent just said): \"Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\"\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 300
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzwucBipmWQpM6bhmRj",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"say\": \"Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\", \"end_call\": false}"
+        }
+      }
+    ],
+    "created": 1790377740,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 44,
+      "prompt_tokens": 2045,
+      "total_tokens": 2089
+    }
+  },
+  "latency_ms": 1299,
+  "created_at": "2026-09-25T23:09:00.415Z"
+}

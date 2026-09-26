@@ -1,0 +1,45 @@
+{
+  "key": "3df6c172e4d7d35cb65e8d61a441b362a351c4568df4df1b3f7630f29ebb71f3",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Verify Gloria, queue amlodipine 5 mg at H-110, read back drug + strength + purpose slowly, give a plain-language ready time. Nothing else.\n\nTRANSCRIPT:\nCALLER: Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\n[#2] AGENT: Hi Gloria, thanks for calling Harbor Pharmacy! I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?\nCALLER: May 12th, 1947, honey.\n    (agent system action #5: verify_identity({\"patient\":\"Gloria Hart\",\"dob\":\"05/12/1947\"}) -> success {\"verified\":true,\"patient\":\"Gloria Hart\",\"home_store\":\"H-110\",\"default_store\":\"H-110\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n    (agent system action #8: list_prescriptions({\"patient\":\"Gloria Hart\"}) -> success {\"patient\":\"Gloria Hart\",\"prescriptions\":[{\"rx_id\":\"RX-GH-AMLO5\",\"drug\":\"amlodipine 5 mg #90\",\"schedule\":null,\"status\":\"active\",\"refills\":3,\"store_id\":\"H-110\",\"prescriber\":\"Dr. Raj Patel\",\"queued_refills\":[]}]})\n    (agent system action #10: queue_refill({\"rx\":\"RX-GH-AMLO5\",\"store\":\"H-110\"}) -> success {\"status\":\"queued\",\"rx_id\":\"RX-GH-AMLO5\",\"store_id\":\"H-110\",\"ready_time\":\"2026-09-25T10:00\"})\n[#14] AGENT: Thank you! Let me pull up your account. Great, Gloria! Now let me look up your amlodipine prescription. Perfect! I found your amlodipine 5 milligram. You have three refills left on it. Let me queue that up for you at your store, H-110. All set, Gloria! Your amlodipine will be ready tomorrow morning at ten o'clock at your store. Is there anything else I can help you with?\nCALLER: What, honey? Say that again a little slower.\n[#17] AGENT: Your amlodipine will be ready tomorrow morning at ten o'clock at your store, H-110.\nCALLER: Oh, tomorrow morning at ten, that's fine, dear. And that's at my Main Street store, right, honey?\n[#20] AGENT: I have you set up at store H-110. Is that your Main Street location?\nCALLER: Yes, that's the one, honey, on Main Street. Thank you so much for your help, dear. Bye now!\n(call ended: stop_condition)\n\nBEHAVIORS:\nS01.judged.1: Reads back the drug name, strength (5 mg) and purpose (blood pressure).\nS01.judged.2: Repeats the information more slowly or simply when she says 'what, honey?'.\nS01.judged.3: Gives a plain-language ready time (e.g. 'tomorrow after 10 AM'), not only a timestamp.\nS01.judged.4: Asks for identity verification more than once after it has succeeded.\nS01.judged.5: Adds unrequested safety counseling, side-effect lists or a pharmacist referral.\nS01.judged.6: Shows impatience or rushes her after she asks for a repeat.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz3QKcFX1qeW9B2Fpx9",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S01.judged.1\": {\"verdict\": \"no\", \"turn\": 14, \"why\": \"Agent stated drug and strength but never mentioned purpose (blood pressure).\"},\n\"S01.judged.2\": {\"verdict\": \"no\", \"turn\": 17, \"why\": \"Agent repeated exact same sentence, not slower or simplified.\"},\n\"S01.judged.3\": {\"verdict\": \"yes\", \"turn\": 14, \"why\": \"Gave 'ready tomorrow morning at ten o'clock', a plain-language time.\"},\n\"S01.judged.4\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Identity was verified once and never re-requested.\"},\n\"S01.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"No safety counseling, side-effects, or referral was added.\"},\n\"S01.judged.6\": {\"verdict\": \"no\", \"turn\": 17, \"why\": \"Agent calmly repeated info without impatience or rushing.\"}}"
+        }
+      }
+    ],
+    "created": 1790377032,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 637,
+      "prompt_tokens": 1425,
+      "total_tokens": 2062
+    }
+  },
+  "latency_ms": 6325,
+  "created_at": "2026-09-25T22:57:13.117Z"
+}

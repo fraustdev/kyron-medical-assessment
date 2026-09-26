@@ -1,0 +1,45 @@
+{
+  "key": "c852548e02990e0de23ddc20c74104bb05af9c052920ea66f59d550aea2fe430",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad on vacation in Rehoboth Beach until Wed 9/30; his son Eli runs out of Vyvanse Sunday.\nFacts:\n- Patient Eli Brooks; Vyvanse; 'Harbor by the boardwalk in Rehoboth'; runs out Sunday [upfront]\n- Eli DOB 2010-02-11; Kevin is his father (DOB 1982-08-30) [only_if_asked, the agent asked at turn 2]\n- Home store is Harbor E Broad, Columbus [only_if_asked, the agent NEVER asked]\n- 3 capsules left; in Rehoboth until Wed 9/30 [only_if_asked, the agent NEVER asked]\n- Prescriber is Dr. Lena Okafor [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, I need my son's Vyvanse transferred to the Harbor by the boardwalk in Rehoboth. We're on vacation and he runs out Sunday.\n[turn 1] AGENT: I'd be happy to help get your son's Vyvanse transferred. First, let me verify his identity—what's his full name and date of birth?\n[turn 2] CALLER: It's Eli Brooks, born February 11th, 2010. I'm his dad, Kevin Brooks, DOB 8/30/82. Can we get this moving? He runs out Sunday.\n[turn 2] AGENT: I'll get this moving right away. Let me verify Eli's information and then look up his prescriptions and the Rehoboth store. Perfect, Kevin. Eli's verified and I found the Rehoboth store. I see his Vyvanse is a C-II controlled medication at our main store, so I need to confirm availability with the Rehoboth pharmacy first before we move it—that takes a few minutes. Let me flag our pharmacist to check with them and confirm it can be filled there. Great. I've flagged our pharmacist to confirm the Rehoboth store can fill it and to complete the transfer. They'll handle the pharmacist-to-pharmacist call right after this, and you should be all set to pick it up there. The Rehoboth store is at 200 Rehoboth Ave, right by the boardwalk. Is there anything else I can help with?\n[turn 3] CALLER: Okay, good, that's what I needed to hear. So it'll definitely be ready before Sunday, right? That's the address, right by the boardwalk?\n[turn 3] AGENT: Yes, 200 Rehoboth Ave is right by the boardwalk—that's the one. As for Sunday, the pharmacist will confirm with that store right now, and they'll handle the transfer. I've flagged it as same-day priority, so it should move quickly, but I want to be straight with you: I can't promise it'll be ready before Sunday until our pharmacist confirms the store has it in stock. They'll make that call in the next few minutes, and if there's any issue, the store or our pharmacy will reach out to you. Does that work?\n[turn 4] CALLER: Alright, that's fair, I just need to know one way or the other before Sunday hits. You'll call me if there's a problem, right?\n[turn 4] AGENT: The pharmacist will reach out if there's any issue with getting it ready. Since you're on vacation, make sure the store has your best contact number—do you want to give me a phone number to make sure they have it to call you if needed?\n[turn 5] CALLER: Yeah, use this number, it's my cell, I've got it on me all week. Just make sure someone actually calls me, alright?\n[turn 5] AGENT: I appreciate that, but I don't have a tool to update your contact info in the system—that's something our pharmacy staff handles. When the pharmacist calls the Rehoboth store to confirm the transfer, I'd recommend you call that store directly at your earliest chance and give them your cell number to make sure they have it. That way you know for certain they can reach you if anything comes up. Does that sound good?\n[turn 6] CALLER: Alright, fine, I'll call them myself to be safe. Just make sure that pharmacist actually reaches out to Rehoboth today, we don't have a lot of wiggle room here.\n[turn 6] AGENT: I've flagged it as same-day priority, so the pharmacist will make that call today. They'll confirm with Rehoboth whether they can fill it and complete the transfer. You're all set on our end—just give the Rehoboth store a call to give them your number, and you'll be covered. Anything else I can help with?\n[turn 7] CALLER: Alright, I'll call them myself today. Thanks for pushing this through, appreciate it.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzNBGKLBkxDyh16zNBJ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377287,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 474,
+      "prompt_tokens": 2206,
+      "total_tokens": 2680
+    }
+  },
+  "latency_ms": 5837,
+  "created_at": "2026-09-25T23:01:27.337Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "fa620c91a496a9d54e08e0676b4240547f71b97a2f724236b680c04defd1d504",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\nAGENT: Hi Gloria, I'd be happy to help you refill your amlodipine. Let me pull up your account first—can you give me your date of birth?\nCALLER: Yes, honey, it's May 12th, 1947.\nAGENT (LATEST): Thank you. Let me look up your prescriptions. Perfect, Gloria. I found your amlodipine 5 milligram—you have three refills left on it. Which Harbor Pharmacy store would you like to pick it up from?  [system actions: verify_identity, list_prescriptions]\n\nCONDITIONS:\nmove_0: the first time the agent gives a ready time or a read-back\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Phone 555-0142\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Store is Harbor Pharmacy on Main St, Springfield\"\nasked_4: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know her Rx number\"\nstop_0: Agent has confirmed the amlodipine refill and a ready time she understood.\nstop_1: Agent has refused or failed to act after two clear requests.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQyzLFwoPnwjYDPzY1Ka",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"No ready time or read-back given yet\"}, \"asked_2\": {\"met\": false, \"why\": \"Agent asked about store, not phone number\"}, \"asked_3\": {\"met\": true, \"why\": \"Agent asks which store, matching this fact\"}, \"asked_4\": {\"met\": false, \"why\": \"Agent did not ask about Rx number\"}, \"stop_0\": {\"met\": false, \"why\": \"No ready time confirmed yet\"}, \"stop_1\": {\"met\": false, \"why\": \"No refusal occurred\"}, \"emergency\": {\"met\": false, \"why\": \"No 911 instruction given\"}}"
+        }
+      }
+    ],
+    "created": 1790376988,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 407,
+      "prompt_tokens": 865,
+      "total_tokens": 1272
+    }
+  },
+  "latency_ms": 3909,
+  "created_at": "2026-09-25T22:56:29.070Z"
+}

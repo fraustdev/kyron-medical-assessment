@@ -1,0 +1,45 @@
+{
+  "key": "36dddfd65835cb84be10f1567702afc4add48af4d9deef25e783dc0124e51faf",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, nine meds, hard of hearing, sure she takes potassium.\nFacts:\n- Wants Eliquis, metformin, thyroid pill, potassium [upfront]\n- DOB 1947-05-12; phone 555-0142 [only_if_asked, the agent asked at turn 2]\n- Believes she takes a potassium pill; unsure who prescribed it [only_if_asked, the agent asked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\n[turn 1] AGENT: Hi Gloria! I'm happy to help you with those medications. Let me pull up your prescriptions so I can see what we have for you. I need your date of birth to pull up your account. Can you give me that?\n[turn 2] CALLER: Sure honey, it's May 12th, 1947. And my phone number is 555-0142 if you need it.\n[turn 2] AGENT: Thank you! Let me verify that for you. Perfect! Now let me pull up your prescriptions. Great! I can see your Eliquis, metformin, and levothyroxine for your thyroid. I don't see a potassium prescription on file right now. Do you have a potassium prescription, or would you like me to check on that with your doctor?\n[turn 3] CALLER (scenario-scripted): Are you sure, honey? I thought I had one. The big pill, you know, the one I take with breakfast.\n[turn 3] AGENT: I'm looking at all your active prescriptions and I don't see a potassium listed. It's possible it ran out of refills, or maybe it's under a different name. Do you remember what the bottle says, or when you last filled it?\n[turn 4] CALLER: Oh I don't rightly know, honey, I don't have the bottle in front of me. Maybe Dr. Patel changed it, I just can't remember. Can you go ahead with the other three while we figure that out?\n[turn 4] AGENT: Absolutely. So I'm going to refill your Eliquis, metformin, and levothyroxine for your thyroid, all at your home store, Harbor Pharmacy on Main Street. Are you picking those up today, or would you like them ready for another time?\n[turn 5] CALLER: Oh, today would be lovely, honey, if you can have them ready this afternoon. Thank you so much for looking into that potassium for me too.\n[turn 5] AGENT: Let me get those three refilled for you right now. Perfect! Your three medications are queued up and will be ready tomorrow morning at ten o'clock at Harbor Pharmacy on Main Street. That's your Eliquis five milligrams for your blood clots, metformin five hundred milligrams for your diabetes, and levothyroxine seventy-five micrograms for your thyroid. About that potassium—if you remember the name or find the bottle, just give us a call back and we can track it down or reach out to Dr. Patel for you.\n[turn 6] CALLER: Oh wait, honey, I thought you said today, not tomorrow? Well, that's alright, I'll manage. Thank you so much, dear, you have a good day now, bye bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz7NJB4duExZR8LyP5X",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 4, \"severity\": \"major\", \"quote\": \"Maybe Dr. Patel changed it, I just can't remember.\", \"why\": \"The caller introduces a specific prescriber name not in the brief (brief states she is unsure who prescribed the potassium), and this could lead the agent to contact a specific doctor by that name.\"}]}"
+        }
+      }
+    ],
+    "created": 1790377088,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 759,
+      "prompt_tokens": 1710,
+      "total_tokens": 2469
+    }
+  },
+  "latency_ms": 8320,
+  "created_at": "2026-09-25T22:58:08.902Z"
+}

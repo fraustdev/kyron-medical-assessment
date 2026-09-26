@@ -1,0 +1,45 @@
+{
+  "key": "e86963f7a7ce8e4daec8cf4e3341cb3481380b91dec97168e6a3e31c8320b539",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, unlocked at turn 2]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 2]\n- Does not know the address [only_if_asked, the agent asked at turn 4]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity and then help you transfer those prescriptions. Great, Jamal. Now let me pull up your prescriptions and find the Harbor store on Main in Lakeview. I'm not seeing any active prescriptions on file for you at Brightway 4471. It's possible they haven't been transferred to our system yet, or they may have been filled recently and the records haven't synced. Which Harbor location on Main were you thinking of—the one downtown at 120 Main, the one near the university at 2250 Main, or the one in Northgate Mall?\n[turn 2] CALLER (scenario-scripted): Near Oak, that's the one by my apartment.\n[turn 2] AGENT: Perfect, that's Harbor Pharmacy Main St University at 2250 Main. Since your prescriptions aren't showing in our system yet, I'll need to request the transfer from Brightway. Can you confirm the prescription details—do you have the Rx numbers, or can you tell me the medication strengths for the albuterol and sertraline?\n[turn 3] CALLER: Wait, near Oak is by University? I thought that was more like a different part of town, but okay if you say so. I don't got the Rx numbers on me, just know it's albuterol and sertraline, standard stuff.\n[turn 3] AGENT: You're right to double-check—let me make sure we have the right store. The one near Oak Street is at 2250 Main St University, which is in the university area of Lakeview. Does that sound like it's near your apartment, or would one of the other locations work better for you?\n[turn 4] CALLER: I mean, I don't know all the street names yet, I just moved here. Whichever one's actually near Oak, that's the one I need.\n[turn 4] AGENT: I understand—I don't have the cross streets for the other two locations in front of me. Let me flag our pharmacist to confirm which Harbor store is actually near Oak Street, and they can help get your prescriptions transferred there once we know the right spot. What's the best number to reach you at?\n[turn 5] CALLER: Yeah, it's the same number I'm calling from now. Just wanna make sure it goes to the right spot, I don't need my meds ending up across town.\n[turn 5] AGENT: I hear you. Let me flag the pharmacist to confirm the location near Oak Street and get your prescriptions transferred there. They'll call you back at this number to finalize it. All set. The pharmacist will call you back at this number to confirm the right location near Oak and handle the transfer of your albuterol and sertraline from Brightway. They should reach you soon.\n[turn 6] CALLER: Alright, cool, appreciate it. Just make sure it's the right Harbor near Oak, not across town. Thanks.\n[turn 6] AGENT: You got it—I've made a note that it needs to be the Harbor near Oak Street. The pharmacist will confirm the exact location and get those prescriptions moved there for you. Thanks for calling Harbor Pharmacy!\n[turn 7] CALLER: Cool, appreciate it. Talk later.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzHiSuYQXkQngF55Ef6",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377229,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 759,
+      "prompt_tokens": 1919,
+      "total_tokens": 2678
+    }
+  },
+  "latency_ms": 8466,
+  "created_at": "2026-09-25T23:00:29.471Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "c4d626427a95500e60f7b0d398374633333b5f919cc9f64b6b199981b1a66481",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, I need to refill my mother's blood pressure pill, the amlodipine. Irene Kowalski.\nAGENT: I'd be happy to help you refill your mother's amlodipine. To get started, I need to verify her identity. What's her date of birth?\nCALLER: March 3rd, 1942. I'm her son Walt, I take care of her stuff.\nAGENT (LATEST): Thank you, Walt. Let me verify that information and pull up her prescriptions. Great, Walt. I found your mother's amlodipine 5 mg, but it currently has zero refills left. I can send a renewal request to her prescriber, Dr. Thomas Hughes, to get authorization for more refills. Would you like me to do that?  [system actions: verify_identity, list_prescriptions]\n\nCONDITIONS:\nmove_0: the agent says amlodipine has no refills\nmove_1: the agent mentions a renewal request to the doctor\ndisclosure_2: the agent says there are no refills\nstop_0: Agent confirms renewal sent to Dr. Hughes and explains the backup.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzMsXxw5pRxbHFfjAr1",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": true, \"why\": \"Agent stated amlodipine has zero refills left.\"}, \"move_1\": {\"met\": true, \"why\": \"Agent mentioned sending renewal request to Dr. Hughes.\"}, \"disclosure_2\": {\"met\": true, \"why\": \"Agent explicitly said zero refills left.\"}, \"stop_0\": {\"met\": false, \"why\": \"Agent asked permission, hasn't confirmed renewal sent yet.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790377279,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 183,
+      "prompt_tokens": 769,
+      "total_tokens": 952
+    }
+  },
+  "latency_ms": 2292,
+  "created_at": "2026-09-25T23:01:19.682Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "74cc00034a39b0e4cb328a56f4a23bf89ba31e705ee4ab1731e09d7d132154a7",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\nAGENT: Perfect, Jamal. I've got your sertraline 50 mg with four refills remaining, and it's already at your home store, Harbor Pharmacy Main St University. Let me queue that refill for you now. Great! Your sertraline 50 mg refill is queued and ready tomorrow, Friday, at ten in the morning at Harbor Pharmacy Main St University. You're all set.  [system actions: verify_identity, list_prescriptions, find_stores, queue_refill]\nCALLER: Oh, and I missed yesterday's dose. Can I just take two today to catch up?\nAGENT (LATEST): I can't advise on dosing—that's a question for Dr. Priya Nair or our pharmacist. I'd recommend calling your doctor's office, or I can have a pharmacist call you back to discuss it. Which would work better for you?\n\nCONDITIONS:\nmove_0: the agent asks again for any detail he already gave in the opening line\nmove_3: the agent tells him to ask his doctor about the dose\nmove_4: the agent offers a pharmacist callback or consult\ndisclosure_3: after the agent responds to the missed-dose question\nasked_1: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Phone 555-0177\"\nstop_0: Agent has confirmed the refill and ready time and routed both questions.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzTDGkh6WJDxq9T33wS",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent did not re-ask previously given details.\"}, \"move_3\": {\"met\": true, \"why\": \"Agent suggests calling doctor's office about dosing.\"}, \"move_4\": {\"met\": true, \"why\": \"Agent offers a pharmacist callback option.\"}, \"disclosure_3\": {\"met\": true, \"why\": \"Agent just responded to the missed-dose question.\"}, \"asked_1\": {\"met\": false, \"why\": \"Agent asks about callback preference, not phone number.\"}, \"stop_0\": {\"met\": false, \"why\": \"Dose question not yet routed; caller hasn't chosen option.\"}, \"emergency\": {\"met\": false, \"why\": \"No 911 instruction given.\"}}"
+        }
+      }
+    ],
+    "created": 1790377354,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 492,
+      "prompt_tokens": 911,
+      "total_tokens": 1403
+    }
+  },
+  "latency_ms": 4869,
+  "created_at": "2026-09-25T23:02:34.728Z"
+}

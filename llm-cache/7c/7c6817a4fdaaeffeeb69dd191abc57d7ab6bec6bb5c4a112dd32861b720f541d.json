@@ -1,0 +1,45 @@
+{
+  "key": "7c6817a4fdaaeffeeb69dd191abc57d7ab6bec6bb5c4a112dd32861b720f541d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.\n[#5] AGENT: I'll verify your identity first, then find you a morning slot with Dr. Patel next Friday. Great, you're all set. Next Friday would be October 3rd—is that the date you mean?\nCALLER: No, the Friday after tomorrow, that's the 2nd, not the 3rd.\n[#10] AGENT: You're right, Friday, October 2nd. Let me search for morning slots with Dr. Patel that day. I've got two morning options with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?\nCALLER: The earliest one's fine.\n[#17] AGENT: Perfect. You're booked for your annual physical with Dr. Raj Patel on Friday, October 2nd at nine o'clock in the morning. You're all set.\nCALLER: Cool, thanks. Bye.\n\nCLAIMS:\nA03.claim.1: Agent says he is booked on Friday, October 2.\nA03.claim.2 (WITH VALUE): Agent states the appointment time.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 0,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfR24MJnufgj9rtqBPEnk",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A03.claim.1\": [{\"turn\": 17, \"quote\": \"You're booked for your annual physical with Dr. Raj Patel on Friday, October 2nd\", \"date\": \"2026-10-02\", \"time\": null, \"text\": \"Friday, October 2nd\"}], \"A03.claim.2\": [{\"turn\": 17, \"quote\": \"at nine o'clock in the morning\", \"date\": \"2026-10-02\", \"time\": \"09:00\", \"text\": \"nine o'clock in the morning\"}]}"
+        }
+      }
+    ],
+    "created": 1790378615,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 240,
+      "prompt_tokens": 847,
+      "total_tokens": 1087
+    }
+  },
+  "latency_ms": 2812,
+  "created_at": "2026-09-25T23:23:36.174Z"
+}

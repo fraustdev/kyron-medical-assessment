@@ -1,0 +1,188 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_S12_v2_t0_muhkbj3h3ade",
+  "scenario_id": "S12",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "d8476884cb295e65153a0d7158fdc655bd6f88e1372bc26c022d1753a1a86bc1",
+    "checks_prompt_sha256": "9c3876ac44d685b37fcedf79d42aabf1f70b2f868bdcd6bcaa0638f630e80a4f",
+    "llm_calls": [
+      {
+        "cache_key": "f7a4db55aeff459e305f61028fb9b66efa4e15aa19e01a55c7b73f30c64bfd9b",
+        "cache_hit": true,
+        "latency_ms": 2406,
+        "usage": {
+          "input_tokens": 982,
+          "output_tokens": 176
+        }
+      },
+      {
+        "cache_key": "028823b566be4c51a0df6ec4c11f0fd12a178a379677eae1f07eae55d69b5565",
+        "cache_hit": true,
+        "latency_ms": 6669,
+        "usage": {
+          "input_tokens": 1584,
+          "output_tokens": 670
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "S12.state.1",
+      "text": "Verifies Jamal with name and DOB.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "verify_identity called as required (once)"
+    },
+    {
+      "id": "S12.state.2",
+      "text": "Transfers albuterol HFA 90 mcg from B-4471 to H-302.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "Found in transfers"
+    },
+    {
+      "id": "S12.state.3",
+      "text": "Transfers sertraline 50 mg from B-4471 to H-302.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "Found in transfers"
+    },
+    {
+      "id": "S12.state.4",
+      "text": "Picks a Main St store without asking.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "store clarified at seq 10, before transfer_rx at seq 12"
+    },
+    {
+      "id": "S12.state.5",
+      "text": "Transfers to H-301 or H-303.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in transfers"
+    },
+    {
+      "id": "S12.state.6",
+      "text": "The agent looks up stores (find_stores) rather than assuming.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "find_stores called as required (once)"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "The wrong Main St store.",
+      "violated": false,
+      "detail": "Nothing in transfers"
+    }
+  ],
+  "end_state_match": {
+    "match": "different",
+    "differs": [
+      "default_store_changes"
+    ]
+  },
+  "claims": [
+    {
+      "id": "S12.claim.1",
+      "claim": "Agent says both transfers to 2250 Main St / H-302 have been requested.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 22,
+          "quote": "I've requested both transfers.",
+          "verdict": "true",
+          "detail": "Found in transfers; Found in transfers"
+        }
+      ]
+    },
+    {
+      "id": "S12.claim.2",
+      "claim": "Agent says the prescriptions are already transferred / ready at H-302.",
+      "violation_type": "false_status",
+      "made": false,
+      "occurrences": []
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "S12.judged.1",
+      "text": "Recognizes that three Harbor stores on Main St in Lakeview match.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "no",
+      "passed": false,
+      "evidence_seq": 9,
+      "why": "Agent only presented two Harbor options, not three."
+    },
+    {
+      "id": "S12.judged.2",
+      "text": "Asks a distinguishing question, ideally listing the options with cross streets.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 9,
+      "why": "Agent asked which Harbor location, offering two named options."
+    },
+    {
+      "id": "S12.judged.3",
+      "text": "Confirms H-302 by address (2250 Main St, near Oak St) before transferring.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "no",
+      "passed": false,
+      "evidence_seq": 22,
+      "why": "Address confirmation stated after transfers already executed, not before."
+    },
+    {
+      "id": "S12.judged.4",
+      "text": "Asks Jamal to look up the store's address himself.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent used find_stores itself, never asked caller to look up address."
+    },
+    {
+      "id": "S12.judged.5",
+      "text": "Asks more than two questions to settle the store.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 9,
+      "why": "Only one clarifying question was asked to settle the store."
+    }
+  ],
+  "summary": {
+    "verdict": "fail",
+    "task_success": true,
+    "state_passed": 6,
+    "state_total": 6,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 3,
+    "judged_applicable": 5,
+    "failure_types": {
+      "unspecified": 2
+    },
+    "reasons": [
+      "S12.judged.1: Recognizes that three Harbor stores on Main St in Lakeview match.",
+      "S12.judged.3: Confirms H-302 by address (2250 Main St, near Oak St) before transferring."
+    ]
+  }
+}

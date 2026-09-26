@@ -1,0 +1,45 @@
+{
+  "key": "7af5a9114fea0bbc321012b66647f05981d68cba072707f0462befd0649fcc0d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Verify Gloria, find her Tue 9/29 Patel follow-up, book the earliest Thursday-afternoon slot (2:00), then cancel the Tuesday appointment. Read the new time back once, slowly, and confirm the old one is cancelled. Nothing else.\n\nTRANSCRIPT:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[#2] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\n[#5] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh dear, I don't have that written down in front of me, honey. Can we just look it up with my name and birthday?\n    (agent system action #8: verify_identity({\"patient\":\"Gloria Hart\",\"dob\":\"1947-05-12\"}) -> success {\"verified\":true,\"patient\":\"Gloria Hart\",\"provider_of_record\":\"Dr. Raj Patel\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n    (agent system action #11: list_appointments({\"patient\":\"Gloria Hart\"}) -> success {\"patient\":\"Gloria Hart\",\"appointments\":[{\"appointment_id\":\"APT-GH-0929\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-09-29T10:00\",\"visit_type\":\"follow_up\",\"slot_id\":\"PAT-20260929-1000\"}]})\n[#13] AGENT: Of course, let me try that for you. Perfect, Gloria, you're all set. Now let me pull up your appointments to find that Tuesday appointment with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Thursday, October 1st or Friday, October 2nd work better for you?\nCALLER: Thursday afternoon would be best, if you have it, honey.\n    (agent system action #16: find_slots({\"visit_type\":\"follow_up\",\"date_range\":\"2026-10-01..2026-10-01\",\"provider\":\"Dr. Raj Patel\"}) -> success {\"visit_type\":\"follow_up\",\"slots\":[{\"slot_id\":\"PAT-20261001-1400\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-01T14:00\"},{\"slot_id\":\"PAT-20261001-1520\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-01T15:20\"}]})\n[#18] AGENT: Let me check what's available with Dr. Patel on Thursday afternoon. Great news—Dr. Patel has two afternoon slots on Thursday, October 1st. You can have two o'clock or three twenty in the afternoon. Which would you prefer?\nCALLER: The earliest of those is fine, dear.\n    (agent system action #21: book_appointment({\"patient\":\"Gloria Hart\",\"slot_id\":\"PAT-20261001-1400\",\"visit_type\":\"follow_up\"}) -> success {\"status\":\"booked\",\"appointment_id\":\"APT-NEW-PAT-20261001-1400\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-01T14:00\",\"visit_type\":\"follow_up\"})\n    (agent system action #25: cancel_appointment({\"appointment_id\":\"APT-GH-0929\"}) -> success {\"status\":\"cancelled\",\"appointment_id\":\"APT-GH-0929\"})\n[#29] AGENT: Perfect, that's two o'clock on Thursday, October 1st. Let me book that for you now. Wonderful, your new appointment is booked for Thursday, October 1st at two o'clock with Dr. Patel. Now let me cancel your Tuesday appointment. All set, Gloria. Your Tuesday appointment is cancelled, and you're all booked for Thursday, October 1st at two o'clock with Dr. Patel. Is there anything else I can help you with?\nCALLER: What, honey? Say that again a little slower.\n[#32] AGENT: Your appointment is now on Thursday, October 1st at two o'clock in the afternoon with Dr. Patel. Your old Tuesday appointment has been cancelled.\nCALLER: Oh, thank you so much, honey. Thursday at two, that's perfect. You have a good day now, bye bye.\n(call ended: stop_condition)\n\nBEHAVIORS:\nA01.judged.1: Reads the new appointment back once, slowly: day, date, time, doctor.\nA01.judged.2: Tells her the Tuesday appointment is cancelled.\nA01.judged.3: Repeats more slowly when she asks.\nA01.judged.4: Asks for an appointment number she doesn't have, or makes her look it up.\nA01.judged.5: Adds unrequested clinical questions or counseling.\nA01.judged.6: Reads out other appointments or medical details she didn't ask about.\nA01.judged.7: Shows impatience or rushes her.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 0,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfR1VEcHzCeBb1BJ2FJJ7",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A01.judged.1\": {\"verdict\": \"yes\", \"turn\": 29, \"why\": \"Agent stated day, date, time, and doctor for new appointment.\"},\n\"A01.judged.2\": {\"verdict\": \"yes\", \"turn\": 29, \"why\": \"Agent explicitly told her the Tuesday appointment was cancelled.\"},\n\"A01.judged.3\": {\"verdict\": \"yes\", \"turn\": 32, \"why\": \"Agent repeated the information again when she asked for it slower.\"},\n\"A01.judged.4\": {\"verdict\": \"n/a\", \"turn\": null, \"why\": \"Agent never asked for an appointment number; used DOB verification instead.\"},\n\"A01.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"No clinical questions or counseling were added.\"},\n\"A01.judged.6\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Only the relevant appointment was discussed, no extra medical details.\"},\n\"A01.judged.7\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent remained patient and repeated info calmly when asked.\"}}"
+        }
+      }
+    ],
+    "created": 1790378174,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 1053,
+      "prompt_tokens": 2028,
+      "total_tokens": 3081
+    }
+  },
+  "latency_ms": 10564,
+  "created_at": "2026-09-25T23:16:14.673Z"
+}

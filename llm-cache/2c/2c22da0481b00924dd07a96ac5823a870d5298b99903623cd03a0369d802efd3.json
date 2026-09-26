@@ -1,0 +1,45 @@
+{
+  "key": "2c22da0481b00924dd07a96ac5823a870d5298b99903623cd03a0369d802efd3",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nFacts:\n- Kevin Brooks, wants everything moved H-501 to H-502 [upfront]\n- Kevin DOB 1982-08-30 [only_if_asked, the agent asked at turn 2]\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11 [only_if_asked, the agent asked at turn 4]\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse [only_if_asked, the agent asked at turn 3]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[turn 1] AGENT: Hi Kevin! I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. What's your date of birth?\n[turn 2] CALLER: August 30th, 1982.\n[turn 2] AGENT: Great, Kevin. Now let me pull up your prescriptions and find the Gahanna store for you. Perfect. I found Harbor Pharmacy Gahanna at 85 Mill Street. You have one active prescription on file—lisinopril 20 mg with three refills remaining at the East Broad store. I'll set Gahanna as your home pharmacy and move that prescription there for you. All set! Your home pharmacy is now Harbor Pharmacy Gahanna, and your lisinopril has been moved there. You mentioned family prescriptions—do you have other family members whose prescriptions we need to move as well?\n[turn 3] CALLER: Yeah, exactly - my wife Maya's albuterol inhaler and my son Eli's Vyvanse also need to move over. Can you get those transferred too?\n[turn 3] AGENT: I'd be happy to help with Maya and Eli's prescriptions. To pull up their records and move them, I'll need to verify their identities first. Let me start with your wife—what's Maya's date of birth?\n[turn 4] CALLER: Oh, sorry, Maya's my daughter, not my wife - she's seven. Her birthday's June 20th, 2017.\n[turn 4] AGENT: Got it, thanks for clarifying. So Maya is your daughter, born June 20th, 2017. Let me verify her identity. Great, Maya's verified and you're listed as her parent, so I can help with her prescriptions. Now let me get Eli's date of birth to verify him as well.\n[turn 5] CALLER: Sure, Eli's birthday is February 11th, 2010.\n[turn 5] AGENT: Perfect, Eli's verified too. Now let me pull up both of their prescriptions and move them to Gahanna. I can move Maya's albuterol right away. However, Eli's Vyvanse is a controlled medication that's already been filled with no refills remaining, so it can't be transferred—he'll need a new prescription from Dr. Okafor for the Gahanna store. Let me set them both up with Gahanna as their home pharmacy and move Maya's inhaler. Done! Maya's albuterol inhaler is now at Gahanna, and both Maya and Eli have Gahanna set as their home pharmacy. For Eli's Vyvanse, you'll need to contact Dr. Okafor to send a new prescription to Harbor Pharmacy Gahanna. Would you like me to flag our pharmacist to reach out to Dr. Okafor about that, or will you handle it?\n[turn 6] CALLER (scenario-scripted): Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\n[turn 6] AGENT: Good question. Eli's Vyvanse is a controlled medication (C-II), and once it's been filled, it can't be transferred or refilled—he needs a brand new prescription from Dr. Okafor. So the plan is: you or Dr. Okafor's office will need to contact them to write a new Vyvanse prescription and send it to Harbor Pharmacy Gahanna. Would you like me to have our pharmacist call Dr. Okafor to request that, or are you planning to reach out to the doctor's office yourself?\n[turn 7] CALLER: Okay that makes sense, controlled stuff is different. Go ahead and have your pharmacist reach out to Dr. Okafor, that's easier on my end.\n[turn 7] AGENT: Perfect! Our pharmacist will reach out to Dr. Okafor to request the new Vyvanse prescription for Eli at the Gahanna store. You're all set—your family's home pharmacy is now Harbor Pharmacy Gahanna at 85 Mill Street.\n[turn 8] CALLER: Great, that's a relief. Thanks for sorting all that out, appreciate it. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzD22Sc7EjX3D3BtckR",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377160,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 228,
+      "prompt_tokens": 2322,
+      "total_tokens": 2550
+    }
+  },
+  "latency_ms": 3472,
+  "created_at": "2026-09-25T22:59:20.728Z"
+}

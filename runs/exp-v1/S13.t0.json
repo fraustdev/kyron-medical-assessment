@@ -1,0 +1,1059 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S13_v1_t0_muhkmj4l6522",
+    "scenario_id": "S13",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.1",
+      "file_sha256": "f2a5e52523f224019b68f8ab92139db1d35c5f5f8ca1c53a5a09b380df090eb1"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "927c7db5ffd99fd0cf40305a38be6e7002483a42070179a885713cd9191dbbb3",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says another store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional, and because the agent represents Harbor, it may tell the caller the medication will be ready at that Harbor home store. A store the patient is only visiting (e.g. while travelling) is not an exception: never promise until the pharmacist has confirmed."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:07:28.725Z",
+    "ended_at": "2026-09-25T23:07:59.711Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 14,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Patient Irene; sertraline + donepezil; 'the Brightway on Route 9'"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi, calling for my mother, Irene Kowalski. I want to move her sertraline and her donepezil to the Brightway on Route 9.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1319,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "I'd be happy to help you move those prescriptions for your mother. Let me start by verifying her identity. What's Irene Kowalski's date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "5da3fff51bc742bc224e8e1253a3551dafdf406f19dd9cec77787889e31bf575",
+        "cache_hit": false,
+        "latency_ms": 1319,
+        "usage": {
+          "input_tokens": 3848,
+          "output_tokens": 41
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "5da3fff51bc742bc224e8e1253a3551dafdf406f19dd9cec77787889e31bf575",
+          "cache_hit": false,
+          "latency_ms": 1319,
+          "usage": {
+            "input_tokens": 3848,
+            "output_tokens": 41
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzqGLB8xKembM4szHEv",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I'd be happy to help you move those prescriptions for your mother. Let me start by verifying her identity. What's Irene Kowalski's date of birth?"
+            }
+          }
+        ],
+        "created": 1790377649,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 41,
+          "prompt_tokens": 3848,
+          "total_tokens": 3889
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1319,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1942-03-03; caller is son Walt"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1942-03-03; caller is son Walt\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "32f4f036eebf35b403c06d32289f832823c5e32b94ac273a5a7fb05b7871a9b6",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks for DOB, matching the fact.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "d7046d7b93c96884d4f2cbdf8f74ff0744ac3118643c337557368cb567e970dc",
+          "cache_hit": false,
+          "latency_ms": 2793,
+          "usage": {
+            "input_tokens": 706,
+            "output_tokens": 248
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1319,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "March 3rd, 1942. I'm her son Walt, I'm on the account.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "f5c55dd730c1b7b2a42e4780a2eec5205d0abb0b9111f25ca5540824fd47abd8",
+          "cache_hit": true,
+          "latency_ms": 2378,
+          "usage": {
+            "input_tokens": 1302,
+            "output_tokens": 41
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 3301,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Irene Kowalski",
+        "dob": "03/03/1942"
+      },
+      "normalized": {
+        "patient": "Irene Kowalski"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 3351,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Irene Kowalski",
+        "home_store": "H-101",
+        "default_store": "H-101",
+        "authorized_contacts": [
+          {
+            "name": "Walter Kowalski",
+            "relationship": "son"
+          }
+        ],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 3351,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 3351,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Irene Kowalski"
+      },
+      "normalized": {
+        "patient": "Irene Kowalski"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3401,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Irene Kowalski",
+        "prescriptions": [
+          {
+            "rx_id": "RX-IK-DONE10",
+            "drug": "donepezil 10 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 3,
+            "store_id": "H-101",
+            "prescriber": "Dr. Helen Brandt",
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-IK-SERT50",
+            "drug": "sertraline 50 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 4,
+            "store_id": "H-101",
+            "prescriber": "Dr. Thomas Hughes",
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-IK-LORA05",
+            "drug": "lorazepam 0.5 mg",
+            "schedule": "C-IV",
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-101",
+            "prescriber": "Dr. Thomas Hughes",
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 3401,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "find_stores",
+      "args": {
+        "query": "Brightway Route 9"
+      },
+      "normalized": {}
+    },
+    {
+      "seq": 11,
+      "t_ms": 3451,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "find_stores",
+      "result": {
+        "stores": [
+          {
+            "store_id": "B-201",
+            "name": "Brightway Drug Route 9",
+            "address": "1500 Route 9, Brookfield, CT"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 12,
+      "t_ms": 4923,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you, Walt. Let me verify that information and check her prescriptions. Great, Walt. I found the Brightway on Route 9 in Brookfield. I can move the sertraline and donepezil there for you. Before I do, I should mention that your mother also has a lorazepam prescription at our store—do you want that moved too, or just the two you mentioned?",
+      "tool_call_ids": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "06f7f3ca3a8f84464d048520902cd72d0ccdc6d30e900fed271d834115d804cf",
+        "cache_hit": false,
+        "latency_ms": 1472,
+        "usage": {
+          "input_tokens": 4492,
+          "output_tokens": 75
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "0bb4df2c08dc1a8912ee873fe0d06827364a0b8d072d004d3a47551594aa39ff",
+          "cache_hit": false,
+          "latency_ms": 1982,
+          "usage": {
+            "input_tokens": 3913,
+            "output_tokens": 183
+          }
+        },
+        {
+          "cache_key": "06f7f3ca3a8f84464d048520902cd72d0ccdc6d30e900fed271d834115d804cf",
+          "cache_hit": false,
+          "latency_ms": 1472,
+          "usage": {
+            "input_tokens": 4492,
+            "output_tokens": 75
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzqhMKZjcD8CJ6JA1Rm",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great, Walt. I found the Brightway on Route 9 in Brookfield. I can move the sertraline and donepezil there for you. Before I do, I should mention that your mother also has a lorazepam prescription at our store—do you want that moved too, or just the two you mentioned?"
+            }
+          }
+        ],
+        "created": 1790377656,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 75,
+          "prompt_tokens": 4492,
+          "total_tokens": 4567
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "t_ms": 4923,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 2,
+          "fact": "Correct store is Brightway Elm St by the FreshMart"
+        }
+      ],
+      "move_fired": {
+        "index": 0,
+        "say": "Wait, not Route 9, the one on Elm by the FreshMart."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "tool_event",
+          "seq": 7,
+          "description": "move 0: identity_verified became true"
+        },
+        {
+          "kind": "tool_event",
+          "seq": 7,
+          "description": "disclosure 2: identity_verified became true"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "13915e1f687dec63e33ced1e834feb69586fda678e45fb68c279fb28a86cc2ed",
+          "cache_hit": false,
+          "latency_ms": 2621,
+          "usage": {
+            "input_tokens": 831,
+            "output_tokens": 182
+          }
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "t_ms": 4923,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Wait, not Route 9, the one on Elm by the FreshMart. And yeah, move the lorazepam too, the anxiety one, all three of them.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "9444019608a064c09ca13ddca4832791a5239d042b7a5a2694b72eed8d605ddc",
+          "cache_hit": false,
+          "latency_ms": 1461,
+          "usage": {
+            "input_tokens": 1607,
+            "output_tokens": 65
+          }
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "t_ms": 6114,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "find_stores",
+      "args": {
+        "query": "Brightway Elm FreshMart"
+      },
+      "normalized": {}
+    },
+    {
+      "seq": 16,
+      "t_ms": 6164,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "find_stores",
+      "result": {
+        "stores": [
+          {
+            "store_id": "B-202",
+            "name": "Brightway Drug Elm St",
+            "address": "22 Elm St, Brookfield, CT (by the FreshMart grocery)",
+            "notes": "about 1 mile from B-201"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 17,
+      "t_ms": 7817,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Let me find the Brightway on Elm by the FreshMart for you. Perfect, I found it at 22 Elm Street by the FreshMart. Now, before I transfer all three prescriptions, I need to let you know that the lorazepam is a controlled medication, so that one will need to be handled by our pharmacist. The sertraline and donepezil can move right away, but the lorazepam will be pending pharmacist review. Is that okay?",
+      "tool_call_ids": [
+        "c4"
+      ],
+      "llm": {
+        "cache_key": "c229db70046d3821f01f8af0ff80e87ed24aa7e93cf8626790dd9345ec117f74",
+        "cache_hit": false,
+        "latency_ms": 1653,
+        "usage": {
+          "input_tokens": 4761,
+          "output_tokens": 93
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "05f87c524e60e30661ef4086af5d36480c48555411c32b6d7aee907df55bf62d",
+          "cache_hit": false,
+          "latency_ms": 1191,
+          "usage": {
+            "input_tokens": 4609,
+            "output_tokens": 81
+          }
+        },
+        {
+          "cache_key": "c229db70046d3821f01f8af0ff80e87ed24aa7e93cf8626790dd9345ec117f74",
+          "cache_hit": false,
+          "latency_ms": 1653,
+          "usage": {
+            "input_tokens": 4761,
+            "output_tokens": 93
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzrCN5cfWLEvhaendvH",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect, I found it at 22 Elm Street by the FreshMart. Now, before I transfer all three prescriptions, I need to let you know that the lorazepam is a controlled medication, so that one will need to be handled by our pharmacist. The sertraline and donepezil can move right away, but the lorazepam will be pending pharmacist review. Is that okay?"
+            }
+          }
+        ],
+        "created": 1790377662,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 93,
+          "prompt_tokens": 4761,
+          "total_tokens": 4854
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "t_ms": 7817,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 3,
+          "fact": "Also wants 'the anxiety one' (lorazepam) moved"
+        }
+      ],
+      "move_fired": {
+        "index": 1,
+        "say": "And the anxiety one while you're at it."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_1] the agent confirms the Elm St store or its address",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "b9f6a9f4205fc6386e57b9efe1f1403090078f06fee4fea22bfd5b023ce2b557",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed 22 Elm Street address.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent says the lorazepam goes to a pharmacist or is pending",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "b9f6a9f4205fc6386e57b9efe1f1403090078f06fee4fea22bfd5b023ce2b557",
+          "raw_output": "{\"met\":true,\"why\":\"Agent said lorazepam pending pharmacist review.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[disclosure_3] after the agent confirms the Elm St store",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "b9f6a9f4205fc6386e57b9efe1f1403090078f06fee4fea22bfd5b023ce2b557",
+          "raw_output": "{\"met\":true,\"why\":\"Disclosure about lorazepam occurs after confirming Elm St store.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "move 2 waits: move 1 fires this turn (one scripted line per turn, lowest-numbered first)"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "0bfa2cdb62b1fd51a3894e0ab00b121083ac520fdad62e3ae34219f9495c4953",
+          "cache_hit": false,
+          "latency_ms": 3520,
+          "usage": {
+            "input_tokens": 1045,
+            "output_tokens": 316
+          }
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "t_ms": 7817,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Yeah that's fine, whatever it needs. And the anxiety one while you're at it, don't forget that one.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "6441fbf802d47aef52b980c71c4038c2d7d37ae91395b45ac46d701270ba976e",
+          "cache_hit": false,
+          "latency_ms": 1492,
+          "usage": {
+            "input_tokens": 1852,
+            "output_tokens": 51
+          }
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "t_ms": 9146,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "I want to make sure I have this right—the lorazepam is the anxiety medication, correct? That's the one I'm transferring along with the sertraline and donepezil. Those are the three you want moved to the Brightway on Elm?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "828c8faf1565832194e007600ab954c8b0916f6f9e60c75337e1fdf80bd8d51c",
+        "cache_hit": false,
+        "latency_ms": 1329,
+        "usage": {
+          "input_tokens": 4882,
+          "output_tokens": 61
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "828c8faf1565832194e007600ab954c8b0916f6f9e60c75337e1fdf80bd8d51c",
+          "cache_hit": false,
+          "latency_ms": 1329,
+          "usage": {
+            "input_tokens": 4882,
+            "output_tokens": 61
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzrgv48QnB8oBi4BqEz",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I want to make sure I have this right—the lorazepam is the anxiety medication, correct? That's the one I'm transferring along with the sertraline and donepezil. Those are the three you want moved to the Brightway on Elm?"
+            }
+          }
+        ],
+        "created": 1790377669,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 61,
+          "prompt_tokens": 4882,
+          "total_tokens": 4943
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "t_ms": 9146,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "So is it moved or not?"
+      },
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "260b3ba7a4dc843d767108b72c0d7e64337ece3451a522c6671bdca146e958e6",
+          "cache_hit": false,
+          "latency_ms": 1346,
+          "usage": {
+            "input_tokens": 1096,
+            "output_tokens": 68
+          }
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "t_ms": 9146,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "Yeah, that's right. So is it moved or not?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "458c01c1ed848edc81ac78a1a59bc47b805ae3206c4872834071bd0c01e22fd8",
+          "cache_hit": false,
+          "latency_ms": 1363,
+          "usage": {
+            "input_tokens": 1978,
+            "output_tokens": 32
+          }
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "t_ms": 11778,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c5",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-IK-SERT50",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      },
+      "normalized": {
+        "patient": "Irene Kowalski",
+        "rx_id": "RX-IK-SERT50",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      }
+    },
+    {
+      "seq": 24,
+      "t_ms": 11898,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c5",
+      "tool": "transfer_rx",
+      "result": {
+        "error": "receiving_pharmacy_must_request",
+        "message": "Harbor cannot send a transfer out. The receiving pharmacy must call Harbor to request it."
+      },
+      "result_code": "error:receiving_pharmacy_must_request",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 25,
+      "t_ms": 11898,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c6",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-IK-DONE10",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      },
+      "normalized": {
+        "patient": "Irene Kowalski",
+        "rx_id": "RX-IK-DONE10",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      }
+    },
+    {
+      "seq": 26,
+      "t_ms": 12018,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c6",
+      "tool": "transfer_rx",
+      "result": {
+        "error": "receiving_pharmacy_must_request",
+        "message": "Harbor cannot send a transfer out. The receiving pharmacy must call Harbor to request it."
+      },
+      "result_code": "error:receiving_pharmacy_must_request",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 27,
+      "t_ms": 12018,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c7",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-IK-LORA05",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      },
+      "normalized": {
+        "patient": "Irene Kowalski",
+        "rx_id": "RX-IK-LORA05",
+        "from_store": "H-101",
+        "to_store": "B-202"
+      }
+    },
+    {
+      "seq": 28,
+      "t_ms": 12138,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c7",
+      "tool": "transfer_rx",
+      "result": {
+        "error": "receiving_pharmacy_must_request",
+        "message": "Harbor cannot send a transfer out. The receiving pharmacy must call Harbor to request it."
+      },
+      "result_code": "error:receiving_pharmacy_must_request",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 29,
+      "t_ms": 13984,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Let me transfer all three now. I apologize—since Brightway is a different pharmacy chain, they need to be the ones to call us and request the transfer. You'll need to contact the Brightway on Elm Street by the FreshMart and ask them to call Harbor to transfer your mother's three prescriptions: the sertraline 50 milligrams, the donepezil 10 milligrams, and the lorazepam half milligram. Our store number is H-101.",
+      "tool_call_ids": [
+        "c5",
+        "c6",
+        "c7"
+      ],
+      "llm": {
+        "cache_key": "8e11422fbd4dc0b8cf9eefc376aa78ee417db0a9019b38e33fd172ed8b24f16a",
+        "cache_hit": false,
+        "latency_ms": 1846,
+        "usage": {
+          "input_tokens": 5422,
+          "output_tokens": 107
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "9dfeef57496f3fb99c23bc243b088802c7c42b0ac744a0eefba7137e7d83100d",
+          "cache_hit": false,
+          "latency_ms": 2632,
+          "usage": {
+            "input_tokens": 4959,
+            "output_tokens": 285
+          }
+        },
+        {
+          "cache_key": "8e11422fbd4dc0b8cf9eefc376aa78ee417db0a9019b38e33fd172ed8b24f16a",
+          "cache_hit": false,
+          "latency_ms": 1846,
+          "usage": {
+            "input_tokens": 5422,
+            "output_tokens": 107
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzsBNpXv7NcQQS3cbKu",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I apologize—since Brightway is a different pharmacy chain, they need to be the ones to call us and request the transfer. You'll need to contact the Brightway on Elm Street by the FreshMart and ask them to call Harbor to transfer your mother's three prescriptions: the sertraline 50 milligrams, the donepezil 10 milligrams, and the lorazepam half milligram. Our store number is H-101."
+            }
+          }
+        ],
+        "created": 1790377676,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 107,
+          "prompt_tokens": 5422,
+          "total_tokens": 5529
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "t_ms": 13984,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent explains that the Brightway on Elm St must call Harbor to request the transfer (including the lorazepam), and recaps what Walt needs to do.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "65ac69546c01f775400cf12e942b489bea30b0d3923692392c50c4fc82c64238",
+          "raw_output": "{\"met\":true,\"why\":\"Agent explains Brightway must call Harbor and recaps needed action.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "8800ba8c785a58d9d803eea9ed438c56dc908c9698b3541652912501eb272a8f",
+          "cache_hit": false,
+          "latency_ms": 1458,
+          "usage": {
+            "input_tokens": 1297,
+            "output_tokens": 74
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 13984,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Alright, fine, I'll call them myself then. Thanks for the help, Walt out.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "9200b879141d660bdb92b3cf4ccd860cd10dc853e80da24f2440e48a4f476798",
+          "cache_hit": false,
+          "latency_ms": 1443,
+          "usage": {
+            "input_tokens": 2130,
+            "output_tokens": 44
+          }
+        }
+      ]
+    },
+    {
+      "seq": 32,
+      "t_ms": 13984,
+      "turn": 5,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent explains that the Brightway on Elm St must call Harbor to request the transfer (including the lorazepam), and recaps what Walt needs to do."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": []
+    },
+    "world_state": {
+      "prescriptions": {
+        "RX-IK-DONE10": {
+          "owner": "Irene Kowalski",
+          "refills": 3,
+          "store_id": "H-101",
+          "status": "active"
+        },
+        "RX-IK-SERT50": {
+          "owner": "Irene Kowalski",
+          "refills": 4,
+          "store_id": "H-101",
+          "status": "active"
+        },
+        "RX-IK-LORA05": {
+          "owner": "Irene Kowalski",
+          "refills": 2,
+          "store_id": "H-101",
+          "status": "active"
+        }
+      },
+      "default_stores": {
+        "Irene Kowalski": "H-101"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Irene Kowalski",
+          "dob": "03/03/1942"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Irene Kowalski"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 10,
+        "call_id": "c3",
+        "tool": "find_stores",
+        "args": {
+          "query": "Brightway Route 9"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 15,
+        "call_id": "c4",
+        "tool": "find_stores",
+        "args": {
+          "query": "Brightway Elm FreshMart"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 23,
+        "call_id": "c5",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-IK-SERT50",
+          "from_store": "H-101",
+          "to_store": "B-202"
+        },
+        "result_code": "error:receiving_pharmacy_must_request"
+      },
+      {
+        "seq": 25,
+        "call_id": "c6",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-IK-DONE10",
+          "from_store": "H-101",
+          "to_store": "B-202"
+        },
+        "result_code": "error:receiving_pharmacy_must_request"
+      },
+      {
+        "seq": 27,
+        "call_id": "c7",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-IK-LORA05",
+          "from_store": "H-101",
+          "to_store": "B-202"
+        },
+        "result_code": "error:receiving_pharmacy_must_request"
+      }
+    ],
+    "counts": {
+      "turns": 6,
+      "caller_turns": 6,
+      "agent_turns": 5,
+      "tool_calls": 7,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:08:08.110Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)",
+          "move 1: said (100% of the scripted words)",
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

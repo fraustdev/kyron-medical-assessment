@@ -5,6 +5,7 @@
  *                        [--agent v1] [--mode live|replay] [--concurrency 4] [--no-eval] [--force]
  *   npm run sim -- show  <run-id | path/to/trace.json>
  *   npm run sim -- list  [--batch <name>]
+ *   npm run sim -- compare <batch-a> <batch-b>
  *
  * `run` saves every call under runs/<batch>/ (trace + evaluation) and prints a summary with token use.
  * `replay` re-runs a finished batch from the committed LLM cache: no API key, identical results.
@@ -13,8 +14,8 @@ import "../env.js";
 import { existsSync, readFileSync } from "node:fs";
 import { PROMPT_VERSIONS, type PromptVersion } from "../agents/prompt.js";
 import type { EvalResult } from "../eval/evaluate.js";
-import { listRuns } from "../server/api.js";
-import { openFreshDb } from "../server/db.js";
+import { compare, listRuns } from "../server/api.js";
+import { inMemoryDb } from "../server/db.js";
 import type { Trace } from "../trace/types.js";
 import type { DatasetKey } from "../world/dataset.js";
 import { runBatch, type BatchRow } from "../runner/batch.js";
@@ -80,7 +81,7 @@ function show() {
   const target = rest[0] ?? die("usage: sim show <run-id | trace.json>");
   let file = target;
   if (!existsSync(file)) {
-    const row = listRuns(openFreshDb()).find((r) => r.run_id === target) ?? die(`no run ${target}`);
+    const row = listRuns(inMemoryDb()).find((r) => r.run_id === target) ?? die(`no run ${target}`);
     file = row.trace_path;
   }
   const trace = JSON.parse(readFileSync(file, "utf8")) as Trace;
@@ -91,13 +92,37 @@ function show() {
 }
 
 function list() {
-  const runs = listRuns(openFreshDb(), opt("batch") ? { batch: opt("batch")! } : {});
+  const runs = listRuns(inMemoryDb(), opt("batch") ? { batch: opt("batch")! } : {});
   console.log("batch                scenario  trial  result     state  false  judged  run id");
   for (const r of runs) console.log(`${r.batch.padEnd(20)} ${r.scenario_id.padEnd(9)} ${String(r.trial_index).padEnd(6)} ${(r.effective_verdict ?? r.run_status).padEnd(10)} ${(r.state_total ? `${r.state_passed}/${r.state_total}` : "–").padEnd(6)} ${String(r.violations ?? "–").padEnd(6)} ${(r.judged_applicable ? `${r.judged_passed}/${r.judged_applicable}` : "–").padEnd(7)} ${r.run_id}`);
-  console.log(`\n${runs.length} run(s). Data rebuilt into data/harbor.db from runs/ and labels/.`);
+  console.log(`\n${runs.length} run(s). Read from runs/ and labels/.`);
+}
+
+function compareCmd() {
+  const [a, b] = rest.filter((x) => !x.startsWith("--"));
+  if (!a || !b) die("usage: sim compare <batch-a> <batch-b>");
+  const c = compare(inMemoryDb(), a!, b!);
+  const pct = (x: number | null) => (x === null ? "  –" : `${Math.round(x * 100)}%`.padStart(4));
+  const row = (label: string, x: number | null, y: number | null, rate = true) =>
+    `${label.padEnd(32)} ${(rate ? pct(x) : String(x ?? "–")).padStart(6)} ${(rate ? pct(y) : String(y ?? "–")).padStart(6)}   ${x === null || y === null ? "" : rate ? `${y - x >= 0 ? "+" : ""}${Math.round((y - x) * 100)} pts` : `${y - x >= 0 ? "+" : ""}${y - x}`}`;
+  console.log(`${"".padEnd(32)} ${a!.padStart(6)} ${b!.padStart(6)}   change`);
+  console.log(row("Calls passed", c.a.pass_rate, c.b.pass_rate));
+  console.log(row("Required outcomes met", c.a.state_pass_rate, c.b.state_pass_rate));
+  console.log(row("Caller-handling checks passed", c.a.judged_pass_rate, c.b.judged_pass_rate));
+  console.log(row("Calls with a false claim", c.a.runs_with_false_claims, c.b.runs_with_false_claims, false));
+  console.log(row("False claims", c.a.false_claims, c.b.false_claims, false));
+  console.log(row("Scored calls", c.a.evaluated - c.a.invalid, c.b.evaluated - c.b.invalid, false));
+  console.log(row("Not scored (unfair test)", c.a.invalid, c.b.invalid, false));
+  console.log("\nscenario   before  after   change      outcomes          false claims");
+  const order: Record<string, number> = { regressed: 0, improved: 1, same: 2, missing: 3 };
+  for (const r of [...c.rows].sort((x, y) => order[x.change]! - order[y.change]! || x.scenario_id.localeCompare(y.scenario_id))) {
+    const v = (x: typeof r.a) => (x ? x.runs.map((q) => q.verdict).join("/") : "–");
+    console.log(`${r.scenario_id.padEnd(10)} ${v(r.a).padEnd(7)} ${v(r.b).padEnd(7)} ${r.change.padEnd(11)} ${pct(r.a?.state_pass_rate ?? null)} -> ${pct(r.b?.state_pass_rate ?? null)}      ${r.a?.false_claims ?? "–"} -> ${r.b?.false_claims ?? "–"}`);
+  }
 }
 
 if (cmd === "run") await run();
 else if (cmd === "show") show();
 else if (cmd === "list") list();
-else die("usage: sim run|show|list  (see src/cli/sim.ts)");
+else if (cmd === "compare") compareCmd();
+else die("usage: sim run|show|list|compare  (see src/cli/sim.ts)");

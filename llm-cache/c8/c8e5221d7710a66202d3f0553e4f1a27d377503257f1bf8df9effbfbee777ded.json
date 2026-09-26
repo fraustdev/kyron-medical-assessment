@@ -1,0 +1,45 @@
+{
+  "key": "c8e5221d7710a66202d3f0553e4f1a27d377503257f1bf8df9effbfbee777ded",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, polite. Her follow-up with Dr. Patel on Tuesday 9/29 clashes with her granddaughter's visit.\nFacts:\n- Name Gloria Hart; has a Dr. Patel appointment on Tuesday; wants it moved later that week [upfront]\n- DOB 1947-05-12 [only_if_asked, the agent asked at turn 2]\n- Prefers Thursday afternoon, the earliest time available then [only_if_asked, the agent NEVER asked]\n- Does not know her appointment number [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[turn 1] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\n[turn 2] CALLER: May 12th, 1947, honey.\n[turn 2] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\n[turn 3] CALLER: Oh, I'm not sure I have that written down, honey. Can we just work with my name and birthday?\n[turn 3] AGENT: Of course, that works fine. Let me pull up your appointments now. Great, Gloria. Now let me look up your appointments with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Wednesday, Thursday, or Friday work better for you?\n[turn 4] CALLER (scenario-scripted): Thursday afternoon would be best, if you have it, honey.\n[turn 4] AGENT: Let me search for available slots with Dr. Patel on Thursday afternoon. Perfect! I have two options for you on Thursday, October 1st: two o'clock in the afternoon or three twenty. Which would you prefer?\n[turn 5] CALLER (scenario-scripted): The earliest of those is fine, dear.\n[turn 5] AGENT: Great, that's two o'clock on Thursday, October 1st. Let me book that for you now. Wonderful, your new appointment is booked. Now let me cancel the Tuesday appointment. All set, Gloria. Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon. Your Tuesday appointment has been cancelled. Is there anything else I can help you with?\n[turn 6] CALLER (scenario-scripted): Perfect, that works. That's all I needed, honey, thank you. Bye now!\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzaqnesCab3Z42u1KRe",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377454,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1558,
+      "total_tokens": 1574
+    }
+  },
+  "latency_ms": 1185,
+  "created_at": "2026-09-25T23:04:14.508Z"
+}

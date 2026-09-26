@@ -1,0 +1,45 @@
+{
+  "key": "4040f66aa44ef8aed2c80fe3be8e408207d33c3a507ee8ab6bd0211d2155c620",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\nAGENT: Hi Gloria! I'm happy to help you with those medications. Let me pull up your prescriptions so I can see what we have for you. I need your date of birth to pull up your account. Can you give me that?  [system actions: verify_identity]\nCALLER: Sure honey, it's May 12th, 1947. And my phone number is 555-0142 if you need it.\nAGENT: Thank you! Let me verify that for you. Perfect! Now let me pull up your prescriptions. Great! I can see your Eliquis, metformin, and levothyroxine for your thyroid. I don't see a potassium prescription on file right now. Do you have a potassium prescription, or would you like me to check on that with your doctor?  [system actions: verify_identity, list_prescriptions]\nCALLER: Are you sure, honey? I thought I had one. The big pill, you know, the one I take with breakfast.\nAGENT: I'm looking at all your active prescriptions and I don't see a potassium listed. It's possible it ran out of refills, or maybe it's under a different name. Do you remember what the bottle says, or when you last filled it?\nCALLER: Oh I don't rightly know, honey, I don't have the bottle in front of me. Maybe Dr. Patel changed it, I just can't remember. Can you go ahead with the other three while we figure that out?\nAGENT: Absolutely. So I'm going to refill your Eliquis, metformin, and levothyroxine for your thyroid, all at your home store, Harbor Pharmacy on Main Street. Are you picking those up today, or would you like them ready for another time?\nCALLER: Oh, today would be lovely, honey, if you can have them ready this afternoon. Thank you so much for looking into that potassium for me too.\nAGENT (LATEST): Let me get those three refilled for you right now. Perfect! Your three medications are queued up and will be ready tomorrow morning at ten o'clock at Harbor Pharmacy on Main Street. That's your Eliquis five milligrams for your blood clots, metformin five hundred milligrams for your diabetes, and levothyroxine seventy-five micrograms for your thyroid. About that potassium—if you remember the name or find the bottle, just give us a call back and we can track it down or reach out to Dr. Patel for you.  [system actions: queue_refill, queue_refill, queue_refill]\n\nCONDITIONS:\nmove_1: before the agent ends the call, if it has not summarized\nstop_0: Agent has summarized the three queued refills and the potassium follow-up.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz6xuFqrHNcVLwE4Tg1",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_1\": {\"met\": false, \"why\": \"Agent already summarized refills and potassium follow-up\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent listed three refills and potassium follow-up plan\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790377078,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 296,
+      "prompt_tokens": 1305,
+      "total_tokens": 1601
+    }
+  },
+  "latency_ms": 3851,
+  "created_at": "2026-09-25T22:57:58.914Z"
+}

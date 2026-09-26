@@ -1,0 +1,45 @@
+{
+  "key": "4a32c7393a8b23c802fa960796f5d26b1fc8efa3d1cab00a617bc2defa90053a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Transfer sertraline only from B-4471 to H-302; treat Zoloft = sertraline; resolve the old store via phone/city/profile without interrogating him; one final read-back.\n\nTRANSCRIPT:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.\n    (agent system action #2: verify_identity({\"patient\":\"Jamal Carter\",\"dob\":\"3/14/1995\"}) -> success {\"verified\":true,\"patient\":\"Jamal Carter\",\"home_store\":\"H-302\",\"default_store\":\"H-302\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n    (agent system action #5: find_stores({\"query\":\"2250 Main Street Lakeview\"}) -> success {\"stores\":[{\"store_id\":\"H-302\",\"name\":\"Harbor Pharmacy Main St University\",\"address\":\"2250 Main St, Lakeview, MI (near Oak St)\"}]})\n    (agent system action #7: list_prescriptions({\"patient\":\"Jamal Carter\"}) -> success {\"patient\":\"Jamal Carter\",\"prescriptions\":[]})\n[#9] AGENT: I'll help you transfer your prescriptions to Harbor Pharmacy in Lakeview. Let me verify your identity and pull up your records. Good news—I've verified your identity. I see that Harbor Pharmacy at 2250 Main Street in Lakeview is already your home store. However, I'm not showing any active prescriptions in our system right now. Do you have prescriptions currently at Brightway in Columbus that you'd like us to request, or were you expecting to see prescriptions here already?\nCALLER: Yeah, I got prescriptions at the old Brightway - Albuterol and... Zoloft.\n    (agent system action #12: transfer_rx({\"rx\":\"Albuterol\",\"from_store\":\"Brightway Columbus\",\"to_store\":\"H-302\"}) -> error:unknown_store {\"error\":\"unknown_store\",\"message\":\"Unknown from_store or to_store id.\"})\n    (agent system action #14: transfer_rx({\"rx\":\"Zoloft\",\"from_store\":\"Brightway Columbus\",\"to_store\":\"H-302\"}) -> error:unknown_store {\"error\":\"unknown_store\",\"message\":\"Unknown from_store or to_store id.\"})\n[#16] AGENT: Got it. I'll request those two from Brightway for you: Albuterol and Zoloft. Let me start those transfers to your Harbor location at 2250 Main Street. I need to find the exact store ID for the Brightway in Columbus. Can you give me the address or cross streets for that location?\nCALLER: Oh, it's the Brightway on High Street I think. And the sertraline, same thing, that's the Zoloft.\n    (agent system action #19: find_stores({\"query\":\"Brightway High Street Columbus\"}) -> success {\"stores\":[]})\n[#21] AGENT: Thanks for clarifying—sertraline is the generic for Zoloft, got it. Let me search for the Brightway on High Street in Columbus. I'm not finding that Brightway location in our system. Since Brightway is a different pharmacy chain, I'll need to request the transfer directly. Can you confirm the full address or zip code for that Brightway location so I can make sure we're reaching the right store?\nCALLER: Actually, leave the inhaler at Brightway, I've still got one. Just transfer the Zoloft.\n[#24] AGENT: Got it, just the Zoloft then. I still need the full address or zip code for that Brightway on High Street in Columbus so I can request the transfer correctly. Do you have that handy?\nCALLER: I don't know the address, it's the one in Columbus. Can't you look it up?\n[#27] AGENT: I can search, but Brightway is a different pharmacy chain and I don't have access to their store locations. What I can do is have our pharmacist call them directly to request the transfer—that's actually how it works between different chains. Can you give me the zip code for Columbus, or do you remember anything else about that Brightway location, like what part of town it's in?\nCALLER: Uh, I think it's near downtown? Honestly I'm not sure, I just know it's the one on High Street.\n[#30] AGENT: No problem. Here's what I can do: I'll flag our pharmacist to call Brightway on High Street in downtown Columbus and request your Zoloft transfer to Harbor at 2250 Main Street in Lakeview. They'll track down the exact store and handle it. Is that okay?\nCALLER: Yeah, that works. Thanks, appreciate it.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS11.judged.1: Treats 'Zoloft' and 'sertraline' as the same single prescription.\nS11.judged.2: Gives one final read-back: sertraline only, from B-4471 to H-302.\nS11.judged.3: Makes Jamal look up or provide the old store's address.\nS11.judged.4: Asks more than one question to identify the old store.\nS11.judged.5: Re-asks name/DOB after he gave them.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzEXrbXJ2BD87U7FkT8",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S11.judged.1\": {\"verdict\":\"yes\",\"turn\":21,\"why\":\"Agent explicitly equates sertraline with Zoloft as same prescription.\"},\n\"S11.judged.2\": {\"verdict\":\"no\",\"turn\":30,\"why\":\"Final summary never mentions B-4471 store ID or a clean read-back.\"},\n\"S11.judged.3\": {\"verdict\":\"yes\",\"turn\":24,\"why\":\"Agent repeatedly asks caller for address/zip of old store.\"},\n\"S11.judged.4\": {\"verdict\":\"yes\",\"turn\":27,\"why\":\"Agent asks multiple separate questions (address, zip, area) to identify store.\"},\n\"S11.judged.5\": {\"verdict\":\"no\",\"turn\":null,\"why\":\"Agent never re-asks name/DOB after initial verification.\"}}"
+        }
+      }
+    ],
+    "created": 1790377182,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 512,
+      "prompt_tokens": 2027,
+      "total_tokens": 2539
+    }
+  },
+  "latency_ms": 5252,
+  "created_at": "2026-09-25T22:59:43.090Z"
+}

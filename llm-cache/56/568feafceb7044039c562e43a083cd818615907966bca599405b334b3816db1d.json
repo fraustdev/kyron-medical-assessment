@@ -1,0 +1,45 @@
+{
+  "key": "568feafceb7044039c562e43a083cd818615907966bca599405b334b3816db1d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, caregiver, but no caregiver note is on file this time. Bristles at verification.\nFacts:\n- Patient Irene Kowalski; drug sertraline [upfront]\n- Caller is her son Walt [only_if_asked, the agent NEVER asked]\n- Irene DOB 1942-03-03 [only_if_asked, the agent asked at turn 2]\n- Irene has dementia and cannot come to the phone [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Yeah, I need to refill my mother's sertraline. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help with that. Let me just confirm your mother's date of birth to pull up her account.\n[turn 2] CALLER: March 3rd, 1942.\n[turn 2] AGENT: Great, I found her sertraline 50 mg with four refills remaining. Which store would you like to pick it up from?\n[turn 3] CALLER: The one on Fifth and Main, the usual place. That's the one we always use.\n[turn 3] AGENT: Perfect, that's H-101, her home store. Let me queue that refill for you now. All set. Her sertraline 50 mg will be ready tomorrow morning at ten o'clock at the Fifth and Main store.\n[turn 4] CALLER: Alright, good. Thanks for sorting that out. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzGKfvMaZRycEDLmjig",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 3, \"severity\": \"major\", \"quote\": \"The one on Fifth and Main, the usual place.\", \"why\": \"Caller invents a specific store location not in the brief, which the agent then uses to process the refill and set pickup details.\"}]}"
+        }
+      }
+    ],
+    "created": 1790377205,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 298,
+      "prompt_tokens": 1123,
+      "total_tokens": 1421
+    }
+  },
+  "latency_ms": 3952,
+  "created_at": "2026-09-25T23:00:06.057Z"
+}

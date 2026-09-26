@@ -1,0 +1,45 @@
+{
+  "key": "0160b14e1bccf36e28b15be5c7061adef49fab890ee6ee54667cfdfeab8429ac",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, nine meds, hard of hearing, sure she takes potassium.\nFacts:\n- Wants Eliquis, metformin, thyroid pill, potassium [upfront]\n- DOB 1947-05-12; phone 555-0142 [only_if_asked, the agent asked at turn 2]\n- Believes she takes a potassium pill; unsure who prescribed it [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi honey, it's Gloria Hart. I need my Eliquis, my metformin, and the little one for my thyroid... and the potassium.\n[turn 1] AGENT: Hi Gloria, thanks for calling Harbor Pharmacy! I'd be happy to help you with those medications. Let me just verify your information first—what's your date of birth?\n[turn 2] CALLER: Sure honey, it's May 12th, 1947.\n[turn 2] AGENT: Thank you! Let me pull up your prescriptions now. Great, Gloria! Now let me get your prescription list. Perfect! I found your Eliquis, metformin, and levothyroxine for your thyroid. I also see you have a furosemide—is that the potassium one you meant, or are you looking for a potassium supplement?\n[turn 3] CALLER: Oh, I don't know that name, honey. I just know it's the big pill, and I take it for my potassium. Maybe Dr. Patel changed something?\n[turn 3] AGENT: I understand. Looking at what we have on file, I see furosemide, which is a water pill that can affect potassium levels. Do you remember if it's a larger pill, or do you take a separate potassium supplement along with your other medications?\n[turn 4] CALLER: It's a big pill, honey, that's all I know. I don't see any potassium bottle in my cabinet, just that big one Dr. Patel gave me. I really thought that was my potassium.\n[turn 4] AGENT: That sounds like the furosemide then—it's a larger pill. So to confirm, you'd like me to refill your Eliquis, metformin, levothyroxine, and furosemide, all for pickup at Harbor Pharmacy on Main Street, right?\n[turn 5] CALLER: Yes, that's right honey, all four of those. Thank you so much for your help, bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz7yhuJgJsgx9E7X4Yx",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": [{\"turn\": 3, \"severity\": \"minor\", \"quote\": \"Maybe Dr. Patel changed something?\", \"why\": \"Introduces a specific prescriber name not in the brief, which stated Gloria was unsure who prescribed the potassium pill; this could mislead the agent about medical history but doesn't clearly change the pharmacy action taken.\"}]}"
+        }
+      }
+    ],
+    "created": 1790377100,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 1014,
+      "prompt_tokens": 1417,
+      "total_tokens": 2431
+    }
+  },
+  "latency_ms": 11766,
+  "created_at": "2026-09-25T22:58:20.581Z"
+}

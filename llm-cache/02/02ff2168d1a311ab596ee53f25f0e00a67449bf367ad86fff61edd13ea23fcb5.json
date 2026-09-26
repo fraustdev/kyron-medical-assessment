@@ -1,0 +1,45 @@
+{
+  "key": "02ff2168d1a311ab596ee53f25f0e00a67449bf367ad86fff61edd13ea23fcb5",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi honey, Tess Morgan. Dr. Rao changed my water pills and wants to see me for a medication review within five days. What do you have?\nAGENT: Hi Tess! I'd be happy to help you find a medication review appointment. Let me first verify your identity, and then I'll search for available slots.\n\nWhat's your date of birth?\nCALLER: January 19th, 1974, honey.\nAGENT: Thank you. Let me search for medication review appointments within the next five days for you. Great! I found two medication review slots for you. You have Tuesday, September 28th at ten in the morning with Dr. Patel, or Tuesday, September 29th at nine in the morning with Dr. Hughes. Which works better for you?  [system actions: verify_identity, find_slots]\nCALLER: Oh, hold on honey, I need to see Dr. Rao specifically, he's the one who changed my water pills. Do you have anything with him?\nAGENT (LATEST): Let me search for medication review slots specifically with Dr. Rao within the next five days. Unfortunately, Dr. Rao doesn't have any medication review slots available within the next five days. Would you like me to add you to the waitlist for Dr. Rao, or would you consider seeing Dr. Patel or Dr. Hughes instead?  [system actions: find_slots]\n\nCONDITIONS:\nmove_0: the agent says nothing is available with Dr. Rao in that window\nmove_1: the agent offers the waitlist\nmove_2: the agent offers to have Dr. Rao's team call her\nmove_3: the agent offers a later Dr. Rao appointment as a backup\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Feels fine; the review is routine follow-up to the medication change\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Would accept a waitlist spot, a call back from Dr. Rao's team, and a later appointment as a backup\"\nstop_0: Agent has explained there is no opening in the window and set up the waitlist and/or a call back.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzbLqeSRYbNPU9Ch6ZH",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": true, \"why\": \"Agent says no Dr. Rao slots within five days\"}, \"move_1\": {\"met\": true, \"why\": \"Agent offers waitlist for Dr. Rao\"}, \"move_2\": {\"met\": false, \"why\": \"No mention of a callback from Dr. Rao's team\"}, \"move_3\": {\"met\": false, \"why\": \"No later Dr. Rao appointment offered\"}, \"asked_2\": {\"met\": false, \"why\": \"Agent didn't ask about symptoms or review purpose\"}, \"asked_3\": {\"met\": false, \"why\": \"Agent didn't ask about callback or later appointment options\"}, \"stop_0\": {\"met\": false, \"why\": \"Waitlist only offered, not yet set up\"}, \"emergency\": {\"met\": false, \"why\": \"No 911 instruction given\"}}"
+        }
+      }
+    ],
+    "created": 1790377465,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 500,
+      "prompt_tokens": 1104,
+      "total_tokens": 1604
+    }
+  },
+  "latency_ms": 5278,
+  "created_at": "2026-09-25T23:04:25.413Z"
+}

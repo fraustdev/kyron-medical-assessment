@@ -1,0 +1,45 @@
+{
+  "key": "f373a0c40f54854a14d6f65aff41de70368498069ce2e49413fcf1443756f164",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\nAGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\nAGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh, I'm not sure I have that written down, honey. Can we just work with my name and birthday?\nAGENT: Of course, that works fine. Let me pull up your appointments now. Great, Gloria. Now let me look up your appointments with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Wednesday, Thursday, or Friday work better for you?  [system actions: verify_identity, list_appointments]\nCALLER: Thursday afternoon would be best, if you have it, honey.\nAGENT: Let me search for available slots with Dr. Patel on Thursday afternoon. Perfect! I have two options for you on Thursday, October 1st: two o'clock in the afternoon or three twenty. Which would you prefer?  [system actions: find_slots]\nCALLER: The earliest of those is fine, dear.\nAGENT (LATEST): Great, that's two o'clock on Thursday, October 1st. Let me book that for you now. Wonderful, your new appointment is booked. Now let me cancel the Tuesday appointment. All set, Gloria. Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon. Your Tuesday appointment has been cancelled. Is there anything else I can help you with?  [system actions: book_appointment, cancel_appointment]\n\nCONDITIONS:\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Prefers Thursday afternoon, the earliest time available then\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know her appointment number\"\nstop_0: End the call right after the agent's next turn following your goodbye, whatever it says.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzadCNQmfpnf8fTXuKn",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"asked_2\": {\"met\": false, \"why\": \"Agent did not ask for time preference in latest turn\"}, \"asked_3\": {\"met\": false, \"why\": \"No question about appointment number asked\"}, \"stop_0\": {\"met\": false, \"why\": \"No goodbye exchanged yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790377451,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 126,
+      "prompt_tokens": 1182,
+      "total_tokens": 1308
+    }
+  },
+  "latency_ms": 1700,
+  "created_at": "2026-09-25T23:04:12.073Z"
+}

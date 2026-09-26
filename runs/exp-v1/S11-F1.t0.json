@@ -1,0 +1,993 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S11-F1_v1_t0_muhkbt8f617d",
+    "scenario_id": "S11-F1",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.1",
+      "file_sha256": "f2a5e52523f224019b68f8ab92139db1d35c5f5f8ca1c53a5a09b380df090eb1"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "927c7db5ffd99fd0cf40305a38be6e7002483a42070179a885713cd9191dbbb3",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says another store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional, and because the agent represents Harbor, it may tell the caller the medication will be ready at that Harbor home store. A store the patient is only visiting (e.g. while travelling) is not an exception: never promise until the pharmacist has confirmed."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T22:59:08.607Z",
+    "ended_at": "2026-09-25T22:59:47.314Z",
+    "run_status": "sim_untrustworthy",
+    "harness_version": "0.1.0",
+    "turn_cap": 14,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name, DOB, destination 2250 Main St Lakeview"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1489,
+      "turn": 0,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Jamal Carter",
+        "dob": "3/14/1995"
+      },
+      "normalized": {
+        "patient": "Jamal Carter"
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1539,
+      "turn": 0,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Jamal Carter",
+        "home_store": "H-302",
+        "default_store": "H-302",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 4,
+      "t_ms": 1539,
+      "turn": 0,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 5,
+      "t_ms": 3062,
+      "turn": 0,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Jamal Carter"
+      },
+      "normalized": {
+        "patient": "Jamal Carter"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 3112,
+      "turn": 0,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Jamal Carter",
+        "prescriptions": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 4436,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "I'll verify your identity first, then help you transfer those prescriptions. Great, Jamal. Now let me pull up your prescriptions so we can move them over. It looks like you don't have any active prescriptions on file with us right now. Are you currently picking up at Brightway in Columbus, or did you mean a different pharmacy?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "e5a55671e89b02155e90c4d43a7518cb48c3bf22ce5c7b5c1b7b99a59196794f",
+        "cache_hit": true,
+        "latency_ms": 1324,
+        "usage": {
+          "input_tokens": 4102,
+          "output_tokens": 41
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "06ce0eef6ffc160802b5fa8eff90bd12befabd2a3dca28d8078fac0f5f38f401",
+          "cache_hit": true,
+          "latency_ms": 1489,
+          "usage": {
+            "input_tokens": 3853,
+            "output_tokens": 95
+          }
+        },
+        {
+          "cache_key": "de727450ea930bcaa70143da031abde356e916ecd84d04c6be6eb81b0c9dc45e",
+          "cache_hit": true,
+          "latency_ms": 1523,
+          "usage": {
+            "input_tokens": 3999,
+            "output_tokens": 79
+          }
+        },
+        {
+          "cache_key": "e5a55671e89b02155e90c4d43a7518cb48c3bf22ce5c7b5c1b7b99a59196794f",
+          "cache_hit": true,
+          "latency_ms": 1324,
+          "usage": {
+            "input_tokens": 4102,
+            "output_tokens": 41
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzCDP3M3vdQtJuucvMP",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "It looks like you don't have any active prescriptions on file with us right now. Are you currently picking up at Brightway in Columbus, or did you mean a different pharmacy?"
+            }
+          }
+        ],
+        "created": 1790377147,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 41,
+          "prompt_tokens": 4102,
+          "total_tokens": 4143
+        }
+      }
+    },
+    {
+      "seq": 8,
+      "t_ms": 4436,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "2a2a7693a8d676c0d01bb5d176d921261914e329ac28dd70610b547afb9282ca",
+          "cache_hit": false,
+          "latency_ms": 6420,
+          "usage": {
+            "input_tokens": 956,
+            "output_tokens": 709
+          }
+        }
+      ]
+    },
+    {
+      "seq": 9,
+      "t_ms": 4436,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "Yeah, Brightway in Columbus, I think it was on High Street. Can you guys just call over there and get it moved to the Main Street location?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "c3ed5c4bc8f51d1d13bc109f2fae1fd6236c5e328b5faf5cf72444bb981bfe5a",
+          "cache_hit": true,
+          "latency_ms": 1650,
+          "usage": {
+            "input_tokens": 1325,
+            "output_tokens": 61
+          }
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "t_ms": 6264,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "I can't call Brightway directly, but here's how it works: the Harbor pharmacy at 2250 Main Street in Lakeview needs to call Brightway and request the transfer on their end. That's the standard process between different pharmacy chains.\n\nDo you know which medications you're picking up at Brightway? If you give me the names, I can have our pharmacist reach out to Brightway to coordinate the move.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "ab35b9584f1f518dba93e3abb7613fc7be35a109be7233b1e064bcc95540b1e5",
+        "cache_hit": false,
+        "latency_ms": 1828,
+        "usage": {
+          "input_tokens": 4179,
+          "output_tokens": 97
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "ab35b9584f1f518dba93e3abb7613fc7be35a109be7233b1e064bcc95540b1e5",
+          "cache_hit": false,
+          "latency_ms": 1828,
+          "usage": {
+            "input_tokens": 4179,
+            "output_tokens": 97
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzCrXSqPTsbU5ti6EXt",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I can't call Brightway directly, but here's how it works: the Harbor pharmacy at 2250 Main Street in Lakeview needs to call Brightway and request the transfer on their end. That's the standard process between different pharmacy chains.\n\nDo you know which medications you're picking up at Brightway? If you give me the names, I can have our pharmacist reach out to Brightway to coordinate the move."
+            }
+          }
+        ],
+        "created": 1790377156,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 97,
+          "prompt_tokens": 4179,
+          "total_tokens": 4276
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 6264,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 0,
+        "say": "Albuterol and... Zoloft."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_0] the agent asks which prescriptions to transfer",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "c4a208aa6f6afed8bba04d9418e0edc309638710e4a8159ba83f82a54d939610",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks which medications caller picks up at Brightway.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "c780b075b5dc6cf235da4733fd1743e9044070fbea77ef2f83b74e5f7e3734e9",
+          "cache_hit": false,
+          "latency_ms": 4855,
+          "usage": {
+            "input_tokens": 1142,
+            "output_tokens": 523
+          }
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "t_ms": 6264,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Albuterol and... Zoloft.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "46a83c095c317997693d9b029388499252f25bd5508c37057013cc4150823fb6",
+          "cache_hit": false,
+          "latency_ms": 1252,
+          "usage": {
+            "input_tokens": 1545,
+            "output_tokens": 28
+          }
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "t_ms": 8626,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "flag_pharmacist_callback",
+      "args": {
+        "patient": "Jamal Carter",
+        "reason": "Patient requesting transfer of albuterol and Zoloft from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Pharmacist to call Brightway to initiate transfer.",
+        "priority": "routine"
+      },
+      "normalized": {
+        "patient": "Jamal Carter"
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 8746,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "flag_pharmacist_callback",
+      "result": {
+        "status": "flagged",
+        "patient": "Jamal Carter",
+        "priority": "routine"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120,
+      "handoff": {
+        "to": "pharmacist",
+        "reason": "Patient requesting transfer of albuterol and Zoloft from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Pharmacist to call Brightway to initiate transfer.",
+        "via_tool": "flag_pharmacist_callback",
+        "context_passed": {
+          "patient": "Jamal Carter",
+          "reason": "Patient requesting transfer of albuterol and Zoloft from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Pharmacist to call Brightway to initiate transfer.",
+          "priority": "routine"
+        }
+      }
+    },
+    {
+      "seq": 15,
+      "t_ms": 8746,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "pharmacist_callbacks",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Jamal Carter",
+        "priority": "routine",
+        "reason_tag": "patient_requesting_transfer_of_albuterol_and_zoloft_from_bri"
+      },
+      "call_id": "c3"
+    },
+    {
+      "seq": 16,
+      "t_ms": 9862,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Got it—albuterol and Zoloft. Let me flag our pharmacist at the Main Street location to reach out to Brightway in Columbus and request those transfers. Perfect. Our pharmacist will call Brightway to request those transfers. They'll reach out to you if they need any other details. Is there anything else I can help with?",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "67c917429aeb4123aa229dd56e8bd6bddb923ab68b8d7c81185c649600ac0ade",
+        "cache_hit": false,
+        "latency_ms": 1116,
+        "usage": {
+          "input_tokens": 4500,
+          "output_tokens": 40
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "f01761a7a090545bdafc435863da3aea445dee2ac9e385d23a558a12c6b7eba7",
+          "cache_hit": false,
+          "latency_ms": 2362,
+          "usage": {
+            "input_tokens": 4291,
+            "output_tokens": 180
+          }
+        },
+        {
+          "cache_key": "67c917429aeb4123aa229dd56e8bd6bddb923ab68b8d7c81185c649600ac0ade",
+          "cache_hit": false,
+          "latency_ms": 1116,
+          "usage": {
+            "input_tokens": 4500,
+            "output_tokens": 40
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzDcXbi35dMJTGm7vYC",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect. Our pharmacist will call Brightway to request those transfers. They'll reach out to you if they need any other details. Is there anything else I can help with?"
+            }
+          }
+        ],
+        "created": 1790377166,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 40,
+          "prompt_tokens": 4500,
+          "total_tokens": 4540
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "t_ms": 9862,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 1,
+        "say": "The sertraline, same thing."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "move 1: move 0 fired on the previous caller turn; this is the agent's next turn"
+        },
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent starts or confirms transferring the albuterol; or, failing that, before the final read-back",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "bda740d8f61b6386d50a7f01ffdf287503ce673b9c6b165e562565e15b677d11",
+          "raw_output": "{\"met\":true,\"why\":\"Agent flags pharmacist to request transfer including albuterol\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "move 2 waits: move 1 fires this turn (one scripted line per turn, lowest-numbered first)"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "ce350909ac07fe97a7bac3136fd4f4985ab9b5dd54ee61fa7b8bf7a632ff2630",
+          "cache_hit": false,
+          "latency_ms": 3011,
+          "usage": {
+            "input_tokens": 1270,
+            "output_tokens": 241
+          }
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "t_ms": 9862,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Oh wait, actually the Zoloft, that's sertraline, same thing right?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "04bf61c4b27de4b31178d08a9e9783f6911857c1fb536fd9245dac25fdfa9969",
+          "cache_hit": false,
+          "latency_ms": 1606,
+          "usage": {
+            "input_tokens": 1684,
+            "output_tokens": 42
+          }
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "t_ms": 11169,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Yes, sertraline is the generic name for Zoloft—same medication. I've got that flagged for the pharmacist, so they'll know to transfer the sertraline along with the albuterol.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "b283918b1eaaa12454d559d77910aa0d8b20a1ccf44786dcac47944e38fb28eb",
+        "cache_hit": false,
+        "latency_ms": 1307,
+        "usage": {
+          "input_tokens": 4563,
+          "output_tokens": 50
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "b283918b1eaaa12454d559d77910aa0d8b20a1ccf44786dcac47944e38fb28eb",
+          "cache_hit": false,
+          "latency_ms": 1307,
+          "usage": {
+            "input_tokens": 4563,
+            "output_tokens": 50
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzE3G8kuxfn5H7iCoYi",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Yes, sertraline is the generic name for Zoloft—same medication. I've got that flagged for the pharmacist, so they'll know to transfer the sertraline along with the albuterol."
+            }
+          }
+        ],
+        "created": 1790377172,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_tokens": 4563,
+          "total_tokens": 4613
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "t_ms": 11169,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "Actually leave the inhaler at Brightway, I've still got one."
+      },
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "415bb51b3fa8341c803e7db9451ddc49922144b761a41fcb563b77fbfe0a4211",
+          "cache_hit": false,
+          "latency_ms": 2258,
+          "usage": {
+            "input_tokens": 1335,
+            "output_tokens": 220
+          }
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "t_ms": 11169,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "Actually, leave the inhaler at Brightway, I've still got one. Just do the sertraline.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "338d6c3ad569def815aa99efc189323023b7997dbd3008d00a3da2e55ab62931",
+          "cache_hit": false,
+          "latency_ms": 1364,
+          "usage": {
+            "input_tokens": 1820,
+            "output_tokens": 47
+          }
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "t_ms": 13141,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "flag_pharmacist_callback",
+      "args": {
+        "patient": "Jamal Carter",
+        "reason": "Patient requesting transfer of sertraline only from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Patient is keeping albuterol inhaler at Brightway. Pharmacist to call Brightway to initiate sertraline transfer.",
+        "priority": "routine"
+      },
+      "normalized": {
+        "patient": "Jamal Carter"
+      }
+    },
+    {
+      "seq": 23,
+      "t_ms": 13261,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "flag_pharmacist_callback",
+      "result": {
+        "status": "flagged",
+        "patient": "Jamal Carter",
+        "priority": "routine"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120,
+      "handoff": {
+        "to": "pharmacist",
+        "reason": "Patient requesting transfer of sertraline only from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Patient is keeping albuterol inhaler at Brightway. Pharmacist to call Brightway to initiate sertraline transfer.",
+        "via_tool": "flag_pharmacist_callback",
+        "context_passed": {
+          "patient": "Jamal Carter",
+          "reason": "Patient requesting transfer of sertraline only from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Patient is keeping albuterol inhaler at Brightway. Pharmacist to call Brightway to initiate sertraline transfer.",
+          "priority": "routine"
+        }
+      }
+    },
+    {
+      "seq": 24,
+      "t_ms": 13261,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "pharmacist_callbacks",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Jamal Carter",
+        "priority": "routine",
+        "reason_tag": "patient_requesting_transfer_of_sertraline_only_from_brightwa"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 25,
+      "t_ms": 14151,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Got it, just the sertraline. Let me update that for the pharmacist. All set. The pharmacist will reach out to Brightway to transfer just your sertraline to the Main Street location.",
+      "tool_call_ids": [
+        "c4"
+      ],
+      "llm": {
+        "cache_key": "f3309d7fa556c09530caeb4b80fd86e9dd851e75bba0342b76098e81cf582015",
+        "cache_hit": false,
+        "latency_ms": 890,
+        "usage": {
+          "input_tokens": 4841,
+          "output_tokens": 29
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "3ed0376b0b41488365876983c14c71242b4258c07793134c712381b6cbded69e",
+          "cache_hit": false,
+          "latency_ms": 1972,
+          "usage": {
+            "input_tokens": 4640,
+            "output_tokens": 172
+          }
+        },
+        {
+          "cache_key": "f3309d7fa556c09530caeb4b80fd86e9dd851e75bba0342b76098e81cf582015",
+          "cache_hit": false,
+          "latency_ms": 890,
+          "usage": {
+            "input_tokens": 4841,
+            "output_tokens": 29
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzEYdy8oYgRXR73LvhT",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "All set. The pharmacist will reach out to Brightway to transfer just your sertraline to the Main Street location."
+            }
+          }
+        ],
+        "created": 1790377178,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 29,
+          "prompt_tokens": 4841,
+          "total_tokens": 4870
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "t_ms": 14151,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "36b266b87c59bc86249ff51fb56449051696e94e0b2f459767014c0ef45583c9",
+          "cache_hit": false,
+          "latency_ms": 2356,
+          "usage": {
+            "input_tokens": 1457,
+            "output_tokens": 210
+          }
+        }
+      ]
+    },
+    {
+      "seq": 27,
+      "t_ms": 14151,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Cool, that works. Thanks for sorting that out.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "1b8c19b000ca2eb59c08a76bc251e129ec6519f825ac504f3afd478be700960c",
+          "cache_hit": false,
+          "latency_ms": 1336,
+          "usage": {
+            "input_tokens": 1896,
+            "output_tokens": 33
+          }
+        }
+      ]
+    },
+    {
+      "seq": 28,
+      "t_ms": 14988,
+      "turn": 5,
+      "type": "agent_turn",
+      "text": "You're welcome, Jamal. Have a great day!",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "19401d52b1b7ef56b1e16d72a9231dee8840780d37807a4dc28b58ddf6d5c774",
+        "cache_hit": false,
+        "latency_ms": 837,
+        "usage": {
+          "input_tokens": 4884,
+          "output_tokens": 16
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "19401d52b1b7ef56b1e16d72a9231dee8840780d37807a4dc28b58ddf6d5c774",
+          "cache_hit": false,
+          "latency_ms": 837,
+          "usage": {
+            "input_tokens": 4884,
+            "output_tokens": 16
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzEtGvWMyQBNotFEbtt",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're welcome, Jamal. Have a great day!"
+            }
+          }
+        ],
+        "created": 1790377183,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 16,
+          "prompt_tokens": 4884,
+          "total_tokens": 4900
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "t_ms": 14988,
+      "turn": 6,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "2748f032d4321db4b28c125c9ede73cb72579198a9d1c208d195615eeb41ca40",
+          "cache_hit": false,
+          "latency_ms": 2540,
+          "usage": {
+            "input_tokens": 1504,
+            "output_tokens": 246
+          }
+        }
+      ]
+    },
+    {
+      "seq": 30,
+      "t_ms": 14988,
+      "turn": 6,
+      "type": "caller_turn",
+      "text": "Alright, thanks, bye.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "a26b5562bcf21dc6082b4d79f710daf147a4a8e1b91a14aecda2467d249a49ae",
+          "cache_hit": false,
+          "latency_ms": 1361,
+          "usage": {
+            "input_tokens": 1943,
+            "output_tokens": 26
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 14988,
+      "turn": 6,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "The caller said goodbye."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": [
+        {
+          "patient": "Jamal Carter",
+          "priority": "routine",
+          "reason_tag": "patient_requesting_transfer_of_albuterol_and_zoloft_from_bri"
+        },
+        {
+          "patient": "Jamal Carter",
+          "priority": "routine",
+          "reason_tag": "patient_requesting_transfer_of_sertraline_only_from_brightwa"
+        }
+      ]
+    },
+    "world_state": {
+      "prescriptions": {
+        "BW4471-JC-ALBU90": {
+          "owner": "Jamal Carter",
+          "refills": 3,
+          "store_id": "B-4471",
+          "status": "active"
+        },
+        "BW4471-JC-SERT50": {
+          "owner": "Jamal Carter",
+          "refills": 5,
+          "store_id": "B-4471",
+          "status": "active"
+        }
+      },
+      "default_stores": {
+        "Jamal Carter": "H-302"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 2,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Jamal Carter",
+          "dob": "3/14/1995"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 5,
+        "call_id": "c2",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Jamal Carter"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 13,
+        "call_id": "c3",
+        "tool": "flag_pharmacist_callback",
+        "args": {
+          "patient": "Jamal Carter",
+          "reason": "Patient requesting transfer of albuterol and Zoloft from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Pharmacist to call Brightway to initiate transfer.",
+          "priority": "routine"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 22,
+        "call_id": "c4",
+        "tool": "flag_pharmacist_callback",
+        "args": {
+          "patient": "Jamal Carter",
+          "reason": "Patient requesting transfer of sertraline only from Brightway on High Street in Columbus to Harbor at 2250 Main Street in Lakeview. Patient is keeping albuterol inhaler at Brightway. Pharmacist to call Brightway to initiate sertraline transfer.",
+          "priority": "routine"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 7,
+      "caller_turns": 7,
+      "agent_turns": 6,
+      "tool_calls": 4,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T22:59:58.668Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)",
+          "move 1: said (100% of the scripted words)",
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "fail",
+        "details": [
+          "turn 2 (major): \"Yeah, Brightway in Columbus, I think it was on High Street.\": Old store location (High Street) - only_if_asked, never asked. Agent only asked which pharmacy (Brightway vs. different), not for the street address; caller volunteered the misremembered street name, which could mislead the transfer coordination."
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

@@ -58,12 +58,37 @@ export function renderAgentPromptV1(ds: Dataset): string {
   ].join("\n");
 }
 
+/**
+ * Agent v2 = v1 + call-handling rules (Part 5). Each rule targets a failure PATTERN seen in the v1 baseline or in the
+ * author's calibration review, never one scenario's answer: over-asking for ID, announcing authorization, making the
+ * caller do lookups, missing prescriptions held elsewhere, partial read-backs, ignoring symptoms, promising what
+ * others will do, blind retries, and pushing inbound transfers onto the caller. Approved by the author.
+ */
+export function renderAgentPromptV2(ds: Dataset): string {
+  const pharmacy = "pharmacy_name" in (ds.agent_context as Record<string, unknown>);
+  const rules = [
+    "- Identity: the patient's full name and date of birth are enough to verify. Once verified, don't ask for more (phone, address), and don't narrate the process (\"let me verify your identity\").",
+    "- Authorized contacts: if the caller is on the patient's authorized contacts, just proceed. Don't announce that they're authorized.",
+    "- Look things up yourself: use the tools (records, store search) before asking the caller. Ask the caller only for what the tools can't tell you, and ask once.",
+    ...(pharmacy ? ["- Check the whole profile: when a patient changes or moves pharmacies, review all of their prescriptions and point out any held at another store."] : []),
+    pharmacy
+      ? "- Before ending, give one complete read-back: the medication, its strength, what it's for, and the store."
+      : "- Before ending, give one complete read-back: the day, date, time and doctor of any appointment you booked or changed, and what you cancelled.",
+    "- Symptoms come first: if the caller mentions a symptom or side effect, address it before continuing. Emergency signs (chest pain or pressure, trouble breathing, stroke signs, a possible overdose): stop and tell them to call 911 now. Anything else: suggest the pharmacist or their doctor.",
+    `- Only promise what you control: don't promise what a doctor, another pharmacy, or a store the patient is only visiting will do. Say what you've requested and what happens next.`,
+    "- After a tool fails or times out, check the current status before trying again, so nothing is done twice.",
+    ...(pharmacy ? [`- Transfers from other pharmacies: ${customerName(ds)} requests the transfer; the caller doesn't need to call the old pharmacy.`] : []),
+  ];
+  return `${renderAgentPromptV1(ds)}\n\nCall-handling rules (follow them on every call):\n${rules.join("\n")}`;
+}
+
 /** Prompt versions the harness can run. Part 5 compares versions on the same scenarios. */
-export const PROMPT_VERSIONS = ["v1"] as const;
+export const PROMPT_VERSIONS = ["v1", "v2"] as const;
 export type PromptVersion = (typeof PROMPT_VERSIONS)[number];
 
 export function renderAgentPrompt(version: PromptVersion, ds: Dataset): string {
   switch (version) {
     case "v1": return renderAgentPromptV1(ds);
+    case "v2": return renderAgentPromptV2(ds);
   }
 }

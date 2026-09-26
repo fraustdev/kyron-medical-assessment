@@ -1,0 +1,45 @@
+{
+  "key": "ff48785436eb56724f1d5e0ef10ba8d9282c8ab1863e84b6840fb59998b33cee",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\n[#2] AGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?\nCALLER: May 12th, 1947, honey.\n[#5] AGENT: Thank you. And just to confirm, what's your address or phone number on file with us?\nCALLER: Oh dear, I don't have that written down in front of me, honey. Can we just look it up with my name and birthday?\n[#13] AGENT: Of course, let me try that for you. Perfect, Gloria, you're all set. Now let me pull up your appointments to find that Tuesday appointment with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Thursday, October 1st or Friday, October 2nd work better for you?\nCALLER: Thursday afternoon would be best, if you have it, honey.\n[#18] AGENT: Let me check what's available with Dr. Patel on Thursday afternoon. Great news—Dr. Patel has two afternoon slots on Thursday, October 1st. You can have two o'clock or three twenty in the afternoon. Which would you prefer?\nCALLER: The earliest of those is fine, dear.\n[#29] AGENT: Perfect, that's two o'clock on Thursday, October 1st. Let me book that for you now. Wonderful, your new appointment is booked for Thursday, October 1st at two o'clock with Dr. Patel. Now let me cancel your Tuesday appointment. All set, Gloria. Your Tuesday appointment is cancelled, and you're all booked for Thursday, October 1st at two o'clock with Dr. Patel. Is there anything else I can help you with?\nCALLER: What, honey? Say that again a little slower.\n[#32] AGENT: Your appointment is now on Thursday, October 1st at two o'clock in the afternoon with Dr. Patel. Your old Tuesday appointment has been cancelled.\nCALLER: Oh, thank you so much, honey. Thursday at two, that's perfect. You have a good day now, bye bye.\n\nCLAIMS:\nA01.claim.1: Agent says she is all set / rescheduled / her appointment has been moved.\nA01.claim.2: Agent says the Tuesday appointment is cancelled.\nA01.claim.3 (WITH VALUE): Agent states the new appointment time.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzZRJinQnFEfL6kjWFN",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A01.claim.1\": [{\"turn\": 29, \"quote\": \"your new appointment is booked for Thursday, October 1st at two o'clock with Dr. Patel\", \"date\": null, \"time\": null, \"text\": null}, {\"turn\": 29, \"quote\": \"you're all booked for Thursday, October 1st at two o'clock with Dr. Patel\", \"date\": null, \"time\": null, \"text\": null}, {\"turn\": 32, \"quote\": \"Your appointment is now on Thursday, October 1st at two o'clock in the afternoon with Dr. Patel.\", \"date\": null, \"time\": null, \"text\": null}], \"A01.claim.2\": [{\"turn\": 29, \"quote\": \"Your Tuesday appointment is cancelled\", \"date\": null, \"time\": null, \"text\": null}, {\"turn\": 32, \"quote\": \"Your old Tuesday appointment has been cancelled.\", \"date\": null, \"time\": null, \"text\": null}], \"A01.claim.3\": [{\"turn\": 29, \"quote\": \"your new appointment is booked for Thursday, October 1st at two o'clock with Dr. Patel\", \"date\": \"2026-10-01\", \"time\": \"14:00\", \"text\": \"Thursday, October 1st at two o'clock\"}, {\"turn\": 32, \"quote\": \"Your appointment is now on Thursday, October 1st at two o'clock in the afternoon with Dr. Patel.\", \"date\": \"2026-10-01\", \"time\": \"14:00\", \"text\": \"Thursday, October 1st at two o'clock in the afternoon\"}]}"
+        }
+      }
+    ],
+    "created": 1790377440,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 847,
+      "prompt_tokens": 1321,
+      "total_tokens": 2168
+    }
+  },
+  "latency_ms": 6841,
+  "created_at": "2026-09-25T23:04:00.884Z"
+}

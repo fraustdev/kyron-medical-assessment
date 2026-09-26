@@ -1,0 +1,664 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_A03_v1_t0_muhki1cj9d7a",
+    "scenario_id": "A03",
+    "dataset": {
+      "name": "harbor-clinic-scheduling-scenarios",
+      "version": "1.0.0",
+      "file_sha256": "1e6878d58f6ecf06d9fd9df56be69f3d851d0676430bdd1a6a9b29ddef365818"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "15041b22fa8215fbddfdf788f0fbeb0191703385f8913dda23e20f6012d1ec3d",
+      "prompt_text": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:03:59.059Z",
+    "ended_at": "2026-09-25T23:04:13.477Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 10,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name, DOB 1995-03-14, annual physical with Dr. Patel, 'next Friday', morning"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 876,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "I'd be happy to help you book that physical with Dr. Patel. Just to confirm the date—next Friday would be October 3rd, correct?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "49292360332540ceaa466b1eec6b416c01722ce483cff4e12fd6031ba9cced39",
+        "cache_hit": true,
+        "latency_ms": 876,
+        "usage": {
+          "input_tokens": 2634,
+          "output_tokens": 37
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "49292360332540ceaa466b1eec6b416c01722ce483cff4e12fd6031ba9cced39",
+          "cache_hit": true,
+          "latency_ms": 876,
+          "usage": {
+            "input_tokens": 2634,
+            "output_tokens": 37
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgW7vXWmkxhjrpbL8xi",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I'd be happy to help you book that physical with Dr. Patel. Just to confirm the date—next Friday would be October 3rd, correct?"
+            }
+          }
+        ],
+        "created": 1790363227,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 37,
+          "prompt_tokens": 2634,
+          "total_tokens": 2671
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 876,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "388db1ff658b7433a21acec99eed3010f1d0fd2ecdf7cc9e6dc77033b3e43a41",
+          "cache_hit": false,
+          "latency_ms": 6023,
+          "usage": {
+            "input_tokens": 829,
+            "output_tokens": 648
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 876,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "No, the Friday after tomorrow, so that's the 2nd, not the 3rd.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "28127a07e5fbbf6a7aad0ab2bec415e204bd4db2875b65c7af04a60e967819b1",
+          "cache_hit": true,
+          "latency_ms": 1347,
+          "usage": {
+            "input_tokens": 1285,
+            "output_tokens": 44
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2512,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Jamal Carter",
+        "dob": "3/14/95"
+      },
+      "normalized": {
+        "patient": "Jamal Carter"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2562,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Jamal Carter",
+        "provider_of_record": "Dr. Raj Patel",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 2562,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 4387,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "annual_physical",
+        "date_range": "2026-10-02..2026-10-02",
+        "provider": "Dr. Raj Patel"
+      },
+      "normalized": {
+        "provider": "Dr. Raj Patel",
+        "visit_type": "annual_physical"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 4437,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "annual_physical",
+        "slots": [
+          {
+            "slot_id": "PAT-20261002-0900",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-02T09:00"
+          },
+          {
+            "slot_id": "PAT-20261002-0920",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-02T09:20"
+          },
+          {
+            "slot_id": "PAT-20261002-1400",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-02T14:00"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 5461,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Got it, Friday, October 2nd. Let me verify your identity first, and then I'll search for morning slots with Dr. Patel that day. Great, you're verified. Now let me find morning slots for an annual physical with Dr. Patel on October 2nd. Perfect! I found two morning slots with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "76e22c8361c9098227f7995f0cf046f53f789278495ff15ff51c8c96d6a49c9f",
+        "cache_hit": true,
+        "latency_ms": 1024,
+        "usage": {
+          "input_tokens": 3136,
+          "output_tokens": 38
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "5f5eee5a23a32efb041cd586ae8d17a7796a16db92d189355f6442b5a34cef7b",
+          "cache_hit": true,
+          "latency_ms": 1636,
+          "usage": {
+            "input_tokens": 2695,
+            "output_tokens": 113
+          }
+        },
+        {
+          "cache_key": "6973479ad556580f22e2e56208993444679d6e46339344816c1b2948b2120c40",
+          "cache_hit": true,
+          "latency_ms": 1825,
+          "usage": {
+            "input_tokens": 2857,
+            "output_tokens": 140
+          }
+        },
+        {
+          "cache_key": "76e22c8361c9098227f7995f0cf046f53f789278495ff15ff51c8c96d6a49c9f",
+          "cache_hit": true,
+          "latency_ms": 1024,
+          "usage": {
+            "input_tokens": 3136,
+            "output_tokens": 38
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiY5GaE7GuCtEZED63G",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect! I found two morning slots with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?"
+            }
+          }
+        ],
+        "created": 1790364827,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 38,
+          "prompt_tokens": 3136,
+          "total_tokens": 3174
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 5461,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "The earliest one's fine."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent offers morning times on October 2",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "ff673654b006161bf54d8517c429f548cb27e92920e2721846014d235fa92bd4",
+          "raw_output": "{\"met\":true,\"why\":\"Agent offers 9:00 and 9:20 slots on Oct 2\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "6fb82fa1859008c7ca50538497b314a8ad3e5cdb25d5633aded343d7847b0a29",
+          "cache_hit": false,
+          "latency_ms": 5566,
+          "usage": {
+            "input_tokens": 1022,
+            "output_tokens": 586
+          }
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "t_ms": 5461,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "The earliest one's fine.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "cd06459f42dbdabcc3999e20459e49ee9c57e88c010fa1ffc83ec3387cba2c63",
+          "cache_hit": true,
+          "latency_ms": 988,
+          "usage": {
+            "input_tokens": 1476,
+            "output_tokens": 24
+          }
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "t_ms": 6740,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "book_appointment",
+      "args": {
+        "patient": "Jamal Carter",
+        "slot_id": "PAT-20261002-0900",
+        "visit_type": "annual_physical"
+      },
+      "normalized": {
+        "patient": "Jamal Carter",
+        "slot_id": "PAT-20261002-0900",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "annual_physical"
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 6860,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "book_appointment",
+      "result": {
+        "status": "booked",
+        "appointment_id": "APT-NEW-PAT-20261002-0900",
+        "provider": "Dr. Raj Patel",
+        "start": "2026-10-02T09:00",
+        "visit_type": "annual_physical"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 15,
+      "t_ms": 6860,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "bookings",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Jamal Carter",
+        "slot_id": "PAT-20261002-0900",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "annual_physical"
+      },
+      "call_id": "c3"
+    },
+    {
+      "seq": 16,
+      "t_ms": 6860,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-NEW-PAT-20261002-0900",
+        "patient": "Jamal Carter",
+        "provider": "Dr. Raj Patel",
+        "slot_id": "PAT-20261002-0900",
+        "start": "2026-10-02T09:00",
+        "visit_type": "annual_physical",
+        "status": "booked"
+      },
+      "call_id": "c3"
+    },
+    {
+      "seq": 17,
+      "t_ms": 7755,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "You're all set! Your annual physical with Dr. Patel is booked for Friday, October 2nd at nine o'clock in the morning.",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "aa214c307ccd6670fdcf6c8b7e421ee8e7d781b052175f504e9066dc42985464",
+        "cache_hit": true,
+        "latency_ms": 895,
+        "usage": {
+          "input_tokens": 3356,
+          "output_tokens": 36
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "ccff108d81b246533789be553c24821836c539bd0ced42167cc9639674f4dcf6",
+          "cache_hit": true,
+          "latency_ms": 1279,
+          "usage": {
+            "input_tokens": 3183,
+            "output_tokens": 105
+          }
+        },
+        {
+          "cache_key": "aa214c307ccd6670fdcf6c8b7e421ee8e7d781b052175f504e9066dc42985464",
+          "cache_hit": true,
+          "latency_ms": 895,
+          "usage": {
+            "input_tokens": 3356,
+            "output_tokens": 36
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiYheqidPCFNxvBZnCU",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're all set! Your annual physical with Dr. Patel is booked for Friday, October 2nd at nine o'clock in the morning."
+            }
+          }
+        ],
+        "created": 1790364835,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 36,
+          "prompt_tokens": 3356,
+          "total_tokens": 3392
+        }
+      }
+    },
+    {
+      "seq": 18,
+      "t_ms": 7755,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms a morning physical on Friday, October 2.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "bfdc662b7f9509bb46f8e96d043e0bf1a43b59b7d25f24424d94783fd178cb3d",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed booking for Oct 2 at 9am\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "2bed21a2ae92da2cbafb1fba25fbc6af691be8f58f5fd9c2d54708ecb7a7478e",
+          "cache_hit": false,
+          "latency_ms": 2818,
+          "usage": {
+            "input_tokens": 1082,
+            "output_tokens": 251
+          }
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "t_ms": 7755,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Cool, thanks. Bye.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "600fb68883da1e310f01c0d904e9781c80798fae54a693ee1fc28b2a5d7ad49e",
+          "cache_hit": true,
+          "latency_ms": 1206,
+          "usage": {
+            "input_tokens": 1519,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "t_ms": 7755,
+      "turn": 3,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent confirms a morning physical on Friday, October 2."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Jamal Carter",
+          "slot_id": "PAT-20261002-0900",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "annual_physical"
+        }
+      ],
+      "cancellations": [],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "world_state": {
+      "appointments": [
+        {
+          "appointment_id": "APT-NEW-PAT-20261002-0900",
+          "patient": "Jamal Carter",
+          "provider": "Dr. Raj Patel",
+          "slot_id": "PAT-20261002-0900",
+          "start": "2026-10-02T09:00",
+          "visit_type": "annual_physical",
+          "status": "booked"
+        }
+      ],
+      "open_slots": [
+        "PAT-20260925-0900",
+        "PAT-20260925-0920",
+        "PAT-20261002-0940",
+        "PAT-20261002-1400",
+        "PAT-20261002-1420"
+      ]
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Jamal Carter",
+          "dob": "3/14/95"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "annual_physical",
+          "date_range": "2026-10-02..2026-10-02",
+          "provider": "Dr. Raj Patel"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 13,
+        "call_id": "c3",
+        "tool": "book_appointment",
+        "args": {
+          "patient": "Jamal Carter",
+          "slot_id": "PAT-20261002-0900",
+          "visit_type": "annual_physical"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 4,
+      "caller_turns": 4,
+      "agent_turns": 3,
+      "tool_calls": 3,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:04:13.478Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

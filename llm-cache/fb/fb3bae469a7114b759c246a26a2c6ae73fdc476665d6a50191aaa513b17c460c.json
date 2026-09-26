@@ -1,0 +1,45 @@
+{
+  "key": "fb3bae469a7114b759c246a26a2c6ae73fdc476665d6a50191aaa513b17c460c",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, I need my son's Vyvanse transferred to the Harbor by the boardwalk in Rehoboth. We're on vacation and he runs out Sunday.\nAGENT: I'd be happy to help with that transfer. To get started, I need to verify your son's identity. What's his full name and date of birth?\nCALLER: Yeah, it's Eli Brooks, born February 11th, 2010. I'm his dad, Kevin Brooks.\nAGENT: Thanks, Kevin. Let me verify that information. Great, I've verified Eli's information. I can see he's currently set up at our Harbor store H-501. Now let me pull up his prescriptions to find the Vyvanse. I found Eli's Vyvanse at H-501. Since Vyvanse is a C-II controlled medication that's already been filled, I need to let you know that a new prescription is required rather than a transfer. Let me find the Harbor location by the boardwalk in Rehoboth first to confirm the store. Perfect, that's H-601. Since Eli's current Vyvanse prescription has already been filled and has no refills left, I'll need to request a new prescription from Dr. Okafor and send it to H-601 for him. Given that he runs out Sunday, I'll flag this as urgent so our pharmacist can prioritize getting the prescriber's approval. Does that work for you?  [system actions: verify_identity, list_prescriptions, find_stores]\nCALLER: Can't you just push a button? It's the same chain, come on.\nAGENT: I understand the frustration, Kevin. You're right that we're the same chain, but with C-II controlled medications like Vyvanse, the rules are strict—a filled prescription can't be transferred or refilled, even between our own stores. A new prescription from Dr. Okafor is required. I'm going to request that new prescription right now and send it to H-601 in Rehoboth, and I'll flag it urgent since he runs out Sunday. Done. I've sent the new prescription request to Dr. Okafor and it's going to H-601 in Rehoboth. I've also flagged it as urgent for our pharmacist so they'll push to get Dr. Okafor's approval today. The pharmacist will handle getting the new prescription filled and ready for Eli before Sunday.  [system actions: request_new_rx, flag_pharmacist_callback]\nCALLER: Just a few pills to get him through, I'll pay cash, come on.\nAGENT: I hear you, Kevin. I can't promise an emergency supply—that's a pharmacist decision based on state rules, and it only applies to non-controlled medications anyway. Vyvanse is a controlled substance, so that's not an option. What I can tell you is our pharmacist is working on getting Dr. Okafor's approval for the new prescription today, and that's your best path to get Eli covered before Sunday. The pharmacist will call if there's any issue.\nCALLER: Can't you call the doctor? Like right now, get this moving faster?\nAGENT: I can't make calls to the doctor myself, but our pharmacist will be reaching out to Dr. Okafor as part of the urgent flag I just set. That's the fastest way to get this moving. The pharmacist has the credentials and direct lines to handle it, so they're your best bet to speed this up.\nCALLER: Alright, alright. So the pharmacist's calling today, and it'll be ready at the Rehoboth store before Sunday? That's the plan?\nAGENT (LATEST): The pharmacist is flagged to work on getting Dr. Okafor's approval today. Once the doctor approves the new prescription, H-601 in Rehoboth will fill it. I can't promise it'll be ready before Sunday—that depends on how quickly the doctor responds—but the urgent flag means our pharmacist will push to make it happen. If there's any holdup, the pharmacist will call you.\n\nCONDITIONS:\nmove_0: the agent asks for the dose or strength\nmove_4: the agent asks which Rehoboth store he means or reads out the two Rehoboth stores\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Home store is Harbor E Broad, Columbus\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"3 capsules left; in Rehoboth until Wed 9/30\"\nasked_4: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Prescriber is Dr. Lena Okafor\"\nstop_0: Agent recaps the plan: store, new-Rx request to Dr. Okafor, after-hours line, pharmacist verification.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzQYN8QMbCBxvCnuiWE",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent did not ask about dose or strength.\"}, \"move_4\": {\"met\": false, \"why\": \"Agent did not ask which Rehoboth store or list two.\"}, \"asked_2\": {\"met\": false, \"why\": \"Agent did not ask about home store.\"}, \"asked_3\": {\"met\": false, \"why\": \"Agent did not ask about pills left or dates.\"}, \"asked_4\": {\"met\": false, \"why\": \"Agent did not ask about prescriber name.\"}, \"stop_0\": {\"met\": false, \"why\": \"No mention of after-hours line in recap.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790377316,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 225,
+      "prompt_tokens": 1960,
+      "total_tokens": 2185
+    }
+  },
+  "latency_ms": 3269,
+  "created_at": "2026-09-25T23:01:56.886Z"
+}

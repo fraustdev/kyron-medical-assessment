@@ -1,0 +1,45 @@
+{
+  "key": "6a0c0356b66f7ff604291d72b9cf078566a873e159f8c73515e089c2c4e0d2f4",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\nAGENT: I'll verify your identity and then help you transfer those prescriptions. I don't see any active prescriptions on file for you at Harbor Pharmacy. Your albuterol and sertraline are at Brightway 4471 in Columbus, which is outside our system. To transfer them to Harbor, the receiving Harbor store needs to request them from Brightway. Which Harbor location on Main Street works best for you—downtown at 120 Main, or the university location at 2250 Main?  [system actions: verify_identity, find_stores, list_prescriptions]\nCALLER: Near Oak, that's the one by my apartment.\nAGENT (LATEST): Perfect, that's Harbor Pharmacy Main St University at 2250 Main near Oak. I'll request the transfer of your albuterol and sertraline from Brightway 4471 to that store. Great! I've requested both transfers. Your albuterol and sertraline are being transferred from Brightway 4471 to Harbor Pharmacy Main St University at 2250 Main near Oak, and I've set that as your home pharmacy. Our staff will complete the transfer after this call, and you should be able to pick them up there soon.  [system actions: transfer_rx, transfer_rx, set_default_store]\n\nCONDITIONS:\nmove_0: the agent first asks which Main St store he means without offering options\nmove_2: the agent asks him to look up the address\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know the address\"\nstop_0: Agent confirms both transfers to H-302 with its address.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzCbRbnbkQsft592weo",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent offered two options, didn't ask without options\"}, \"move_2\": {\"met\": false, \"why\": \"Agent did not ask caller to look up address\"}, \"asked_3\": {\"met\": false, \"why\": \"Latest turn asks nothing about knowing address\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent confirms both transfers with the store address\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790377155,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 390,
+      "prompt_tokens": 1006,
+      "total_tokens": 1396
+    }
+  },
+  "latency_ms": 4565,
+  "created_at": "2026-09-25T22:59:16.075Z"
+}

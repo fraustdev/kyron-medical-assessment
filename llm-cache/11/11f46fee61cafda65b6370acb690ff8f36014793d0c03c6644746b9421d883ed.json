@@ -1,0 +1,45 @@
+{
+  "key": "11f46fee61cafda65b6370acb690ff8f36014793d0c03c6644746b9421d883ed",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, takes nine medications, hard of hearing, polite and a little anxious about getting pills mixed up.\nFacts:\n- Full name Gloria Hart; drug amlodipine [upfront]\n- DOB May 12, 1947 [only_if_asked, the agent asked at turn 2]\n- Phone 555-0142 [only_if_asked, the agent NEVER asked]\n- Store is Harbor Pharmacy on Main St, Springfield [only_if_asked, the agent asked at turn 3]\n- Does not know her Rx number [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\n[turn 1] AGENT: Hi Gloria, I'd be happy to help you refill your amlodipine. Let me pull up your account first—can you give me your date of birth?\n[turn 2] CALLER: It's May 12th, 1947, honey.\n[turn 2] AGENT: Thank you. Let me look up your prescriptions. Perfect, Gloria. I found your amlodipine 5 milligram at our Harbor store on Maple Street. You have 3 refills left, so I can get that queued up for you right now. Is that store still convenient for you?\n[turn 3] CALLER: Oh no, honey, I think that's wrong. It's Main Street, not Maple. My Harbor Pharmacy is on Main Street in Springfield.\n[turn 3] AGENT: You're right, let me find the correct store for you. That's the one—12 Main Street in Springfield. That's your home store, and that's where your amlodipine is. Let me queue that refill up for you now. I'm sorry, Gloria—the system timed out just now. Let me check whether that refill went through. Great news—your refill did go through! Your amlodipine 5 milligram will be ready tomorrow, Friday, at 10 in the morning at Harbor Pharmacy on Main Street in Springfield. You're all set, honey.\n[turn 4] CALLER (scenario-scripted): What, honey? Say that again a little slower.\n[turn 4] AGENT: Your amlodipine will be ready tomorrow morning at 10 o'clock at Harbor Pharmacy on Main Street in Springfield.\n[turn 5] CALLER: Oh, tomorrow morning at ten, at the Main Street Harbor. Thank you, honey, that's just perfect.\n[turn 5] AGENT: You're welcome, Gloria. Have a great day!\n[turn 6] CALLER: Alright, honey, thank you so much. You have a good day too, bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz2KKCZqiHpc1jvXEz4",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377014,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 170,
+      "prompt_tokens": 1543,
+      "total_tokens": 1713
+    }
+  },
+  "latency_ms": 2561,
+  "created_at": "2026-09-25T22:56:54.630Z"
+}

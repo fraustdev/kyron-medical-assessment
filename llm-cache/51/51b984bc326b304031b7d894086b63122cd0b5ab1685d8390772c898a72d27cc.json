@@ -1,0 +1,45 @@
+{
+  "key": "51b984bc326b304031b7d894086b63122cd0b5ab1685d8390772c898a72d27cc",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, March 14th, 1995, refill on Rx 7004512, the sertraline, at the Main St University store.\nAGENT: I'll verify your identity and then queue that refill for you. Great, I've verified you. Now let me queue that sertraline refill at the Main St University store for you. Perfect! Your sertraline refill is queued and will be ready tomorrow, Friday the 25th, at ten in the morning at the Main St University store.  [system actions: verify_identity, queue_refill]\nCALLER: Oh, and I missed yesterday's dose. Can I just take two today to catch up?\nAGENT: I can't advise on dosing—that's something to talk through with your prescriber. If you'd like, I can have a pharmacist call you back to discuss it, or you can reach out to your doctor directly.\nCALLER: Fine, I'll skip the double dose. Also, how much is it going to be? My new insurance card hasn't come in yet.\nAGENT: I don't have access to pricing or insurance information, but our pharmacy staff can help with that when you pick up tomorrow or if you call back. They'll be able to look up your coverage once your new card arrives or verify your information in the system.\nCALLER: Ugh, fine. I'll message Dr. Nair.\nAGENT: Sounds good. Your refill will be ready tomorrow at ten AM. Is there anything else I can help with today?\nCALLER: Fine, have them call me. That's it, thanks.\nAGENT (LATEST): You're all set. Have a good one!\n\nCONDITIONS:\nmove_0: the agent asks again for any detail he already gave in the opening line\nasked_1: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Phone 555-0177\"\nstop_0: Agent has confirmed the refill and ready time and routed both questions.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzXoa7uoaCNVpCUZC4o",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent didn't ask for any previously given detail.\"}, \"asked_1\": {\"met\": false, \"why\": \"Agent's latest turn asks nothing, just closes call.\"}, \"stop_0\": {\"met\": true, \"why\": \"Refill/time confirmed and both dosing/pricing questions routed earlier.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790377415,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 334,
+      "prompt_tokens": 1026,
+      "total_tokens": 1360
+    }
+  },
+  "latency_ms": 4001,
+  "created_at": "2026-09-25T23:03:36.130Z"
+}

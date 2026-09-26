@@ -1,0 +1,45 @@
+{
+  "key": "e65bfbc9a0f91deef8620a93aec1cd188bc3863cc311b6cc9f6de6334805443d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Walter \"Walt\" Kowalski, caregiver. 58, caregiver for his mother Irene (84, dementia). On file as an authorized caregiver. Tired of being treated like a stranger.\nFacts:\n- Patient Irene Kowalski; drug is 'the memory pill, the Aricept one' [upfront]\n- DOB March 3, 1942 [only_if_asked, the agent asked at turn 2]\n- Caller is her son Walt [only_if_asked, the agent NEVER asked]\n- Does not have the Rx number [only_if_asked, the agent NEVER asked]\n- Store is Harbor Maple Ave [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Yeah, hi, I need to refill my mother's memory pill. The Aricept one. Irene Kowalski.\n[turn 1] AGENT: I'd be happy to help with your mother's Aricept refill. Let me pull up her record first. Can I get her date of birth?\n[turn 2] CALLER: March 3rd, 1942. Now can you get her refill going at the Maple Ave store?\n[turn 2] AGENT: Great, I found the Aricept—that's the donepezil 10 mg with three refills left. It's already at the Maple Ave store, so I'll queue up the refill for you now. Perfect! The donepezil 10 mg refill is queued and will be ready tomorrow morning at ten o'clock at Harbor Pharmacy on Maple Ave in Brookfield.\n[turn 3] CALLER: Alright, tomorrow at ten at Maple Ave. Thanks for finally getting that sorted. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz4gq4X6djKuTu5qhQ3",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 2, \"fact\": \"Store is Harbor Maple Ave\", \"severity\": \"major\", \"quote\": \"Now can you get her refill going at the Maple Ave store?\", \"why\": \"This is an only_if_asked fact; the agent never asked about the store location, yet the caller volunteered it, directly influencing where the agent queued the refill.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377049,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 439,
+      "prompt_tokens": 1194,
+      "total_tokens": 1633
+    }
+  },
+  "latency_ms": 5062,
+  "created_at": "2026-09-25T22:57:29.323Z"
+}

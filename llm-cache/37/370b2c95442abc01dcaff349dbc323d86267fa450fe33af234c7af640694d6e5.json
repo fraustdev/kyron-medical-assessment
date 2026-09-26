@@ -1,0 +1,45 @@
+{
+  "key": "370b2c95442abc01dcaff349dbc323d86267fa450fe33af234c7af640694d6e5",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\nAGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me first verify your identity, and then we'll get everything set up. What's your date of birth?\nCALLER: August 30th, 1982. So can we get all three of us switched over today?\nAGENT (LATEST): Thanks. Let me verify your information and pull up your family's prescriptions. Great, Kevin, you're verified. I found the Gahanna store at 85 Mill Street. Before I move everyone's prescriptions, I need the full names and dates of birth for the other two family members so I can pull up their records and move theirs as well. Who are they?  [system actions: verify_identity, find_stores, find_stores]\n\nCONDITIONS:\nmove_0: the agent says the Vyvanse cannot be transferred\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Maya DOB 2017-06-20; Eli DOB 2010-02-11\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse\"\nstop_0: Agent recaps: two moved, defaults set, Vyvanse new-Rx request to Dr. Okafor.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzqsbihp7oYo6uf4WDu",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent never mentions Vyvanse or transfer issue.\"}, \"asked_2\": {\"met\": true, \"why\": \"Agent asks for names and DOBs of other family members.\"}, \"asked_3\": {\"met\": false, \"why\": \"Agent asks for identity info, not prescription names.\"}, \"stop_0\": {\"met\": false, \"why\": \"No recap of moved prescriptions or Vyvanse request given.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services.\"}}"
+        }
+      }
+    ],
+    "created": 1790377659,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 178,
+      "prompt_tokens": 920,
+      "total_tokens": 1098
+    }
+  },
+  "latency_ms": 2252,
+  "created_at": "2026-09-25T23:07:39.516Z"
+}

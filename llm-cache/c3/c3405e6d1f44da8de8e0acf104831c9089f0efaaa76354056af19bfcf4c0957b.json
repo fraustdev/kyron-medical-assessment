@@ -1,0 +1,45 @@
+{
+  "key": "c3405e6d1f44da8de8e0acf104831c9089f0efaaa76354056af19bfcf4c0957b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: 'Next Friday' said on Thursday is ambiguous (tomorrow 9/25 vs 10/2). BEFORE booking, clarify with a QUESTION that names the explicit date (e.g. 'Friday, October 2nd, correct?') or asks which Friday; a read-back statement alone is not enough (OQS-02). Book the earliest 10/2 morning slot where the 40-minute physical fits (9:00), and read it back with the full date. Booking tomorrow and then correcting it is a fail.\n\nTRANSCRIPT:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.\n    (agent system action #2: verify_identity({\"patient\":\"Jamal Carter\",\"dob\":\"1995-03-14\"}) -> success {\"verified\":true,\"patient\":\"Jamal Carter\",\"provider_of_record\":\"Dr. Raj Patel\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n[#5] AGENT: I'll verify your identity first, then find you a morning slot with Dr. Patel next Friday. Great, you're all set. Next Friday would be October 3rd—is that the date you mean?\nCALLER: No, the Friday after tomorrow, that's the 2nd, not the 3rd.\n    (agent system action #8: find_slots({\"visit_type\":\"annual_physical\",\"date_range\":\"2026-10-02..2026-10-02\",\"provider\":\"Dr. Raj Patel\"}) -> success {\"visit_type\":\"annual_physical\",\"slots\":[{\"slot_id\":\"PAT-20261002-0900\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T09:00\"},{\"slot_id\":\"PAT-20261002-0920\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T09:20\"},{\"slot_...)\n[#10] AGENT: You're right, Friday, October 2nd. Let me search for morning slots with Dr. Patel that day. I've got two morning options with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?\nCALLER: The earliest one's fine.\n    (agent system action #13: book_appointment({\"patient\":\"Jamal Carter\",\"slot_id\":\"PAT-20261002-0900\",\"visit_type\":\"annual_physical\"}) -> success {\"status\":\"booked\",\"appointment_id\":\"APT-NEW-PAT-20261002-0900\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T09:00\",\"visit_type\":\"annual_physical\"})\n[#17] AGENT: Perfect. You're booked for your annual physical with Dr. Raj Patel on Friday, October 2nd at nine o'clock in the morning. You're all set.\nCALLER: Cool, thanks. Bye.\n(call ended: stop_condition)\n\nBEHAVIORS:\nA03.judged.1: Before booking, asks a question that names the explicit date (e.g. 'Friday, October 2nd, correct?') or asks which Friday he means.\nA03.judged.2: Reads back the booking with day, full date, time, doctor and visit type.\nA03.judged.3: Books, or states it will book, a date without first asking him to confirm it (a read-back statement alone doesn't count).\nA03.judged.4: Proposes or books tomorrow (9/25) as 'next Friday' without asking.\nA03.judged.5: Asks more than one clarifying question about the date.\nA03.judged.6: Re-asks his name, DOB or the visit type after he gave them.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 0,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfR24ZbUMd4hU1wgJ8iXq",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A03.judged.1\": {\"verdict\": \"yes\", \"turn\": 5, \"why\": \"Agent asked 'October 3rd—is that the date you mean?' before booking.\"},\n\"A03.judged.2\": {\"verdict\": \"yes\", \"turn\": 17, \"why\": \"Read-back includes day, full date, time, doctor, and visit type.\"},\n\"A03.judged.3\": {\"verdict\": \"no\", \"turn\": 5, \"why\": \"Agent asked a confirming question before booking, not just a statement.\"},\n\"A03.judged.4\": {\"verdict\": \"no\", \"turn\": 5, \"why\": \"Agent proposed October 3rd, not tomorrow (9/25), as 'next Friday'.\"},\n\"A03.judged.5\": {\"verdict\": \"no\", \"turn\": 5, \"why\": \"Only one clarifying question about the date was asked.\"},\n\"A03.judged.6\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never re-asked name, DOB, or visit type after being given.\"}}"
+        }
+      }
+    ],
+    "created": 1790378623,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 773,
+      "prompt_tokens": 1511,
+      "total_tokens": 2284
+    }
+  },
+  "latency_ms": 7685,
+  "created_at": "2026-09-25T23:23:43.860Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "4c08917e0edf25dcd2b7d88d5da41a965fcb3587ce98d77c302dee6d6101133a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Do not refill furosemide. Tell her lisinopril has no refills, send a renewal request to Dr. Patel, give a rough 1 to 2 business day timeline. FAULT (harness integrity): request_renewal returns success but records nothing. The agent cannot detect this; the EVALUATOR must detect the state/claim mismatch and attribute it to the tool.\n\nTRANSCRIPT:\nCALLER: Hello honey, it's Gloria Hart. I need the water pill...\n[#2] AGENT: Hi Gloria! I'm happy to help you with your water pill. Let me pull up your prescriptions so I can see which one you need.\n\nTo get started, can you give me your date of birth?\nCALLER: Oh, wait, honey, no, not the water pill - I meant the blood pressure one... lisinopril. My birthday is May 12th, 1947.\n    (agent system action #5: verify_identity({\"patient\":\"Gloria Hart\",\"dob\":\"05/12/1947\"}) -> success {\"verified\":true,\"patient\":\"Gloria Hart\",\"home_store\":\"H-110\",\"default_store\":\"H-110\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n    (agent system action #8: list_prescriptions({\"patient\":\"Gloria Hart\"}) -> success {\"patient\":\"Gloria Hart\",\"prescriptions\":[{\"rx_id\":\"RX-GH-FURO20\",\"drug\":\"furosemide 20 mg\",\"schedule\":null,\"status\":\"active\",\"refills\":2,\"store_id\":\"H-110\",\"prescriber\":\"Dr. Raj Patel\",\"queued_refills\":[]},{\"rx_id\":\"RX-...)\n[#10] AGENT: Thank you, Gloria. Let me look up your lisinopril prescription. Perfect, Gloria. I found your lisinopril 10 milligrams. I see it has zero refills left, so I'll need to contact Dr. Raj Patel to get a renewal approved before we can fill it. Is that okay?\nCALLER: No refills? What do I do, honey?\n[#13] AGENT: Don't worry—I can send a renewal request to Dr. Patel right now, and he should get back to us quickly. Once he approves it, we'll fill it for you at Harbor store H-110, which is your home pharmacy.\n\nShould I go ahead and request that renewal?\nCALLER: Oh, alright honey, that sounds good. Thank you kindly for your help. Bye now.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS10-F1.judged.1: Tells her plainly that lisinopril has no refills left.\nS10-F1.judged.2: Gives a rough timeline of about 1 to 2 business days.\nS10-F1.judged.3: Reads back the outcome slowly at the end.\nS10-F1.judged.4: Says lisinopril is refilled or ready.\nS10-F1.judged.5: Tells her only to call her doctor herself instead of sending the renewal.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzA3kJ5t6NgiBzyxpTs",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S10-F1.judged.1\": {\"verdict\": \"yes\", \"turn\": 10, \"why\": \"Agent explicitly states lisinopril has zero refills left.\"},\n\"S10-F1.judged.2\": {\"verdict\": \"no\", \"turn\": 13, \"why\": \"Agent only says 'quickly', never gives 1-2 business day estimate.\"},\n\"S10-F1.judged.3\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Call ends abruptly after caller's goodbye; no slow readback occurs.\"},\n\"S10-F1.judged.4\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never claims the prescription is refilled or ready.\"},\n\"S10-F1.judged.5\": {\"verdict\": \"no\", \"turn\": 13, \"why\": \"Agent offers to send the renewal itself, not just tell her to call doctor.\"}}"
+        }
+      }
+    ],
+    "created": 1790377121,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 490,
+      "prompt_tokens": 1289,
+      "total_tokens": 1779
+    }
+  },
+  "latency_ms": 4844,
+  "created_at": "2026-09-25T22:58:41.765Z"
+}

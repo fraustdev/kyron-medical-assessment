@@ -15,6 +15,14 @@ export const LABELS_FILE = join(REPO_ROOT, "labels", "labels.json");
 /** The on-disk database (gitignored). It is derived: delete it any time and it is rebuilt from runs/ and labels/. */
 export const DB_FILE = join(REPO_ROOT, "data", "harbor.db");
 
+/** An in-memory copy for read-only command-line use (never touches data/harbor.db, which the app may hold open). */
+export function inMemoryDb(): Db {
+  const db = new Db();
+  db.importRuns();
+  db.importLabels();
+  return db;
+}
+
 /** Open a fresh database file rebuilt from the committed runs and labels. */
 export function openFreshDb(file = DB_FILE): Db {
   mkdirSync(dirname(file), { recursive: true });

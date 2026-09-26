@@ -209,12 +209,29 @@ Each fix made the simulator enforce its brief *structurally* rather than by inst
 
 ## 10. What this harness can and cannot tell us about a real voice system
 
-*TODO: to be written by the author after reading the traces.* Outline:
-1. What a text-only simulation leaves out (ASR errors, barge-in, latency the caller actually feels, prosody).
-2. How closely the mock tools resemble a real pharmacy or clinic system.
-3. The simulated caller's biases (cooperative, follows its brief, consistent).
-4. What a passing run does and does not show.
-5. What would be needed to trust results on real traffic.
+*TODO (author): write this section in your own words. The bullets under each point are evidence from the runs to draw on; delete them once written.*
 
-## 11. Open items for Part 3 (noted, not decided here)
+1. **What a text-only simulation leaves out.**
+   - Speech-recognition errors on drug names, DOBs and store names ("sertraline"/"Zoloft", "3/14/95"). Every caller line here arrives as perfect text.
+   - Barge-in and talking over the agent; silence and hold time. The caller here always waits for a full turn.
+   - Latency the caller feels. Agent response times are recorded (about 1–2 s per turn for Haiku) but don't affect the simulated caller.
+   - Tone and prosody: Gloria's "what, honey?" is written in, not heard.
+2. **How closely the mock tools resemble a real pharmacy or clinic system.**
+   - Built to follow your decisions: the receiving pharmacy requests transfers; transfers within Harbor are instant for non-controlled drugs; controlled drugs go to a pharmacist; home store = default store; no stock visibility.
+   - Simplified: no insurance or price checks, no refill-too-soon edits, no duplicate-order protection (that's why S01-F2's duplicate refill was possible), and one directory covering Harbor stores only (that's why transfers in from Brightway fail).
+   - Faults are injected on purpose (timeouts that did or didn't commit, errors, silent no-ops, empty results) to test honesty under failure.
+3. **The simulated caller's biases.**
+   - Cooperative and consistent: it answers what's asked, rarely changes its mind, and never hangs up in frustration unless scripted.
+   - It still slips. Over three baseline runs it leaked hidden facts through sample lines and personas, and volunteered only-if-asked facts, until the brief was enforced in code. It invented details (S17's store number, which the agent then used; S07's "Dr. Patel"; S14's "Fifth and Main"). About 1–3 calls in 38 per batch are excluded as unfair tests.
+   - It can't say anything outside its brief, even something a real person would know (A02: Gloria doesn't know her own phone number).
+4. **What a passing run does and does not show.**
+   - It shows that on *this* scenario, with *this* caller behavior, one trial, the agent reached the required outcomes, made no false claims, and handled the caller acceptably by the rubric.
+   - It doesn't show the agent would pass again (one trial; the agent and the caller are both random), would pass with a real caller or voice, or is right about things the rubric doesn't check. Calibration found 4 calls you'd fail that the rubric passed.
+5. **What would be needed to trust results on real traffic.**
+   - A reviewed sample of real calls, labelled with the same rubric, to check the scenarios look like real calls and the grader agrees with reviewers on them.
+   - Several trials per scenario, a second reviewer, and a judge from a different model family than the simulator.
+   - Voice in the loop.
+   - See PRODUCTION.md.
+
+## 11. Open items (noted, not decided)
 - **Retry count must not affect grading** (author decision). However, the frozen pharmacy dataset's check **S11-F1.state.5** ("does not retry the failing transfer more than 3 times") and the golden S11-F1.good's `for_part3` note both reference an attempt cap. Part 3 must decide whether that cap counts as "depending on retry count"; the harness only records attempts.

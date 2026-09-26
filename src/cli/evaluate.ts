@@ -19,12 +19,14 @@ import { getScenario, loadDataset } from "../world/dataset.js";
 const args = process.argv.slice(2);
 const mode = args.includes("replay") ? "replay" : "live";
 const files = args.filter((a) => a.endsWith(".json"));
-const judge = args.includes("--no-judge") ? null : new LlmJudge(new ChatClient(llmConfigFromEnv("JUDGE"), new LlmCache(mode)));
+const judgeClient = args.includes("--no-judge") ? null : new ChatClient(llmConfigFromEnv("JUDGE"), new LlmCache(mode));
 
 for (const f of files) {
   const trace = JSON.parse(readFileSync(f, "utf8")) as Trace;
   const key = trace.metadata.dataset.name.includes("clinic") ? "scheduling" : "pharmacy";
   const scenario = getScenario(loadDataset(key), trace.metadata.scenario_id);
+  // Same seed as the batch runner used (the trace's own), so re-grading reuses cached judge calls.
+  const judge = judgeClient ? new LlmJudge(judgeClient, trace.metadata.seed) : null;
   const result = await evaluate(trace, scenario, judge);
   writeFileSync(f.replace(/\.json$/, ".eval.json"), JSON.stringify(result, null, 2) + "\n");
   console.log(formatEval(result) + "\n");

@@ -1,0 +1,45 @@
+{
+  "key": "d8dbc2782b7b49df8ed3f82bb2b050f18b6f6a45b60def5b4083d15740229e92",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Yeah, hi, I need to refill my mother's memory pill. The Aricept one. Irene Kowalski.\n[#2] AGENT: I'd be happy to help you refill your mother's Aricept. Let me verify her information first. What's her date of birth?\nCALLER: March 3rd, 1942. Now can you get her refill going at the Maple Ave store?\n[#10] AGENT: Great, I've verified your mother's information. Now let me pull up her prescriptions to find the Aricept. I found her Aricept—that's the donepezil 10 mg, and it has three refills available. Her home store is H-101 on Maple Ave. Before I queue the refill there, just to confirm: you want it at the Maple Ave location, correct?\nCALLER: Yeah, that's right, Maple Ave, same as always. So when's it gonna be ready?\n[#17] AGENT: Perfect, the refill is queued. It'll be ready tomorrow morning at ten o'clock at the Maple Ave store.\nCALLER: Alright, ten o'clock tomorrow, got it. Thanks for finally getting that sorted. Bye.\n\nCLAIMS:\nS05.claim.1: Agent says the donepezil refill is placed/queued/ready.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz6G5qmoXCzF4ZsfrDR",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S05.claim.1\": [{\"turn\": 17, \"quote\": \"the refill is queued. It'll be ready tomorrow morning at ten o'clock at the Maple Ave store.\", \"date\": \"2026-09-25\", \"time\": \"10:00\", \"text\": \"Maple Ave store\"}]}"
+        }
+      }
+    ],
+    "created": 1790377067,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 153,
+      "prompt_tokens": 862,
+      "total_tokens": 1015
+    }
+  },
+  "latency_ms": 1915,
+  "created_at": "2026-09-25T22:57:47.555Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "0a43c19e5a35510e1b4206c6a1a231c452ce32eb74da6f7ed27004b9d5a3c215",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, busy and impatient; gives everything in one breath and uses casual relative dates.\nFacts:\n- Name, DOB 1995-03-14, annual physical with Dr. Patel, 'next Friday', morning [upfront]\n- By 'next Friday' he means Friday, October 2, not tomorrow (Friday, September 25) [only_if_asked, the agent NEVER asked]\n- Wants the earliest morning time that day [only_if_asked, the agent NEVER asked]\n- Phone 555-0177 [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can.\n[turn 1] AGENT: I'll verify your identity first, then find you a morning slot with Dr. Patel next Friday. Great, you're all set. Next Friday would be October 3rd—is that the date you mean?\n[turn 2] CALLER: No, the Friday after tomorrow, that's the 2nd, not the 3rd.\n[turn 2] AGENT: You're right, Friday, October 2nd. Let me search for morning slots with Dr. Patel that day. I've got two morning options with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?\n[turn 3] CALLER (scenario-scripted): The earliest one's fine.\n[turn 3] AGENT: Perfect. You're booked for your annual physical with Dr. Raj Patel on Friday, October 2nd at nine o'clock in the morning. You're all set.\n[turn 4] CALLER: Cool, thanks. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzYBit2P7NqGmVm6P5q",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377419,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 207,
+      "prompt_tokens": 1219,
+      "total_tokens": 1426
+    }
+  },
+  "latency_ms": 2995,
+  "created_at": "2026-09-25T23:03:40.283Z"
+}

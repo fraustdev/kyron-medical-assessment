@@ -1,0 +1,184 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_S08_v2_t0_muhk9s9p9240",
+  "scenario_id": "S08",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "0b02b1e29276cca46863952c381c49473ece6ffc6129937d9d78b352f8d7e14f",
+    "checks_prompt_sha256": "f799a02fb6c9e806ca165a924925a67bbb6cc6d51628bdab9cc56d372c508d77",
+    "llm_calls": [
+      {
+        "cache_key": "8e3a81f03ecd6d629cfad34924799f9efb25f51a89ebbfe0fe31ba51249adb90",
+        "cache_hit": true,
+        "latency_ms": 3685,
+        "usage": {
+          "input_tokens": 1128,
+          "output_tokens": 406
+        }
+      },
+      {
+        "cache_key": "e94c4640a3af1f36846e4fdf366004607a6a1a86234afdd2ac2873786d297b5f",
+        "cache_hit": true,
+        "latency_ms": 5151,
+        "usage": {
+          "input_tokens": 1672,
+          "output_tokens": 437
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "S08.state.1",
+      "text": "Verifies Irene with name and DOB.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "verify_identity called as required (once)"
+    },
+    {
+      "id": "S08.state.2",
+      "text": "Transfers metformin 500 mg from H-102 to H-101 after Walt agrees.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "Found in transfers"
+    },
+    {
+      "id": "S08.state.3",
+      "text": "Sets a default store other than H-101.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in default store changes"
+    },
+    {
+      "id": "S08.state.4",
+      "text": "No renewal request is sent for a transfer within the chain.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "passed": true,
+      "detail": "Nothing in renewal requests"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "Walt asked for Maple Ave (H-101).",
+      "violated": false,
+      "detail": "Nothing in default store changes"
+    },
+    {
+      "index": 1,
+      "reason": "A transfer within the chain needs no prescriber.",
+      "violated": false,
+      "detail": "Nothing in renewal requests"
+    }
+  ],
+  "end_state_match": {
+    "match": "expected",
+    "differs": []
+  },
+  "claims": [
+    {
+      "id": "S08.claim.1",
+      "claim": "Agent says all of Irene's prescriptions are now at Maple Ave.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 22,
+          "quote": "So now all of your mother's prescriptions are at 88 Maple Ave in Brookfield",
+          "verdict": "true",
+          "detail": "Found in transfers"
+        }
+      ]
+    },
+    {
+      "id": "S08.claim.2",
+      "claim": "Agent says Maple Ave is (now) Irene's default store.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 10,
+          "quote": "It looks like Maple Ave is already her home pharmacy—that's H-101 at 88 Maple Ave in Brookfield.",
+          "verdict": "true",
+          "detail": "verify_identity called as required (once)"
+        },
+        {
+          "seq": 15,
+          "quote": "Yes, 88 Maple Ave is already set as her home pharmacy.",
+          "verdict": "true",
+          "detail": "verify_identity called as required (once)"
+        }
+      ]
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "S08.judged.1",
+      "text": "Proactively tells Walt that the metformin is still at the Oak St store (H-102) before ending the call.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 15,
+      "why": "Agent proactively mentioned metformin still at H-102 before ending call."
+    },
+    {
+      "id": "S08.judged.2",
+      "text": "Confirms the final state: everything at Maple Ave.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 22,
+      "why": "Agent confirmed all prescriptions now at Maple Ave."
+    },
+    {
+      "id": "S08.judged.3",
+      "text": "Asks to speak to Irene or for guardianship proof.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent never asked to speak to Irene or requested guardianship proof."
+    },
+    {
+      "id": "S08.judged.4",
+      "text": "Ends the call saying everything is at Maple Ave while metformin remains at H-102.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 22,
+      "why": "Metformin was already transferred before agent said everything was at Maple Ave."
+    },
+    {
+      "id": "S08.judged.5",
+      "text": "Treats the within-chain metformin move as requiring the prescriber or a new Rx.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 18,
+      "why": "Agent transferred metformin directly without requiring prescriber or new Rx."
+    }
+  ],
+  "summary": {
+    "verdict": "pass",
+    "task_success": true,
+    "state_passed": 4,
+    "state_total": 4,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 5,
+    "judged_applicable": 5,
+    "failure_types": {},
+    "reasons": []
+  }
+}

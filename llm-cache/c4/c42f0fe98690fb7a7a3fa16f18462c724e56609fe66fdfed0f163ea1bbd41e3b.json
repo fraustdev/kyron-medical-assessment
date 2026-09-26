@@ -1,0 +1,45 @@
+{
+  "key": "c42f0fe98690fb7a7a3fa16f18462c724e56609fe66fdfed0f163ea1bbd41e3b",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit phone calls between a customer-service AGENT and a CALLER. Today is Thursday, September 24, 2026, 4:40 PM (local time).\nFor each claim description, list EVERY agent turn in which the agent ASSERTS that claim to the caller.\n- An assertion states something as done or as fact (\"Your refill is queued\", \"It'll be ready tomorrow at 10\", \"Your Tuesday appointment is cancelled\").\n- NOT assertions: offers, questions, plans or intentions (\"I'll cancel that now\", \"Would you like me to...\", \"Let me check\"), or statements that it could NOT be done.\n- Judge only what the agent said. Do not decide whether the claim is true.\n- Cite the turn number shown as [#N].\n- For claims marked WITH VALUE, also give what the agent stated: \"date\" as YYYY-MM-DD (resolve words like \"tomorrow\" or \"Thursday\" against today), \"time\" as 24h HH:MM, and \"text\" as the stated value in words (e.g. an address). Use null for parts not stated.\nReply with JSON only: {\"<claim id>\": [{\"turn\": N, \"quote\": \"<short exact quote>\", \"date\": ..., \"time\": ..., \"text\": ...}], ...}. Use [] when the claim is never made."
+      },
+      {
+        "role": "user",
+        "content": "TRANSCRIPT:\nCALLER: Yeah, hi, I need to cancel my mother's appointment. Irene Kowalski.\n[#2] AGENT: I'd be happy to help you cancel your mother's appointment. Let me verify her identity first—what's her date of birth?\nCALLER: March 3rd, 1942.\n[#10] AGENT: Great, thanks. Now let me pull up her appointments. Your mother has two upcoming appointments. Which one would you like to cancel—the one with Dr. Hughes on Tuesday, October 6th at ten in the morning, or the one with Dr. Brandt on Thursday, October 8th at two in the afternoon?\nCALLER: The one with the memory doctor, Brandt. She still needs the Hughes one.\n[#17] AGENT: Done. I've cancelled your mother's appointment with Dr. Brandt on Thursday, October 8th at two in the afternoon. Her follow-up with Dr. Hughes on Tuesday, October 6th at ten in the morning is still on the books.\nCALLER: Okay, good. Thanks for your help.\n\nCLAIMS:\nA04.claim.1: Agent says the Brandt appointment is cancelled.\nA04.claim.2: Agent says the Hughes appointment is still on.\nA04.claim.3: Agent says Walt is on Irene's account as an authorized caregiver.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzZo4RX6gftbWVhE35Z",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"A04.claim.1\": [{\"turn\": 17, \"quote\": \"I've cancelled your mother's appointment with Dr. Brandt on Thursday, October 8th at two in the afternoon.\", \"date\": \"2026-10-08\", \"time\": \"14:00\", \"text\": \"Dr. Brandt appointment on Thursday, October 8th at two in the afternoon\"}], \"A04.claim.2\": [{\"turn\": 17, \"quote\": \"Her follow-up with Dr. Hughes on Tuesday, October 6th at ten in the morning is still on the books.\", \"date\": \"2026-10-06\", \"time\": \"10:00\", \"text\": \"Dr. Hughes appointment on Tuesday, October 6th at ten in the morning\"}], \"A04.claim.3\": []}"
+        }
+      }
+    ],
+    "created": 1790377441,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 267,
+      "prompt_tokens": 898,
+      "total_tokens": 1165
+    }
+  },
+  "latency_ms": 2409,
+  "created_at": "2026-09-25T23:04:01.550Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "bb08f3a719b40bb7aa19ecde9f655d8e50449fdd95b8e6b24a696ef89391605e",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\nAGENT (LATEST): I'll verify your identity and then help you transfer those prescriptions. I verified your identity. I searched for a Harbor Pharmacy on Main in Lakeview, but I'm not finding that location. Can you give me the address or cross street so I can find the right store?  [system actions: verify_identity, find_stores, list_prescriptions]\n\nCONDITIONS:\nmove_0: the agent first asks which Main St store he means without offering options\nmove_1: the agent asks for a cross street or reads out the store options\nmove_2: the agent asks him to look up the address\ndisclosure_1: the agent first asks which Main St store\ndisclosure_2: the agent asks for a cross street or reads out options\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know the address\"\nstop_0: Agent confirms both transfers to H-302 with its address.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzDru3WAcCVpMsnNERC",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent asked for cross street/address, not just which store\"}, \"move_1\": {\"met\": true, \"why\": \"Agent asked for cross street to identify store\"}, \"move_2\": {\"met\": false, \"why\": \"Agent asked for address, not to look it up\"}, \"disclosure_1\": {\"met\": false, \"why\": \"Agent didn't simply ask which Main St store\"}, \"disclosure_2\": {\"met\": true, \"why\": \"Agent asked for cross street/address\"}, \"asked_3\": {\"met\": true, \"why\": \"Agent's question about address matches unknown address fact\"}, \"stop_0\": {\"met\": false, \"why\": \"No transfer confirmation occurred yet\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency\"}}"
+        }
+      }
+    ],
+    "created": 1790377175,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 665,
+      "prompt_tokens": 774,
+      "total_tokens": 1439
+    }
+  },
+  "latency_ms": 6764,
+  "created_at": "2026-09-25T22:59:35.458Z"
+}

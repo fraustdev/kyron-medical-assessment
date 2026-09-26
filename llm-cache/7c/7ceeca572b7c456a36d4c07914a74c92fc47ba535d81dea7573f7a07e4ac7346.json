@@ -1,0 +1,45 @@
+{
+  "key": "7ceeca572b7c456a36d4c07914a74c92fc47ba535d81dea7573f7a07e4ac7346",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Kevin Brooks, parent. 44, stressed dad who just moved the family to Gahanna. Wants a plan even if the answer is no.\nFacts:\n- Kevin Brooks, wants everything moved H-501 to H-502 [upfront]\n- Kevin DOB 1982-08-30 [only_if_asked, the agent asked at turn 2]\n- Maya DOB 2017-06-20; Eli DOB 2010-02-11 [only_if_asked, the agent asked at turn 3]\n- The prescriptions are Kevin's lisinopril, Maya's albuterol inhaler, Eli's Vyvanse [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Kevin Brooks. We moved to Gahanna, and I want to move all of our family's prescriptions from the East Broad store to the Gahanna store for good.\n[turn 1] AGENT: Hi Kevin, I'd be happy to help you move your family's prescriptions to Gahanna. Let me look up the stores first and then pull up your prescriptions. I found the Gahanna store. Before I pull up your prescriptions, I need to verify your identity—can you give me your date of birth?\n[turn 2] CALLER: August 30th, 1982. So once you verify that, can we get all three of us switched over today?\n[turn 2] AGENT: Great, you're verified. Now I need to know the names and dates of birth for the other two family members so I can pull up all the prescriptions and move them over.\n[turn 3] CALLER: Sure, Maya Brooks, born June 20th, 2017. And Eli Brooks, born February 11th, 2010. Can we get all of us switched today?\n[turn 3] AGENT: Perfect, I've got everyone verified. You have three prescriptions total: your lisinopril, Maya's albuterol inhaler, and Eli's Vyvanse. I can set Gahanna as your home pharmacy for all three of you right away. For your lisinopril and Maya's albuterol, I can transfer those today since they have refills. Eli's Vyvanse is a controlled medication that's already been filled, so that one needs a new prescription from his doctor—I can request that for the Gahanna store. Let me get started.\n[turn 4] CALLER (scenario-scripted): Wait, why not the Vyvanse? Okay, so what's the plan for Eli?\n[turn 4] AGENT: Good question. Eli's Vyvanse is a controlled medication that's already been filled, so it can't be transferred or refilled—that's a federal rule. To get him set up at Gahanna, his doctor needs to write a new prescription. I can request that from Dr. Okafor and send it to the Gahanna store. Once she approves it, he'll be all set there. Does that work?\n[turn 5] CALLER: Okay, that works. So go ahead and request that from Dr. Okafor for Gahanna, and my lisinopril and Maya's inhaler transfer today?\n[turn 5] AGENT: (says nothing)\n[turn 6] CALLER: Alright, sounds good. So once you send that request, how long before Eli's new script actually shows up at Gahanna?\n[turn 6] AGENT: (says nothing)\n[turn 7] CALLER: Hello? You still there? Just need a rough timeframe on Eli's script.\n[turn 7] AGENT: Sorry about that! I don't have visibility into how long Dr. Okafor will take to respond—that depends on her office. Once she approves it, it should show up at Gahanna pretty quickly, but I'd recommend calling the Gahanna store in a day or two to check on it, or having Eli's doctor's office send it directly if they can. Does that help?\n[turn 8] CALLER: Okay, that works. So just to recap - lisinopril and the inhaler transfer today, Vyvanse request goes to Dr. Okafor, and I'll check back with Gahanna in a couple days. Thanks for the help.\n[turn 8] AGENT: You're all set. Let me get those transfers and the new Vyvanse request going now.\n[turn 9] CALLER: Great, thanks so much for sorting this out. Bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzAJChQCjLzZt6U57MM",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377124,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 342,
+      "prompt_tokens": 2033,
+      "total_tokens": 2375
+    }
+  },
+  "latency_ms": 4960,
+  "created_at": "2026-09-25T22:58:45.287Z"
+}

@@ -1,0 +1,45 @@
+{
+  "key": "26cd3f1d2443e97985018809953c3142aebd47c9d33dbcf917fc6c64104bebc5",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hey, Jamal Carter, DOB 3/14/95. I want to make the Harbor at 2250 Main Street in Lakeview my default pharmacy.\nAGENT (LATEST): I'll verify your identity and then set that as your default store. Great, I found that store—it's Harbor Pharmacy Main St University. I see it's already your default store, so you're all set!  [system actions: verify_identity, find_stores]\n\nCONDITIONS:\nmove_0: the agent offers to transfer prescriptions or asks where his prescriptions are\nasked_1: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Prescriptions were transferred to H-302 last month\"\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Phone 555-0177\"\nstop_0: Agent confirms H-302 is his default store (already, or now).\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz3kou7Cp5a954FVG4o",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent did not mention transferring prescriptions.\"}, \"asked_1\": {\"met\": false, \"why\": \"Agent didn't ask about prescription transfers.\"}, \"asked_2\": {\"met\": false, \"why\": \"Agent didn't ask for phone number.\"}, \"stop_0\": {\"met\": true, \"why\": \"Agent confirms store already default.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency.\"}}"
+        }
+      }
+    ],
+    "created": 1790377033,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 158,
+      "prompt_tokens": 711,
+      "total_tokens": 869
+    }
+  },
+  "latency_ms": 1888,
+  "created_at": "2026-09-25T22:57:13.503Z"
+}

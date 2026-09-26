@@ -1,0 +1,801 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_A09_v1_t0_muhkivq95961",
+    "scenario_id": "A09",
+    "dataset": {
+      "name": "harbor-clinic-scheduling-scenarios",
+      "version": "1.0.0",
+      "file_sha256": "1e6878d58f6ecf06d9fd9df56be69f3d851d0676430bdd1a6a9b29ddef365818"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "15041b22fa8215fbddfdf788f0fbeb0191703385f8913dda23e20f6012d1ec3d",
+      "prompt_text": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:04:38.433Z",
+    "ended_at": "2026-09-25T23:04:50.064Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 16,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name; wants her regular Dr. Rao follow-up"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi honey, Tess Morgan. I need to book my regular follow-up with Dr. Rao.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 956,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Tess! I'd be happy to help you book a follow-up with Dr. Rao. Before I can do that, I need to verify your identity. Can you give me your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "7fa2329d593cbf6928c651b2e9e7b5b56cc9af12a271a9024c43afdcdd504987",
+        "cache_hit": true,
+        "latency_ms": 956,
+        "usage": {
+          "input_tokens": 2624,
+          "output_tokens": 49
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "7fa2329d593cbf6928c651b2e9e7b5b56cc9af12a271a9024c43afdcdd504987",
+          "cache_hit": true,
+          "latency_ms": 956,
+          "usage": {
+            "input_tokens": 2624,
+            "output_tokens": 49
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgXLc3ji2zcgpJCZe9q",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Tess! I'd be happy to help you book a follow-up with Dr. Rao. Before I can do that, I need to verify your identity. Can you give me your date of birth?"
+            }
+          }
+        ],
+        "created": 1790363243,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 49,
+          "prompt_tokens": 2624,
+          "total_tokens": 2673
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 956,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1974-01-19"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1974-01-19\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "dc868171128539ac404897786a82886faeee8c4960f3fd0d5b93506ab8914666",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asked for date of birth\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "c3e0f59e6be92eac625b7bb3b5d5136b329df5d49b13352d4c2f73aeea74be67",
+          "cache_hit": false,
+          "latency_ms": 2117,
+          "usage": {
+            "input_tokens": 751,
+            "output_tokens": 219
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 956,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "Sure thing, honey. January 19th, 1974.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "12de4344ad4914f23b940102688cb6ff87c66ff2dbc11a03c63a4e7a0d99f412",
+          "cache_hit": true,
+          "latency_ms": 1647,
+          "usage": {
+            "input_tokens": 1271,
+            "output_tokens": 33
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2016,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you! Now let me search for available slots with Dr. Rao for your follow-up. What dates work best for you? Are you looking to come in soon, or do you have a particular week in mind?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "9150cbf8bb656f659acb2841e2eda98fa72454a90e9db6ea8c56aaada5e425d0",
+        "cache_hit": true,
+        "latency_ms": 1060,
+        "usage": {
+          "input_tokens": 2690,
+          "output_tokens": 50
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "9150cbf8bb656f659acb2841e2eda98fa72454a90e9db6ea8c56aaada5e425d0",
+          "cache_hit": true,
+          "latency_ms": 1060,
+          "usage": {
+            "input_tokens": 2690,
+            "output_tokens": 50
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQgZ4mbsun8NA157fjP4",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thank you! Now let me search for available slots with Dr. Rao for your follow-up. What dates work best for you? Are you looking to come in soon, or do you have a particular week in mind?"
+            }
+          }
+        ],
+        "created": 1790363267,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_tokens": 2690,
+          "total_tokens": 2740
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2016,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 2,
+          "fact": "Wants a morning next week, the first available"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_2] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Wants a morning next week, the first available\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "e0d20cd429aa8338d420397479f178fb05ee75f0982c5ae62a1a3c49ab6549de",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks about dates/timing preferences for appointment\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "71ca81b59ce2a40d91bcb329179c468a2a96d9a45967da5666a2a856484a2b54",
+          "cache_hit": false,
+          "latency_ms": 2420,
+          "usage": {
+            "input_tokens": 796,
+            "output_tokens": 213
+          }
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "t_ms": 2016,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Next week's good for me, honey. Mornings work best, whatever's first available.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "a212512ada6fe273079afea37c9959b3107a90c0f1dcd3bd2e6600a4f221ad54",
+          "cache_hit": true,
+          "latency_ms": 1531,
+          "usage": {
+            "input_tokens": 1403,
+            "output_tokens": 39
+          }
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "t_ms": 2731,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Just to confirm—next week would be September 28th through October 4th, correct?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "65f77aca972d396b06b63741d5d56637cf0ea66572e058d099c2a042f3a6a10e",
+        "cache_hit": true,
+        "latency_ms": 715,
+        "usage": {
+          "input_tokens": 2763,
+          "output_tokens": 23
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "65f77aca972d396b06b63741d5d56637cf0ea66572e058d099c2a042f3a6a10e",
+          "cache_hit": true,
+          "latency_ms": 715,
+          "usage": {
+            "input_tokens": 2763,
+            "output_tokens": 23
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiatJrRXTHJQLCjjD2v",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Just to confirm—next week would be September 28th through October 4th, correct?"
+            }
+          }
+        ],
+        "created": 1790364865,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 23,
+          "prompt_tokens": 2763,
+          "total_tokens": 2786
+        }
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 2731,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "6b910bdee8d016a08fba2ce9c3e02cc88e5f918f202bbd56e65b482c492ec3c7",
+          "cache_hit": false,
+          "latency_ms": 2049,
+          "usage": {
+            "input_tokens": 810,
+            "output_tokens": 177
+          }
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "t_ms": 2731,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "That sounds right, honey, whatever's next week works for me.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "4f8a8f1d1a48b346646313404e3d2ad84300f88ff3ade4274fb357b78a9d600a",
+          "cache_hit": true,
+          "latency_ms": 1545,
+          "usage": {
+            "input_tokens": 1464,
+            "output_tokens": 34
+          }
+        }
+      ]
+    },
+    {
+      "seq": 11,
+      "t_ms": 4050,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "follow_up",
+        "date_range": "2026-09-28..2026-10-04",
+        "provider": "Dr. Rao"
+      },
+      "normalized": {
+        "provider": "Dr. Anita Rao",
+        "visit_type": "follow_up"
+      }
+    },
+    {
+      "seq": 12,
+      "t_ms": 4100,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "follow_up",
+        "slots": [
+          {
+            "slot_id": "RAO-20260929-0920",
+            "provider": "Dr. Anita Rao",
+            "start": "2026-09-29T09:20"
+          },
+          {
+            "slot_id": "RAO-20260930-0840",
+            "provider": "Dr. Anita Rao",
+            "start": "2026-09-30T08:40"
+          },
+          {
+            "slot_id": "RAO-20261001-1000",
+            "provider": "Dr. Anita Rao",
+            "start": "2026-10-01T10:00"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 13,
+      "t_ms": 5034,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Great! I found three morning slots with Dr. Rao. The earliest is Tuesday, September 29th at 9:20 AM. Would that work for you?",
+      "tool_call_ids": [
+        "c1"
+      ],
+      "llm": {
+        "cache_key": "9b657fd272948e2e593e3ff26a564437e147cedfcc83e5bd5cfb8572ae7347d0",
+        "cache_hit": true,
+        "latency_ms": 934,
+        "usage": {
+          "input_tokens": 3055,
+          "output_tokens": 40
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "4168bb1dabea11af60f24be5df582fe97d5aff84d9894b7cd57cb348fc93361d",
+          "cache_hit": true,
+          "latency_ms": 1319,
+          "usage": {
+            "input_tokens": 2803,
+            "output_tokens": 110
+          }
+        },
+        {
+          "cache_key": "9b657fd272948e2e593e3ff26a564437e147cedfcc83e5bd5cfb8572ae7347d0",
+          "cache_hit": true,
+          "latency_ms": 934,
+          "usage": {
+            "input_tokens": 3055,
+            "output_tokens": 40
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQibQakrHb7vkTfVNtpH",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great! I found three morning slots with Dr. Rao. The earliest is Tuesday, September 29th at 9:20 AM. Would that work for you?"
+            }
+          }
+        ],
+        "created": 1790364872,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 40,
+          "prompt_tokens": 3055,
+          "total_tokens": 3095
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 5034,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 3,
+        "say": "The first one's fine."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_3] the agent offers morning times next week",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "04bdbb0001318ce9ac644cbdb97d5a6dc7cff0a725d989268077101193839259",
+          "raw_output": "{\"met\":true,\"why\":\"Agent offers 9:20 AM slot next week\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "6680be8964ad409d962df8352b85a8d730a0da3bb6583bd6ea72eef68c5c2f80",
+          "cache_hit": false,
+          "latency_ms": 3218,
+          "usage": {
+            "input_tokens": 902,
+            "output_tokens": 304
+          }
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "t_ms": 5034,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "The first one's fine, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "0b5b0e8d0a2105eff90406d36f0352153e451d8f78d57adeb1aad8dce0af3b4f",
+          "cache_hit": true,
+          "latency_ms": 1109,
+          "usage": {
+            "input_tokens": 1558,
+            "output_tokens": 25
+          }
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "t_ms": 6304,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "book_appointment",
+      "args": {
+        "patient": "Tess Morgan",
+        "slot_id": "RAO-20260929-0920",
+        "visit_type": "follow_up"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "slot_id": "RAO-20260929-0920",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "follow_up"
+      }
+    },
+    {
+      "seq": 17,
+      "t_ms": 6424,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "book_appointment",
+      "result": {
+        "status": "booked",
+        "appointment_id": "APT-NEW-RAO-20260929-0920",
+        "provider": "Dr. Anita Rao",
+        "start": "2026-09-29T09:20",
+        "visit_type": "follow_up"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 18,
+      "t_ms": 6424,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "bookings",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Tess Morgan",
+        "slot_id": "RAO-20260929-0920",
+        "provider": "Dr. Anita Rao",
+        "visit_type": "follow_up"
+      },
+      "call_id": "c2"
+    },
+    {
+      "seq": 19,
+      "t_ms": 6424,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-NEW-RAO-20260929-0920",
+        "patient": "Tess Morgan",
+        "provider": "Dr. Anita Rao",
+        "slot_id": "RAO-20260929-0920",
+        "start": "2026-09-29T09:20",
+        "visit_type": "follow_up",
+        "status": "booked"
+      },
+      "call_id": "c2"
+    },
+    {
+      "seq": 20,
+      "t_ms": 7234,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Perfect! Let me book that for you on Tuesday, September 29th at 9:20 AM with Dr. Rao. You're all set, Tess! Your follow-up with Dr. Rao is booked for Tuesday, September 29th at 9:20 AM. Is there anything else I can help you with?",
+      "tool_call_ids": [
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "311bf2cafa236eb556ebdab2243be6e7d39c7d7c8742f4135ea30ea82b9e939d",
+        "cache_hit": true,
+        "latency_ms": 810,
+        "usage": {
+          "input_tokens": 3309,
+          "output_tokens": 50
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "cf6724bd9eb004969a61ced195947be0d3fa21bd7e299ef81ccd7bd107c37512",
+          "cache_hit": true,
+          "latency_ms": 1270,
+          "usage": {
+            "input_tokens": 3106,
+            "output_tokens": 134
+          }
+        },
+        {
+          "cache_key": "311bf2cafa236eb556ebdab2243be6e7d39c7d7c8742f4135ea30ea82b9e939d",
+          "cache_hit": true,
+          "latency_ms": 810,
+          "usage": {
+            "input_tokens": 3309,
+            "output_tokens": 50
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQibsRo1ZeZ5b5UXND6W",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're all set, Tess! Your follow-up with Dr. Rao is booked for Tuesday, September 29th at 9:20 AM. Is there anything else I can help you with?"
+            }
+          }
+        ],
+        "created": 1790364878,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_tokens": 3309,
+          "total_tokens": 3359
+        }
+      }
+    },
+    {
+      "seq": 21,
+      "t_ms": 7234,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms her follow-up time.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "05a910ebeab82e4bd6162bae5e3027c8dcae8347867d94c0e12c24380f92a3f2",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed booking time explicitly\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "f76e3450a68fd06b1dd87c8a8d5679a55797df5677fecb747aa1cb8557466129",
+          "cache_hit": false,
+          "latency_ms": 1807,
+          "usage": {
+            "input_tokens": 1019,
+            "output_tokens": 143
+          }
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "t_ms": 7234,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "That's it, honey, thank you kindly. Bye now!",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "238a319c409070bca6bdb7ce96f0efbd5bb46fc0240a8383a33c4c7e8e3ec3fa",
+          "cache_hit": true,
+          "latency_ms": 2015,
+          "usage": {
+            "input_tokens": 1658,
+            "output_tokens": 34
+          }
+        }
+      ]
+    },
+    {
+      "seq": 23,
+      "t_ms": 7234,
+      "turn": 5,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent confirms her follow-up time."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": false,
+      "bookings": [
+        {
+          "patient": "Tess Morgan",
+          "slot_id": "RAO-20260929-0920",
+          "provider": "Dr. Anita Rao",
+          "visit_type": "follow_up"
+        }
+      ],
+      "cancellations": [],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "world_state": {
+      "appointments": [
+        {
+          "appointment_id": "APT-NEW-RAO-20260929-0920",
+          "patient": "Tess Morgan",
+          "provider": "Dr. Anita Rao",
+          "slot_id": "RAO-20260929-0920",
+          "start": "2026-09-29T09:20",
+          "visit_type": "follow_up",
+          "status": "booked"
+        }
+      ],
+      "open_slots": [
+        "RAO-20260930-0840",
+        "RAO-20261001-1000"
+      ]
+    },
+    "tool_calls": [
+      {
+        "seq": 11,
+        "call_id": "c1",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "follow_up",
+          "date_range": "2026-09-28..2026-10-04",
+          "provider": "Dr. Rao"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 16,
+        "call_id": "c2",
+        "tool": "book_appointment",
+        "args": {
+          "patient": "Tess Morgan",
+          "slot_id": "RAO-20260929-0920",
+          "visit_type": "follow_up"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 6,
+      "caller_turns": 6,
+      "agent_turns": 5,
+      "tool_calls": 2,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:04:51.290Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 3: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

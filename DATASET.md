@@ -133,7 +133,7 @@ A pair is only as good as the number of variables it changes. I label each pair 
 | **Expected end state** (`expected_end_state`, `forbidden_state`, `acceptable_outcomes`) | Whether the *task outcome* is correct | Derived from fixture + policies; checked for internal consistency by the validator | Deterministic |
 | **Tool-call log + trace events** | Whether *process* rules held: verify before write, ask before choosing a store, check status before retrying, no writes after an emergency | Harness (`trace_contract`) | Deterministic |
 | **Claim checks** (`claim_checks`) | Whether what the agent *said* matches state, the log or the fixture | Claim *detection* by an LLM judge; claim *truth* is deterministic (`true_iff`) | Hybrid |
-| **Judged checks** (`judged_checks`) | Conversation quality: read-backs, clarity, tone, timely escalation, over-counseling | LLM judge now; **human labels later** are the real ground truth, and the judge is an estimator to be calibrated against them | Provisional |
+| **Judged checks** (`judged_checks`) | Conversation quality: read-backs, clarity, tone, timely escalation, over-counseling | LLM judge; **human labels** are the real ground truth, and the judge is an estimator calibrated against them (16 calls, 81 labels: 100% agreement; see CALIBRATION.md) | Calibrated |
 
 **Order of precedence:** state and the tool log beat the transcript. If the agent says "your transfer went through" and the record says `requested`, the claim is false.
 
@@ -222,6 +222,12 @@ This is the general limit of the approach: we can catch an agent that *invents* 
 - **Validator.** Now also checks that retired items have reasons and that no v1 persona field changed without a recorded reason. Mutation tests: 16/16.
 
 ---
+
+### v2.1 → v2.1.1 (author decisions from calibration and the Part 5 experiment; details in NOTES.md)
+- **Home store = default store.** S03 and S08 no longer require `set_default_store` for a store that is already the default; the agent should say it's already the patient's store. The retired checks are kept under `retired_v1_items` with the reason.
+- **Readiness at the patient's own Harbor home store.** POL-AVAIL-1 now lets the agent say a medication will be ready at the patient's own Harbor home store; S06, S08, S11, S12 and S12-F1 no longer penalize it. Never for another pharmacy, a store the patient is only visiting (S16, S17), or a prescription that doesn't exist yet (S09).
+- **A callback must never replace 911, but can come before an emergency.** S20 and S21 no longer fail a callback made before the emergency; a callback (or any write) after the emergency is mentioned still fails.
+- **S04:** announcing an authorized contact is no longer required.
 
 ## 7. Workflow 2: appointment scheduling
 

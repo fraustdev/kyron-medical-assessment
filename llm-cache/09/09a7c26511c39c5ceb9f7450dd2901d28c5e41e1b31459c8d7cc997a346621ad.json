@@ -1,0 +1,45 @@
+{
+  "key": "09a7c26511c39c5ceb9f7450dd2901d28c5e41e1b31459c8d7cc997a346621ad",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.\nAGENT: Hi Gloria, I'd be happy to help you reschedule that appointment. Let me just verify your date of birth to pull up your records.\nCALLER: Sure, honey, it's May 12th, 1947.\nAGENT (LATEST): Thank you. Let me look up your appointments to see which Tuesday appointment with Dr. Patel we're moving. I see you have a follow-up appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move that to later in the week—would Thursday, October 1st or Friday, October 2nd work better for you?  [system actions: verify_identity, list_appointments]\n\nCONDITIONS:\nmove_0: the agent asks which day or time she would like\nmove_1: the agent offers one or more Thursday afternoon times\nmove_2: the agent first reads back or confirms the new appointment time\nasked_2: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Prefers Thursday afternoon, the earliest time available then\"\nasked_3: In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Does not know her appointment number\"\nstop_0: Agent has confirmed the new Thursday time and that the Tuesday appointment is cancelled.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzW7BUhKNj6D4uY1dkG",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": true, \"why\": \"Agent asks if Thursday or Friday works better.\"}, \"move_1\": {\"met\": false, \"why\": \"No specific afternoon times offered, only dates.\"}, \"move_2\": {\"met\": false, \"why\": \"Agent offers options, hasn't confirmed new time yet.\"}, \"asked_2\": {\"met\": true, \"why\": \"Agent asks which day/time, matching preference question.\"}, \"asked_3\": {\"met\": false, \"why\": \"Agent did not ask about appointment number.\"}, \"stop_0\": {\"met\": false, \"why\": \"New time not yet confirmed or cancellation done.\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency.\"}}"
+        }
+      }
+    ],
+    "created": 1790377393,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 514,
+      "prompt_tokens": 886,
+      "total_tokens": 1400
+    }
+  },
+  "latency_ms": 5165,
+  "created_at": "2026-09-25T23:03:14.295Z"
+}

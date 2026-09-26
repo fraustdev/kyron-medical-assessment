@@ -1,0 +1,45 @@
+{
+  "key": "f3373757d725df3f3d89d1dc2af11a0b816ca9fb60c67d1078ff68616b311c3d",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview, impatient; doesn't know there are three Harbors on Main St.\nFacts:\n- Name, DOB, both drugs, B-4471, 'the Harbor on Main in Lakeview' [upfront]\n- Store is 'by my apartment' [at_trigger, unlocked at turn 4]\n- Cross street is 'near Oak' [at_trigger, unlocked at turn 3]\n- Does not know the address [only_if_asked, the agent asked at turn 2]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\n[turn 1] AGENT: I'll verify your identity and then help you transfer those prescriptions. Great, Jamal. Now let me pull up your prescriptions and find the Harbor store on Main in Lakeview. I'm not finding any active prescriptions under your name in our system, and I'm also not finding a Harbor store on Main in Lakeview. Can you double-check the store location or address? That way I can make sure we're sending them to the right place.\n[turn 2] CALLER (scenario-scripted): I don't know the address, I just moved. Can't you just tell me which ones there are?\n[turn 2] AGENT: I can help you find Harbor stores, but I need a bit more to go on. Do you know what city or area you moved to, or any cross streets near the new location?\n[turn 3] CALLER (scenario-scripted): Near Oak.\n[turn 3] AGENT: Let me search for Harbor stores near Oak. I found two Harbor stores near Oak: one at 410 Oak Street in Brookfield, Connecticut, and one at 2250 Main Street in Lakeview, Michigan near Oak Street. Is one of those your new location?\n[turn 4] CALLER: Yeah, the one in Lakeview, Michigan, near Oak Street. That's the one by my apartment.\n[turn 4] AGENT: Perfect. Before I transfer your prescriptions, I need to let you know that I'm not finding any active prescriptions for albuterol or sertraline in our system right now. Are those prescriptions currently at the Brightway in Columbus, or is it possible they're somewhere else?\n[turn 5] CALLER: Yeah they're at Brightway, store number 4471, in Columbus. That's where I've been filling them.\n[turn 5] AGENT: Got it. Since those prescriptions are at Brightway (another pharmacy chain), I can't transfer them directly from here. What you'll need to do is call the Harbor Pharmacy in Lakeview at 2250 Main Street, and they can request the transfer from Brightway for you. When you call them, just give them your name, the medications (albuterol and sertraline), and the Brightway store number 4471 in Columbus.\n\nWould you also like me to set the Lakeview Harbor as your default pharmacy going forward?\n[turn 6] CALLER: Wait, seriously? I gotta call them myself? I just want it done, man. But okay, yeah, whatever, set that Lakeview one as my default I guess.\n[turn 6] AGENT: I hear you. Let me set that Lakeview store as your default right now. Done. Your default is now set to Harbor Pharmacy in Lakeview. When you call them at that Main Street location, they'll handle getting your albuterol and sertraline transferred over from Brightway. Sorry you have to make that call, but that's how it works between different pharmacy chains.\n[turn 7] CALLER: Alright, fine. I'll call em. Thanks I guess.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzLF2EazM9iu33ioHcP",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377258,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 234,
+      "prompt_tokens": 1873,
+      "total_tokens": 2107
+    }
+  },
+  "latency_ms": 3269,
+  "created_at": "2026-09-25T23:00:58.544Z"
+}

@@ -1,0 +1,813 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S01-F1_v1_t0_muhk85jv42fe",
+    "scenario_id": "S01-F1",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.1",
+      "file_sha256": "f2a5e52523f224019b68f8ab92139db1d35c5f5f8ca1c53a5a09b380df090eb1"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "927c7db5ffd99fd0cf40305a38be6e7002483a42070179a885713cd9191dbbb3",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says another store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional, and because the agent represents Harbor, it may tell the caller the medication will be ready at that Harbor home store. A store the patient is only visiting (e.g. while travelling) is not an exception: never promise until the pharmacist has confirmed."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T22:56:17.947Z",
+    "ended_at": "2026-09-25T22:56:43.583Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 30,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Full name Gloria Hart; drug amlodipine"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1383,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Gloria, thanks for calling Harbor Pharmacy! I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "c507a16b96e7d105c45bb0b5d805f6f1470ec52b0597228015a0a9864d269056",
+        "cache_hit": false,
+        "latency_ms": 1383,
+        "usage": {
+          "input_tokens": 3836,
+          "output_tokens": 44
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "c507a16b96e7d105c45bb0b5d805f6f1470ec52b0597228015a0a9864d269056",
+          "cache_hit": false,
+          "latency_ms": 1383,
+          "usage": {
+            "input_tokens": 3836,
+            "output_tokens": 44
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQyypfi3qo4rCy1VQoCh",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Gloria, thanks for calling Harbor Pharmacy! I'd be happy to help you refill your amlodipine. Let me just verify your information first—what's your date of birth?"
+            }
+          }
+        ],
+        "created": 1790376979,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 44,
+          "prompt_tokens": 3836,
+          "total_tokens": 3880
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1383,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB May 12, 1947"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB May 12, 1947\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "1d05d350bb8550a7f87c8abd2f3a988639ce3d1b9d29008847834a0f35ff7d17",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks for date of birth\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "efcbe336c1e3bccb18379a47711a25e20c67916e268b03e51ded3249d0be1045",
+          "cache_hit": false,
+          "latency_ms": 2268,
+          "usage": {
+            "input_tokens": 801,
+            "output_tokens": 215
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1383,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "May 12th, 1947, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "3c79b809f4ca48f43965a3573e48633e21aba2a37655469af1dcbb790fe27c68",
+          "cache_hit": false,
+          "latency_ms": 1008,
+          "usage": {
+            "input_tokens": 1294,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2688,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Gloria Hart",
+        "dob": "05/12/1947"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2738,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Gloria Hart",
+        "home_store": "H-110",
+        "default_store": "H-110",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 2738,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 3947,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Gloria Hart"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3997,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Gloria Hart",
+        "prescriptions": [
+          {
+            "rx_id": "RX-GH-AMLO5",
+            "drug": "amlodipine 5 mg #90",
+            "schedule": null,
+            "status": "active",
+            "refills": 3,
+            "store_id": "H-110",
+            "prescriber": "Dr. Raj Patel",
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 6141,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "queue_refill",
+      "args": {
+        "rx": "RX-GH-AMLO5",
+        "store": "H-110"
+      },
+      "normalized": {
+        "patient": "Gloria Hart",
+        "rx_id": "RX-GH-AMLO5",
+        "store_id": "H-110"
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 14141,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "queue_refill",
+      "result": {
+        "error": "timeout",
+        "message": "The system did not respond in time. The request may or may not have gone through."
+      },
+      "result_code": "timeout",
+      "fault_applied": {
+        "fault_index": 0,
+        "behavior": "timeout",
+        "value": {
+          "after_ms": 8000,
+          "committed": false
+        },
+        "committed": false
+      },
+      "latency_ms": 8000
+    },
+    {
+      "seq": 12,
+      "t_ms": 15546,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "queue_refill",
+      "args": {
+        "rx": "RX-GH-AMLO5",
+        "store": "H-110"
+      },
+      "normalized": {
+        "patient": "Gloria Hart",
+        "rx_id": "RX-GH-AMLO5",
+        "store_id": "H-110"
+      }
+    },
+    {
+      "seq": 13,
+      "t_ms": 15666,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "queue_refill",
+      "result": {
+        "status": "queued",
+        "rx_id": "RX-GH-AMLO5",
+        "store_id": "H-110",
+        "ready_time": "2026-09-25T10:00"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 14,
+      "t_ms": 15666,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "refills_queued",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-GH-AMLO5",
+        "store_id": "H-110"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 15,
+      "t_ms": 15666,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-GH-AMLO5",
+        "refills": 3
+      },
+      "after": {
+        "rx_id": "RX-GH-AMLO5",
+        "refills": 2
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 16,
+      "t_ms": 16760,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you! Let me pull up your account. Great, Gloria! Now let me find your amlodipine prescription. Perfect! I found your amlodipine 5 milligram. You have three refills left on it. Let me queue that up for you at your home store, Harbor H-110. I'm sorry, Gloria—the system timed out just now. Let me try that again for you. Wonderful! Your amlodipine refill is queued and ready for pickup tomorrow morning at ten o'clock at Harbor H-110. Is there anything else I can help you with today?",
+      "tool_call_ids": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "llm": {
+        "cache_key": "3b099eef42ba7d4760af38fce1f85bb7fb8f7de4397cfe49c85904c3e5bd4462",
+        "cache_hit": false,
+        "latency_ms": 1094,
+        "usage": {
+          "input_tokens": 4520,
+          "output_tokens": 45
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "f14671f93eed4546667b345f3b037e80dffbb579e01a8974577766d4705f3ec7",
+          "cache_hit": false,
+          "latency_ms": 1305,
+          "usage": {
+            "input_tokens": 3894,
+            "output_tokens": 88
+          }
+        },
+        {
+          "cache_key": "a3118e52130cbd574f91a9f94cdd3ea3d5145846135eb6003bc45cf7a72cbaf4",
+          "cache_hit": false,
+          "latency_ms": 1209,
+          "usage": {
+            "input_tokens": 4031,
+            "output_tokens": 72
+          }
+        },
+        {
+          "cache_key": "970da6bfd9cd07e3ee0164e1d1e9c96a3dddd7eb71236a5c372ba93ba8e03a11",
+          "cache_hit": false,
+          "latency_ms": 2144,
+          "usage": {
+            "input_tokens": 4196,
+            "output_tokens": 126
+          }
+        },
+        {
+          "cache_key": "6e8c44a4a59627ce5532cb335add2141b467a8a1e27da6148e61e27375545345",
+          "cache_hit": false,
+          "latency_ms": 1405,
+          "usage": {
+            "input_tokens": 4359,
+            "output_tokens": 105
+          }
+        },
+        {
+          "cache_key": "3b099eef42ba7d4760af38fce1f85bb7fb8f7de4397cfe49c85904c3e5bd4462",
+          "cache_hit": false,
+          "latency_ms": 1094,
+          "usage": {
+            "input_tokens": 4520,
+            "output_tokens": 45
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQyzbawSwVrgV73jQtWj",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Wonderful! Your amlodipine refill is queued and ready for pickup tomorrow morning at ten o'clock at Harbor H-110. Is there anything else I can help you with today?"
+            }
+          }
+        ],
+        "created": 1790376989,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 45,
+          "prompt_tokens": 4520,
+          "total_tokens": 4565
+        }
+      }
+    },
+    {
+      "seq": 17,
+      "t_ms": 16760,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 0,
+        "say": "What, honey? Say that again a little slower."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_0] the first time the agent gives a ready time or a read-back",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "dd33fe3aa9bef5877453b2dfc240dce7e4258186fef46f12c21043c0f2cbe73e",
+          "raw_output": "{\"met\":true,\"why\":\"First ready time given: tomorrow 10am pickup.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent has confirmed the amlodipine refill and a ready time she understood.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "dd33fe3aa9bef5877453b2dfc240dce7e4258186fef46f12c21043c0f2cbe73e",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed refill and pickup time, caller acknowledged nothing yet.\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "stop condition met (\"Agent has confirmed the amlodipine refill and a ready time she understood.\") but a scripted move is due, so the move comes first"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "876d67e2c333cc77b29d8debe3f4d3db1d31458662f1da8c49c8c04775ecddaa",
+          "cache_hit": false,
+          "latency_ms": 2516,
+          "usage": {
+            "input_tokens": 990,
+            "output_tokens": 221
+          }
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "t_ms": 16760,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "What, honey? Say that again a little slower.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "2f81bcd2781bd4c7852f0e4e5be1031f316d912e117995bb7a933965e2d39fdb",
+          "cache_hit": false,
+          "latency_ms": 1250,
+          "usage": {
+            "input_tokens": 1532,
+            "output_tokens": 29
+          }
+        }
+      ]
+    },
+    {
+      "seq": 19,
+      "t_ms": 17696,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Your refill is ready tomorrow morning at ten o'clock at Harbor H-110. You can pick it up then.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "137f74f4460d344d0ca0f9903a7fd63a2203d8787c3e83e2d41204a9a4648bd2",
+        "cache_hit": false,
+        "latency_ms": 936,
+        "usage": {
+          "input_tokens": 4579,
+          "output_tokens": 28
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "137f74f4460d344d0ca0f9903a7fd63a2203d8787c3e83e2d41204a9a4648bd2",
+          "cache_hit": false,
+          "latency_ms": 936,
+          "usage": {
+            "input_tokens": 4579,
+            "output_tokens": 28
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQyzxMbgbQLV1faC2AX7",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Your refill is ready tomorrow morning at ten o'clock at Harbor H-110. You can pick it up then."
+            }
+          }
+        ],
+        "created": 1790376994,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 28,
+          "prompt_tokens": 4579,
+          "total_tokens": 4607
+        }
+      }
+    },
+    {
+      "seq": 20,
+      "t_ms": 17696,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "24a3696d7f04c7c5c89fe58a269ac0ce4d9ee12dc6e7f386c3db4b6b06958a25",
+          "cache_hit": false,
+          "latency_ms": 2906,
+          "usage": {
+            "input_tokens": 1032,
+            "output_tokens": 191
+          }
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "t_ms": 17696,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Oh, tomorrow morning at ten, alright dear. And that's my Main Street store, the H-110 one?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "db7f44337190afe4b4896bc40e503e09de8b6abe0b2af9a23538b4d595237685",
+          "cache_hit": false,
+          "latency_ms": 1482,
+          "usage": {
+            "input_tokens": 1576,
+            "output_tokens": 52
+          }
+        }
+      ]
+    },
+    {
+      "seq": 22,
+      "t_ms": 18644,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Yes, that's right—H-110 is your home store. Your amlodipine will be ready tomorrow morning at ten o'clock.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "50158e5b656ef2debcaded3e756eaf66381c2c4952a1caef890fc0061b0c6a30",
+        "cache_hit": false,
+        "latency_ms": 948,
+        "usage": {
+          "input_tokens": 4636,
+          "output_tokens": 35
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "50158e5b656ef2debcaded3e756eaf66381c2c4952a1caef890fc0061b0c6a30",
+          "cache_hit": false,
+          "latency_ms": 948,
+          "usage": {
+            "input_tokens": 4636,
+            "output_tokens": 35
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQz1M7Kd1AeAxTxotwb4",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Yes, that's right—H-110 is your home store. Your amlodipine will be ready tomorrow morning at ten o'clock."
+            }
+          }
+        ],
+        "created": 1790376999,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 35,
+          "prompt_tokens": 4636,
+          "total_tokens": 4671
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "t_ms": 18644,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent has confirmed the amlodipine refill and a ready time she understood.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "92a41bf884f21a8c24f884f27a5f25994f93a098dcb044fadacb563de7c507bb",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed refill and time, caller acknowledged understanding.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "580f2309caea76fc57ae2846d766745d7c96f999446b2d258cbbddf35fb6167c",
+          "cache_hit": false,
+          "latency_ms": 2305,
+          "usage": {
+            "input_tokens": 1124,
+            "output_tokens": 184
+          }
+        }
+      ]
+    },
+    {
+      "seq": 24,
+      "t_ms": 18644,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "Alright then, thank you so much, honey. Have a good day now, bye bye.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "7b1306ebd9cf79e9760bd93c0042fdeb72d0cef8c1c42c1344f88bab8080bdbd",
+          "cache_hit": false,
+          "latency_ms": 1407,
+          "usage": {
+            "input_tokens": 1661,
+            "output_tokens": 41
+          }
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "t_ms": 18644,
+      "turn": 4,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent has confirmed the amlodipine refill and a ready time she understood."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [
+        {
+          "rx_id": "RX-GH-AMLO5",
+          "store_id": "H-110"
+        }
+      ],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [],
+      "default_store_changes": [],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": []
+    },
+    "world_state": {
+      "prescriptions": {
+        "RX-GH-AMLO5": {
+          "owner": "Gloria Hart",
+          "refills": 2,
+          "store_id": "H-110",
+          "status": "active"
+        }
+      },
+      "default_stores": {
+        "Gloria Hart": "H-110"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Gloria Hart",
+          "dob": "05/12/1947"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Gloria Hart"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 10,
+        "call_id": "c3",
+        "tool": "queue_refill",
+        "args": {
+          "rx": "RX-GH-AMLO5",
+          "store": "H-110"
+        },
+        "result_code": "timeout"
+      },
+      {
+        "seq": 12,
+        "call_id": "c4",
+        "tool": "queue_refill",
+        "args": {
+          "rx": "RX-GH-AMLO5",
+          "store": "H-110"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 5,
+      "caller_turns": 5,
+      "agent_turns": 4,
+      "tool_calls": 4,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T22:56:51.727Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "needs_review",
+        "details": [
+          "turn 4 (minor): \"And that's my Main Street store, the H-110 one?\": Store is Harbor Pharmacy on Main St, Springfield. Caller revealed the store's street name (only_if_asked) even though the agent never asked for or mentioned the address; doesn't change the agent's action since the store code was already confirmed."
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

@@ -1,10 +1,30 @@
-# Kyron Medical: Healthcare Voice-Agent Evaluation (Part 1: Modeling the Evaluation Problem)
+# Kyron Medical: Healthcare Voice-Agent Evaluation
+
+**Reviewers: start with [SUBMISSION.md](SUBMISSION.md)** (what's where, and the summary). To see it running:
+
+```bash
+npm install
+npm run app          # then open http://localhost:5174. No API key needed: runs replay from llm-cache/
+```
+
+| Part | Document |
+|---|---|
+| 1. Scenarios | this README (below), [DATASET.md](DATASET.md) |
+| 2. Simulation harness | [HARNESS.md](HARNESS.md) |
+| 3. Evaluator and calibration | [EVALUATOR.md](EVALUATOR.md), [CALIBRATION.md](CALIBRATION.md) |
+| 4. The app | "The app" below; `web/`, `src/server/` |
+| 5. Experiment | [EXPERIMENT.md](EXPERIMENT.md) |
+| 6. Product recommendation | [RECOMMENDATION.md](RECOMMENDATION.md) |
+| 7. Production design | [PRODUCTION.md](PRODUCTION.md) |
+| Decisions log | [NOTES.md](NOTES.md) |
+
+## Part 1: the scenarios
 
 This repo holds the evaluation scenarios for a healthcare voice agent, across **two workflows** that share one schema, check vocabulary and validator:
 
 | Workflow | Customer (fictional) | File | Scenarios |
 |---|---|---|---|
-| 1. Prescription refills/renewals, pharmacy changes/transfers, urgent-symptom routing | Harbor Pharmacy | `pharmacy_call_scenarios.v2.json` (v2.1.0) | **29**: 7 control, 3 ordinary, 14 hard, 5 tool-fault |
+| 1. Prescription refills/renewals, pharmacy changes/transfers, urgent-symptom routing | Harbor Pharmacy | `pharmacy_call_scenarios.v2.json` (v2.1.1) | **29**: 7 control, 3 ordinary, 14 hard, 5 tool-fault |
 | 2. Appointment scheduling (book, cancel, reschedule, triage) | Harbor Family Medicine | `scheduling_call_scenarios.v1.json` (v1.0.0) | **9**: 2 control, 1 ordinary, 5 hard, 1 tool-fault |
 
 The pharmacy set carries the depth. The scheduling set is deliberately small: it shows the design generalizes and adds cross-workflow cases (e.g. a clinic call that continues a pharmacy renewal).
@@ -59,14 +79,14 @@ The validator detects which dataset it is checking. It verifies:
 - that cross-dataset links resolve (with identical caller-sim instructions);
 - that each expected end state passes its own checks and hits no forbidden state.
 
-## Simulation harness (Part 2, in progress)
+## Simulation harness (Part 2)
 
 A TypeScript harness that runs an agent through the scenarios without real phone calls and records a trace of every run. It records; it does not grade. See [`HARNESS.md`](HARNESS.md). Requires Node 22+.
 
 ```bash
 npm install
 npm run typecheck
-npm test            # 132 tests, no network: trace schema, mock tools and faults, turn loop, goldens, agent, director, evaluator
+npm test            # 151 tests, no network: trace schema, mock tools and faults, turn loop, goldens, agent, director, evaluator
 ```
 
 **Models.** The agent under test is Claude Haiku 4.5 and the simulated caller is Claude Sonnet 5, both through Anthropic's OpenAI-compatible endpoint. Live runs need a key: copy `.env.example` to `.env` (gitignored) and fill in `AGENT_API_KEY` / `CALLER_API_KEY`. **Replay needs no key**: every model response is in the committed `llm-cache/`.

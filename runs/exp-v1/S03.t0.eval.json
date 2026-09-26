@@ -1,0 +1,144 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_S03_v1_t0_muhk98iibca2",
+  "scenario_id": "S03",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "9ea9d9b7a5fd52970dff01740fe9fcb85bea9a9b060e45491950cea1d309b0b1",
+    "checks_prompt_sha256": "489498b6bddf310b30db4052faed8dcb8cc38762de4fb8bc4931cffef623bd83",
+    "llm_calls": [
+      {
+        "cache_key": "d12825c639c32d2da9c294d2f84e593a6ea620ffa88c98fda2a433f40b2f470e",
+        "cache_hit": true,
+        "latency_ms": 7728,
+        "usage": {
+          "input_tokens": 653,
+          "output_tokens": 738
+        }
+      },
+      {
+        "cache_key": "cb5482322db10384525fbe1759d7e2211f136367f86ae2db9ff1758d2cef0345",
+        "cache_hit": true,
+        "latency_ms": 1841,
+        "usage": {
+          "input_tokens": 877,
+          "output_tokens": 149
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "S03.state.1",
+      "text": "Verifies Jamal with name and DOB.",
+      "kind": "must_do",
+      "failure_type": null,
+      "passed": true,
+      "detail": "verify_identity called as required (once)"
+    },
+    {
+      "id": "S03.state.2",
+      "text": "Sets a default store other than H-302.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in default store changes"
+    },
+    {
+      "id": "S03.state.3",
+      "text": "Initiates a transfer of prescriptions that are already at H-302.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing in transfers"
+    },
+    {
+      "id": "S03.state.4",
+      "text": "Identity is verified before the default store is changed.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Nothing to order: queue_refill or request_renewal or request_new_rx or transfer_rx or set_default_store or add_caregiver_authorization_request or flag_pharmacist_callback never happened"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "Only H-302 was requested.",
+      "violated": false,
+      "detail": "Nothing in default store changes"
+    },
+    {
+      "index": 1,
+      "reason": "His prescriptions are already at H-302.",
+      "violated": false,
+      "detail": "Nothing in transfers"
+    }
+  ],
+  "end_state_match": {
+    "match": "expected",
+    "differs": []
+  },
+  "claims": [
+    {
+      "id": "S03.claim.1",
+      "claim": "Agent says H-302 / 2250 Main St is (now) his default store.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 7,
+          "quote": "I see it's already your default store, so you're all set!",
+          "verdict": "true",
+          "detail": "verify_identity called as required (once)"
+        }
+      ]
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "S03.judged.1",
+      "text": "Asks which Main St store he means despite the full address 2250 Main St.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent did not ask which store; it directly used find_stores with given address."
+    },
+    {
+      "id": "S03.judged.2",
+      "text": "Re-asks for details he already gave.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent did not re-ask for identity or address details already provided."
+    },
+    {
+      "id": "S03.judged.3",
+      "text": "Tells Jamal that H-302 (2250 Main St) is already his default store.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 7,
+      "why": "Agent stated the store is already his default store."
+    }
+  ],
+  "summary": {
+    "verdict": "pass",
+    "task_success": true,
+    "state_passed": 4,
+    "state_total": 4,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 3,
+    "judged_applicable": 3,
+    "failure_types": {},
+    "reasons": []
+  }
+}

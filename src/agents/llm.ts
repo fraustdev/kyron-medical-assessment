@@ -14,6 +14,7 @@ export interface LlmAgentOptions {
   temperature?: number;
   /** Per-run seed (the runner varies it by trial), included in the request and so in the cache key. */
   seed?: number;
+  /** Reply budget. 400 cut off turns with several tool calls (exp batches: S06, S09, S13), so the default is 1024. */
   maxTokens?: number;
   /** Reasoning models only. "none" turns thinking off (a phone agent can't pause 30s to think every turn). */
   reasoningEffort?: ChatParams["reasoning_effort"];
@@ -29,7 +30,7 @@ export class LlmAgent implements Agent {
   constructor(dataset: Dataset, private readonly client: ChatClient, private readonly opts: LlmAgentOptions = {}) {
     this.prompt = opts.promptText ?? renderAgentPromptV1(dataset);
     this.params = {
-      temperature: opts.temperature ?? 0.3, seed: opts.seed ?? 0, max_tokens: opts.maxTokens ?? 400,
+      temperature: opts.temperature ?? 0.3, seed: opts.seed ?? 0, max_tokens: opts.maxTokens ?? 1024,
       ...(opts.reasoningEffort ? { reasoning_effort: opts.reasoningEffort } : {}),
     };
   }

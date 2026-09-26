@@ -1,0 +1,1020 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_A02_v1_t0_muhkhw7y3db7",
+    "scenario_id": "A02",
+    "dataset": {
+      "name": "harbor-clinic-scheduling-scenarios",
+      "version": "1.0.0",
+      "file_sha256": "1e6878d58f6ecf06d9fd9df56be69f3d851d0676430bdd1a6a9b29ddef365818"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "15041b22fa8215fbddfdf788f0fbeb0191703385f8913dda23e20f6012d1ec3d",
+      "prompt_text": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:03:52.414Z",
+    "ended_at": "2026-09-25T23:04:13.322Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 12,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name Gloria Hart; has a Dr. Patel appointment on Tuesday; wants it moved later that week"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hello, honey, this is Gloria Hart. I have an appointment with Dr. Patel on Tuesday, and I need to move it to later that week.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1306,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "80074ba54319e66a64d42bd061bb4b803b455b6cf7880171d2a1d426f5dfa3b5",
+        "cache_hit": true,
+        "latency_ms": 1306,
+        "usage": {
+          "input_tokens": 2633,
+          "output_tokens": 39
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "80074ba54319e66a64d42bd061bb4b803b455b6cf7880171d2a1d426f5dfa3b5",
+          "cache_hit": true,
+          "latency_ms": 1306,
+          "usage": {
+            "input_tokens": 2633,
+            "output_tokens": 39
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQYgD8ueF1UXB6vjfh12",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Gloria, I'd be happy to help you reschedule that appointment. Let me first verify your information so I can access your account. What's your date of birth?"
+            }
+          }
+        ],
+        "created": 1790357069,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 39,
+          "prompt_tokens": 2633,
+          "total_tokens": 2672
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1306,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1947-05-12"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1947-05-12\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "43d82b004b89369d0038855316d11f16d0771b4874133fd89ade08506fe2314f",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asked for date of birth\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "095381c85f7f9e8aa2e359287ac0068d00e44178500c91ec54712e4c43a0a4c6",
+          "cache_hit": false,
+          "latency_ms": 2930,
+          "usage": {
+            "input_tokens": 767,
+            "output_tokens": 243
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1306,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "May 12th, 1947, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "752019bf2d0491f3b33519431441f3a45cdbc3000de1697573f03544d201ac66",
+          "cache_hit": true,
+          "latency_ms": 1397,
+          "usage": {
+            "input_tokens": 1357,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2205,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you. And just to confirm, what's your address or phone number on file with us?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "07b9874df5aed303363a81cad39d9d6bd0d50f4a2f8e1f163cde9359c4fa7160",
+        "cache_hit": true,
+        "latency_ms": 899,
+        "usage": {
+          "input_tokens": 2686,
+          "output_tokens": 23
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "07b9874df5aed303363a81cad39d9d6bd0d50f4a2f8e1f163cde9359c4fa7160",
+          "cache_hit": true,
+          "latency_ms": 899,
+          "usage": {
+            "input_tokens": 2686,
+            "output_tokens": 23
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQZXUR2o6EKTs1FHr5Sw",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Thank you. And just to confirm, what's your address or phone number on file with us?"
+            }
+          }
+        ],
+        "created": 1790357737,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 23,
+          "prompt_tokens": 2686,
+          "total_tokens": 2709
+        }
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2205,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "a4d822b21285228bba3e16a80cb9a5f4f99208f2a99a3f4e89cf7436967ab20a",
+          "cache_hit": false,
+          "latency_ms": 2405,
+          "usage": {
+            "input_tokens": 771,
+            "output_tokens": 229
+          }
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "t_ms": 2205,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Oh, I'm not sure I have that written down, honey. Can we just work with my name and birthday?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "ceda63ed454e138179071c9b1e5559969b6154ac7ac6e17520008294556418a8",
+          "cache_hit": true,
+          "latency_ms": 1418,
+          "usage": {
+            "input_tokens": 1406,
+            "output_tokens": 47
+          }
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "t_ms": 3598,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Gloria Hart",
+        "dob": "1947-05-12"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3648,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Gloria Hart",
+        "provider_of_record": "Dr. Raj Patel",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 3648,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 11,
+      "t_ms": 4871,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_appointments",
+      "args": {
+        "patient": "Gloria Hart"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 12,
+      "t_ms": 4921,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_appointments",
+      "result": {
+        "patient": "Gloria Hart",
+        "appointments": [
+          {
+            "appointment_id": "APT-GH-0929",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-09-29T10:00",
+            "visit_type": "follow_up",
+            "slot_id": "PAT-20260929-1000"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 13,
+      "t_ms": 6087,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "Of course, that works fine. Let me pull up your appointments now. Great, Gloria. Now let me look up your appointments with Dr. Patel. I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Wednesday, Thursday, or Friday work better for you?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "e516f4f9703855cb173b697121de963e9ef8704d9961a4f86c17faaf969756db",
+        "cache_hit": true,
+        "latency_ms": 1166,
+        "usage": {
+          "input_tokens": 3030,
+          "output_tokens": 49
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "be7484ab48b231c6e281864c27dcb595226ca71b07c1d34ab0cec1d8ef043855",
+          "cache_hit": true,
+          "latency_ms": 1393,
+          "usage": {
+            "input_tokens": 2736,
+            "output_tokens": 93
+          }
+        },
+        {
+          "cache_key": "49852372a175cb6b2fa036b398dd3596dd31702f04c075b887fe52de0effc67a",
+          "cache_hit": true,
+          "latency_ms": 1223,
+          "usage": {
+            "input_tokens": 2876,
+            "output_tokens": 73
+          }
+        },
+        {
+          "cache_key": "e516f4f9703855cb173b697121de963e9ef8704d9961a4f86c17faaf969756db",
+          "cache_hit": true,
+          "latency_ms": 1166,
+          "usage": {
+            "input_tokens": 3030,
+            "output_tokens": 49
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiXe22qN5WbGWRysELF",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "I see your appointment with Dr. Patel on Tuesday, September 29th at ten in the morning. You'd like to move it to later that week—would Wednesday, Thursday, or Friday work better for you?"
+            }
+          }
+        ],
+        "created": 1790364821,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 49,
+          "prompt_tokens": 3030,
+          "total_tokens": 3079
+        }
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 6087,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 0,
+        "say": "Thursday afternoon would be best, if you have it."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_0] the agent asks which day or time she would like",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "b9ff9fa29c925a38c65c9552b08bc35034392fee558d551ae93ee4bb852689de",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks if Wednesday, Thursday, or Friday works better.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "e40fcf5cf47241d21dff7982a39d75515ca4f7457dab1b13d2f971ff5f7cc4c2",
+          "cache_hit": false,
+          "latency_ms": 5651,
+          "usage": {
+            "input_tokens": 947,
+            "output_tokens": 489
+          }
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "t_ms": 6087,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Thursday afternoon would be best, if you have it, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "33480e5ba04873da862844dae77156d54b4f14d2712129d348602c80a1b41f05",
+          "cache_hit": false,
+          "latency_ms": 1249,
+          "usage": {
+            "input_tokens": 1606,
+            "output_tokens": 35
+          }
+        }
+      ]
+    },
+    {
+      "seq": 16,
+      "t_ms": 7765,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "follow_up",
+        "date_range": "2026-10-01..2026-10-01",
+        "provider": "Dr. Raj Patel"
+      },
+      "normalized": {
+        "provider": "Dr. Raj Patel",
+        "visit_type": "follow_up"
+      }
+    },
+    {
+      "seq": 17,
+      "t_ms": 7815,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "follow_up",
+        "slots": [
+          {
+            "slot_id": "PAT-20261001-1400",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-01T14:00"
+          },
+          {
+            "slot_id": "PAT-20261001-1520",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-01T15:20"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 18,
+      "t_ms": 8855,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Let me search for available slots with Dr. Patel on Thursday afternoon. Perfect! I have two options for you on Thursday, October 1st: two o'clock in the afternoon or three twenty. Which would you prefer?",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "da00c002777c5f498d3f7720f39b5c2491f6a9a44fdfb72fa80855f6562ef44d",
+        "cache_hit": true,
+        "latency_ms": 1040,
+        "usage": {
+          "input_tokens": 3324,
+          "output_tokens": 35
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "b5cea713ca6610aeb8eecd5dea0d6bfd8a99bae766d1e2f79016cbbc1b4d828b",
+          "cache_hit": true,
+          "latency_ms": 1678,
+          "usage": {
+            "input_tokens": 3095,
+            "output_tokens": 128
+          }
+        },
+        {
+          "cache_key": "da00c002777c5f498d3f7720f39b5c2491f6a9a44fdfb72fa80855f6562ef44d",
+          "cache_hit": true,
+          "latency_ms": 1040,
+          "usage": {
+            "input_tokens": 3324,
+            "output_tokens": 35
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiYPooCjRSE4hTP9C8s",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect! I have two options for you on Thursday, October 1st: two o'clock in the afternoon or three twenty. Which would you prefer?"
+            }
+          }
+        ],
+        "created": 1790364831,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 35,
+          "prompt_tokens": 3324,
+          "total_tokens": 3359
+        }
+      }
+    },
+    {
+      "seq": 19,
+      "t_ms": 8855,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 1,
+        "say": "The earliest of those is fine, dear."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_1] the agent offers one or more Thursday afternoon times",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "228cfcb325415068ff46472b965ae15d1425ea06a30a32f1f043dac3309dc23d",
+          "raw_output": "{\"met\":true,\"why\":\"Agent offers 2:00pm and 3:20pm Thursday options\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent first states the new appointment time (offered or booked)",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "228cfcb325415068ff46472b965ae15d1425ea06a30a32f1f043dac3309dc23d",
+          "raw_output": "{\"met\":true,\"why\":\"First time agent states specific new appointment times offered\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "move 2 waits: move 1 fires this turn (one scripted line per turn, lowest-numbered first)"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "d371f047a90495024e2f7db211e879de4e8c653827f43b946210487dcc12312d",
+          "cache_hit": false,
+          "latency_ms": 4485,
+          "usage": {
+            "input_tokens": 1046,
+            "output_tokens": 424
+          }
+        }
+      ]
+    },
+    {
+      "seq": 20,
+      "t_ms": 8855,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "The earliest of those is fine, dear.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "986018c5cc6d3b8a6313887e4af34321386fb5ca5bd34037084049a005dbdccb",
+          "cache_hit": false,
+          "latency_ms": 1218,
+          "usage": {
+            "input_tokens": 1707,
+            "output_tokens": 28
+          }
+        }
+      ]
+    },
+    {
+      "seq": 21,
+      "t_ms": 10421,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "book_appointment",
+      "args": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20261001-1400",
+        "visit_type": "follow_up"
+      },
+      "normalized": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20261001-1400",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "follow_up"
+      }
+    },
+    {
+      "seq": 22,
+      "t_ms": 10541,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "book_appointment",
+      "result": {
+        "status": "booked",
+        "appointment_id": "APT-NEW-PAT-20261001-1400",
+        "provider": "Dr. Raj Patel",
+        "start": "2026-10-01T14:00",
+        "visit_type": "follow_up"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 23,
+      "t_ms": 10541,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "bookings",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20261001-1400",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "follow_up"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 24,
+      "t_ms": 10541,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-NEW-PAT-20261001-1400",
+        "patient": "Gloria Hart",
+        "provider": "Dr. Raj Patel",
+        "slot_id": "PAT-20261001-1400",
+        "start": "2026-10-01T14:00",
+        "visit_type": "follow_up",
+        "status": "booked"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 25,
+      "t_ms": 11868,
+      "turn": 4,
+      "type": "tool_call",
+      "call_id": "c5",
+      "tool": "cancel_appointment",
+      "args": {
+        "appointment_id": "APT-GH-0929"
+      },
+      "normalized": {
+        "patient": "Gloria Hart",
+        "appointment_id": "APT-GH-0929",
+        "provider": "Dr. Raj Patel"
+      }
+    },
+    {
+      "seq": 26,
+      "t_ms": 11988,
+      "turn": 4,
+      "type": "tool_result",
+      "call_id": "c5",
+      "tool": "cancel_appointment",
+      "result": {
+        "status": "cancelled",
+        "appointment_id": "APT-GH-0929"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 27,
+      "t_ms": 11988,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "cancellations",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-GH-0929",
+        "patient": "Gloria Hart"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 28,
+      "t_ms": 11988,
+      "turn": 4,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "update",
+      "before": {
+        "appointment_id": "APT-GH-0929",
+        "status": "booked"
+      },
+      "after": {
+        "appointment_id": "APT-GH-0929",
+        "status": "cancelled"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 29,
+      "t_ms": 13068,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "Great, that's two o'clock on Thursday, October 1st. Let me book that for you now. Wonderful, your new appointment is booked. Now let me cancel the Tuesday appointment. All set, Gloria. Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon. Your Tuesday appointment has been cancelled. Is there anything else I can help you with?",
+      "tool_call_ids": [
+        "c4",
+        "c5"
+      ],
+      "llm": {
+        "cache_key": "5f95a9ff424db513b9b7db1cc739696946c0ea87675137342185e6a56730fdbf",
+        "cache_hit": true,
+        "latency_ms": 1080,
+        "usage": {
+          "input_tokens": 3677,
+          "output_tokens": 50
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "d9aee5f73a897aa988eaa9017a70ababb936f031875d575e03985c18ed90381a",
+          "cache_hit": true,
+          "latency_ms": 1566,
+          "usage": {
+            "input_tokens": 3371,
+            "output_tokens": 127
+          }
+        },
+        {
+          "cache_key": "db73f5b9960dc4dcd31b0cf83429308012b66b315b49553c9d1b3d870f6eb99d",
+          "cache_hit": true,
+          "latency_ms": 1327,
+          "usage": {
+            "input_tokens": 3566,
+            "output_tokens": 81
+          }
+        },
+        {
+          "cache_key": "5f95a9ff424db513b9b7db1cc739696946c0ea87675137342185e6a56730fdbf",
+          "cache_hit": true,
+          "latency_ms": 1080,
+          "usage": {
+            "input_tokens": 3677,
+            "output_tokens": 50
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQiYyGCPhXRQJqVnPPLp",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "All set, Gloria. Your appointment with Dr. Patel is now Thursday, October 1st at two o'clock in the afternoon. Your Tuesday appointment has been cancelled. Is there anything else I can help you with?"
+            }
+          }
+        ],
+        "created": 1790364839,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 50,
+          "prompt_tokens": 3677,
+          "total_tokens": 3727
+        }
+      }
+    },
+    {
+      "seq": 30,
+      "t_ms": 13068,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "Perfect, that works. That's all I needed, honey, thank you. Bye now!"
+      },
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "f373a0c40f54854a14d6f65aff41de70368498069ce2e49413fcf1443756f164",
+          "cache_hit": false,
+          "latency_ms": 1700,
+          "usage": {
+            "input_tokens": 1182,
+            "output_tokens": 126
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 13068,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Perfect, that works. That's all I needed, honey, thank you. Bye now!",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "3e0d777a80c7e7e25218a8e8defff0a780fa3967ed0749e8a8819f067b5e060d",
+          "cache_hit": false,
+          "latency_ms": 1246,
+          "usage": {
+            "input_tokens": 1883,
+            "output_tokens": 42
+          }
+        }
+      ]
+    },
+    {
+      "seq": 32,
+      "t_ms": 13068,
+      "turn": 5,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "The caller said goodbye."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20261001-1400",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "follow_up"
+        }
+      ],
+      "cancellations": [
+        {
+          "appointment_id": "APT-GH-0929",
+          "patient": "Gloria Hart"
+        }
+      ],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "world_state": {
+      "appointments": [
+        {
+          "appointment_id": "APT-GH-0929",
+          "patient": "Gloria Hart",
+          "provider": "Dr. Raj Patel",
+          "slot_id": "PAT-20260929-1000",
+          "start": "2026-09-29T10:00",
+          "visit_type": "follow_up",
+          "status": "cancelled"
+        },
+        {
+          "appointment_id": "APT-NEW-PAT-20261001-1400",
+          "patient": "Gloria Hart",
+          "provider": "Dr. Raj Patel",
+          "slot_id": "PAT-20261001-1400",
+          "start": "2026-10-01T14:00",
+          "visit_type": "follow_up",
+          "status": "booked"
+        }
+      ],
+      "open_slots": [
+        "PAT-20260929-1000",
+        "PAT-20260930-0820",
+        "PAT-20261001-1520",
+        "PAT-20261002-0900"
+      ]
+    },
+    "tool_calls": [
+      {
+        "seq": 8,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Gloria Hart",
+          "dob": "1947-05-12"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 11,
+        "call_id": "c2",
+        "tool": "list_appointments",
+        "args": {
+          "patient": "Gloria Hart"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 16,
+        "call_id": "c3",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "follow_up",
+          "date_range": "2026-10-01..2026-10-01",
+          "provider": "Dr. Raj Patel"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 21,
+        "call_id": "c4",
+        "tool": "book_appointment",
+        "args": {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20261001-1400",
+          "visit_type": "follow_up"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 25,
+        "call_id": "c5",
+        "tool": "cancel_appointment",
+        "args": {
+          "appointment_id": "APT-GH-0929"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 6,
+      "caller_turns": 6,
+      "agent_turns": 5,
+      "tool_calls": 5,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:04:14.508Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)",
+          "move 1: said (100% of the scripted words)",
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

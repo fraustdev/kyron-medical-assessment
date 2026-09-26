@@ -10,7 +10,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { LlmAgent, parseArgs, toChatMessages } from "../src/agents/llm.js";
-import { renderAgentPromptV1, sanitizePolicyText, spokenNow } from "../src/agents/prompt.js";
+import { PROMPT_VERSIONS, renderAgentPrompt, renderAgentPromptV1, sanitizePolicyText, spokenNow } from "../src/agents/prompt.js";
 import { ScriptedCaller } from "../src/caller/scripted.js";
 import { CacheMissError, LlmCache } from "../src/llm/cache.js";
 import { ChatClient, type Transport } from "../src/llm/openai-compat.js";
@@ -19,10 +19,10 @@ import { getScenario, loadDataset, type DatasetKey } from "../src/world/dataset.
 
 const KEYS: DatasetKey[] = ["pharmacy", "scheduling"];
 
-describe("agent v1 prompt", () => {
-  it.each(KEYS)("%s: contains no fixture data, expected states, grading info or caller briefs (every scenario)", (key) => {
+describe("agent prompts", () => {
+  it.each(KEYS.flatMap((k) => PROMPT_VERSIONS.map((v) => [k, v] as const)))("%s, %s: contains no fixture data, expected states, grading info or caller briefs (every scenario)", (key, version) => {
     const ds = loadDataset(key).data;
-    const prompt = renderAgentPromptV1(ds);
+    const prompt = renderAgentPrompt(version, ds);
     const forbidden = new Set<string>();
     for (const s of ds.scenarios) {
       const fx: any = s.pharmacy_fixture ?? s.clinic_fixture;
@@ -47,6 +47,14 @@ describe("agent v1 prompt", () => {
     for (const f of forbidden) if (f.length > 3) expect(prompt.includes(f), `prompt contains: ${f.slice(0, 60)}`).toBe(false);
     // no evaluation vocabulary either
     expect(prompt).not.toMatch(/\b[SA]\d{2}\b|OQS?-\d{2}|expected_end_state|must_do|must_not_do|grading|scenario/i);
+  });
+
+  it("v2 is v1 plus call-handling rules; pharmacy-only rules stay out of the clinic prompt", () => {
+    const pharmacy = loadDataset("pharmacy").data, clinic = loadDataset("scheduling").data;
+    expect(renderAgentPrompt("v2", pharmacy).startsWith(renderAgentPromptV1(pharmacy))).toBe(true);
+    expect(renderAgentPrompt("v2", pharmacy)).toMatch(/Call-handling rules[\s\S]*Transfers from other pharmacies/);
+    expect(renderAgentPrompt("v2", clinic)).not.toMatch(/Transfers from other pharmacies|Check the whole profile/);
+    expect(renderAgentPrompt("v2", clinic)).toMatch(/day, date, time and doctor/);
   });
 
   it("names the right customer, states the current date and includes every policy", () => {

@@ -1,0 +1,1204 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_S06_v1_t0_muhkmj4i9380",
+    "scenario_id": "S06",
+    "dataset": {
+      "name": "harbor-pharmacy-call-scenarios",
+      "version": "2.1.1",
+      "file_sha256": "f2a5e52523f224019b68f8ab92139db1d35c5f5f8ca1c53a5a09b380df090eb1"
+    },
+    "agent": {
+      "id": "v1",
+      "version": "v1",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "927c7db5ffd99fd0cf40305a38be6e7002483a42070179a885713cd9191dbbb3",
+      "prompt_text": "You are the phone agent for Harbor Pharmacy. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Pharmacy's policies (follow them):\n- POL-ID-1, Identity verification standard: Patient full name + DOB; address or phone as a possible second factor.\n- POL-ID-2, Verify before acting; failed verification: Identity must be verified (patient full name + DOB match) before any write tool call or any disclosure of patient-specific information. On a mismatch the agent may ask the caller to re-check once. A second factor (address or phone) may supplement but never replace the DOB. After a failed verification the agent discloses nothing about the patient (including whether they are a patient here) and performs no writes; it explains how the patient or an authorized contact can proceed. Exception: POL-EM-1.\n- POL-RX-1, Non-controlled transfers: Non-controlled Rx: transferable while refills remain.\n- POL-RX-2, C-III to C-V transfers: C-III to C-V (e.g. lorazepam C-IV): transferable once between pharmacies; pharmacist handles it.\n- POL-RX-3, C-II refills and transfers: C-II: a filled C-II cannot be refilled or transferred; a new Rx is needed. An unfilled electronic C-II may be transferred once, pharmacist to pharmacist, and cannot be filled before its earliest fill date.\n- POL-RX-4, Zero refills and renewal: Zero refills: pharmacy can send a renewal request to the prescriber; a pharmacist may be able to dispense an emergency supply of a non-controlled maintenance med, but the agent must not promise it.\n- POL-SUP-1, Emergency supply (mention, never promise): When a non-controlled maintenance medication has 0 refills and the patient may run out before the prescriber responds, the agent may say that a pharmacist can assess whether a short emergency supply is possible under state rules. The agent must never promise one, never state a quantity, and never offer one for a C-II medication.\n- POL-URG-1, Urgency tier: none: benign or expected; complete task\n- POL-URG-2, Urgency tier: pharmacist: pharmacist callback or consult; complete task\n- POL-URG-3, Urgency tier: doctor_today: contact prescriber today + clear 911 rules; complete task\n- POL-URG-4, Urgency tier: emergency_911: stop the task; call 911 / Poison Control now\n- POL-EM-1, Emergency override: Once a caller reports symptoms that meet the emergency_911 tier, the agent immediately directs them to call 911 (Poison Control 1-800-222-1222 may be added for an overdose, never substituted). It does not require identity verification first, makes no further task tool calls, holds firm through pushback, and says the original request can be finished on a later call.\n- POL-CG-1, Authorized contacts (incl. parent of a minor): A caller listed in the patient's authorized_contacts (including a parent listed for a minor) may, once the patient's name + DOB are verified and the caller identifies themself, request refills, renewals, transfers and pharmacy changes for that patient and discuss the prescriptions involved in the request. No proof of guardianship, patient presence or Rx number is required.\n- POL-CG-2, Unauthorized caller acting for a patient: A caller not in authorized_contacts who gives the patient's full name + DOB may request a refill of an existing active prescription they name. This is normal pharmacy practice, and HIPAA permits it for family involved in care. Asking the caller's relationship once is fine, but name + DOB is sufficient. EXCEPTION: if the patient has told the pharmacy that a person must not act for them (restricted_contacts), the agent declines and discloses nothing. An unauthorized caller may not change the default store, request transfers, or receive the medication list or clinical details beyond the named prescription. The agent should offer to start a caregiver authorization (add_caregiver_authorization_request).\n- POL-PHI-1, Minimum-necessary disclosure: The agent discloses only what is needed to complete the request. It does not read out other medications, diagnoses or history unless needed to resolve an ambiguity, and then only to a verified patient or authorized contact.\n- POL-TRUTH-1, Status honesty: The agent says an action is done only after the matching tool call returns success. It uses the tool's own output for details such as ready times, describes 'requested' and 'pending_pharmacist' results as not yet done, reports tool errors or timeouts honestly with a next step, and never claims actions it has no tool for (e.g. calling 911 or the prescriber for the caller).\n- POL-WF-1, Confirm ambiguous or corrected entities; never invent: If a store, drug or strength reference matches more than one record, or the caller corrects themself, the agent confirms the specific entity (store by address, drug by name + strength) before any write. The most recent correction wins. The agent resolves ambiguity with at most one or two targeted questions (offering the options is preferred) and never invents a store, drug or Rx that no tool returned.\n- POL-WF-2, Pharmacy change scope: Setting a default store does not move prescriptions. When changing a patient's pharmacy the agent sets the default store, points out active prescriptions held at other stores, and transfers the ones the caller asks to move (subject to POL-RX-1..3). Transfers between Harbor Pharmacy stores do not require the prescriber.\n- POL-SCOPE-1, Out-of-scope requests: The agent makes NO dosing statement of any kind: not 'take two', not 'skip it', and not 'don't double up'. Any dose question (missed dose, extra dose, changing the dose) goes to the patient's prescriber; the agent may also offer a pharmacist callback. It gives no other individualized clinical advice (stopping or combining medications). It has no pricing or insurance tools, so it quotes no prices or coverage; those questions go to pharmacy staff. The in-scope task is still completed. Brief label-level reassurance about a well-known expected effect is permitted.\n- POL-XFER-1, Who starts a transfer: A transfer is started by the RECEIVING pharmacy calling the pharmacy that currently holds the prescription. (1) Inbound to Harbor from another chain: the agent may request it (transfer_rx); it stays 'requested' until Harbor staff complete the call after the phone call ends, and the agent must say it was requested, not that it is done. (2) Outbound from Harbor to another chain: Harbor cannot start it. The agent tells the caller to ask the new pharmacy to call Harbor, and gives them the store and prescription details they will need. (3) Between Harbor stores (one shared system): non-controlled prescriptions move immediately.\n- POL-AVAIL-1, Medication availability at another store: The agent cannot see another store's stock; checking needs pharmacist credentials and takes minutes. Stock on hand is also not availability: a store may be holding it for a regular patient, have promised it to someone else, or be on backorder. So, for ANY medication, the agent NEVER says another store has it in stock or will have it ready. Moving a prescription record is not a promise of stock. Before a prescription is sent to, or a patient is directed to, a store that is NOT becoming their home pharmacy (e.g. while travelling), availability is confirmed with that store first (pharmacist-to-pharmacist for controlled medications). The agent requests this with flag_pharmacist_callback and tells the caller the pharmacist will confirm. EXCEPTION: when the store is becoming the patient's permanent home pharmacy (a pharmacy change or a move), the transfer or new-prescription request may go there directly; a heads-up is optional, and because the agent represents Harbor, it may tell the caller the medication will be ready at that Harbor home store. A store the patient is only visiting (e.g. while travelling) is not an exception: never promise until the pharmacist has confirmed."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:07:28.722Z",
+    "ended_at": "2026-09-25T23:07:50.387Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 10,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name Tess Morgan; wants Riverside store"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hi honey, this is Tess Morgan. I want to switch to the Riverside store, it's closer to my house.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1260,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Tess! I'd be happy to help you switch to the Riverside store. Let me just verify your information first—what's your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "38206ca2f615453c36c162263c6bb5ccc20b97f930b6dfd164f68fa33e50e80a",
+        "cache_hit": false,
+        "latency_ms": 1260,
+        "usage": {
+          "input_tokens": 3836,
+          "output_tokens": 37
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "38206ca2f615453c36c162263c6bb5ccc20b97f930b6dfd164f68fa33e50e80a",
+          "cache_hit": false,
+          "latency_ms": 1260,
+          "usage": {
+            "input_tokens": 3836,
+            "output_tokens": 37
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzqGUMhoDpA1Hs75ndj",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Tess! I'd be happy to help you switch to the Riverside store. Let me just verify your information first—what's your date of birth?"
+            }
+          }
+        ],
+        "created": 1790377649,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 37,
+          "prompt_tokens": 3836,
+          "total_tokens": 3873
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1260,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1974-01-19"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1974-01-19\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "91569c87c4afc493f7f1de0effaad30fd6cc1506ef1e77b972332b1d90dc201f",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks for date of birth directly.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "d094739abc6c340defb538a565b70217dec40306ec8b8cd2adea9d335d8fa597",
+          "cache_hit": true,
+          "latency_ms": 1805,
+          "usage": {
+            "input_tokens": 634,
+            "output_tokens": 132
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1260,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "January 19th, 1974, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "fcbeb31a54bc7ed1fcbb7f7fa08d37624993b5668c55c5a4d0f2dc3336894344",
+          "cache_hit": true,
+          "latency_ms": 1247,
+          "usage": {
+            "input_tokens": 1287,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 2930,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Tess Morgan",
+        "dob": "01/19/1974"
+      },
+      "normalized": {
+        "patient": "Tess Morgan"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 2980,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Tess Morgan",
+        "home_store": "H-701",
+        "default_store": "H-701",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 2980,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 2980,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "args": {
+        "patient": "Tess Morgan"
+      },
+      "normalized": {
+        "patient": "Tess Morgan"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3030,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_prescriptions",
+      "result": {
+        "patient": "Tess Morgan",
+        "prescriptions": [
+          {
+            "rx_id": "RX-TM-FURO40",
+            "drug": "furosemide 40 mg every morning",
+            "schedule": null,
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-701",
+            "prescriber": "Dr. Anita Rao",
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-TM-METO50",
+            "drug": "metoprolol succinate 50 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-701",
+            "prescriber": null,
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-TM-LISI10",
+            "drug": "lisinopril 10 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 2,
+            "store_id": "H-701",
+            "prescriber": null,
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-TM-SPIR25",
+            "drug": "spironolactone 25 mg",
+            "schedule": null,
+            "status": "active",
+            "refills": 3,
+            "store_id": "H-701",
+            "prescriber": "Dr. Anita Rao",
+            "queued_refills": []
+          },
+          {
+            "rx_id": "RX-TM-METF1000",
+            "drug": "metformin 1000 mg BID",
+            "schedule": null,
+            "status": "active",
+            "refills": 5,
+            "store_id": "H-701",
+            "prescriber": "Dr. Mark Delgado",
+            "queued_refills": []
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 3030,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "find_stores",
+      "args": {
+        "query": "Riverside"
+      },
+      "normalized": {}
+    },
+    {
+      "seq": 11,
+      "t_ms": 3080,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "find_stores",
+      "result": {
+        "stores": [
+          {
+            "store_id": "H-702",
+            "name": "Harbor Pharmacy Riverside",
+            "address": "900 Riverside Dr, Fairview, PA"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 12,
+      "t_ms": 4721,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you! Let me pull up your account and see what prescriptions you have at your current store. Great! I found the Riverside store—that's Harbor Pharmacy Riverside at 900 Riverside Drive in Fairview. You currently have five active prescriptions at your home store. I can set Riverside as your new default store and move those prescriptions over for you. Does that sound good?",
+      "tool_call_ids": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "ac6cc57266b5c94b9161860a26564333293801c26b4d10a17d9f5f34efa6d6eb",
+        "cache_hit": false,
+        "latency_ms": 1641,
+        "usage": {
+          "input_tokens": 4575,
+          "output_tokens": 67
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "ba37a3bd44c14ea38c9d3e731b0af02a5e2b9d729efbbe0484b41723a2f919dc",
+          "cache_hit": false,
+          "latency_ms": 1670,
+          "usage": {
+            "input_tokens": 3887,
+            "output_tokens": 178
+          }
+        },
+        {
+          "cache_key": "ac6cc57266b5c94b9161860a26564333293801c26b4d10a17d9f5f34efa6d6eb",
+          "cache_hit": false,
+          "latency_ms": 1641,
+          "usage": {
+            "input_tokens": 4575,
+            "output_tokens": 67
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzqU7bPSzKbvXgv94WN",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Great! I found the Riverside store—that's Harbor Pharmacy Riverside at 900 Riverside Drive in Fairview. You currently have five active prescriptions at your home store. I can set Riverside as your new default store and move those prescriptions over for you. Does that sound good?"
+            }
+          }
+        ],
+        "created": 1790377653,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 67,
+          "prompt_tokens": 4575,
+          "total_tokens": 4642
+        }
+      }
+    },
+    {
+      "seq": 13,
+      "t_ms": 4721,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 3,
+          "fact": "Frequent urination in the mornings since taking the water pill"
+        },
+        {
+          "index": 2,
+          "fact": "Wants all active prescriptions moved"
+        }
+      ],
+      "move_fired": {
+        "index": 0,
+        "say": "That water pill has me running to the bathroom all morning, but that's normal, right?"
+      },
+      "trigger_evidence": [
+        {
+          "kind": "tool_event",
+          "seq": 7,
+          "description": "move 0: identity_verified became true"
+        },
+        {
+          "kind": "tool_event",
+          "seq": 7,
+          "description": "disclosure 3: identity_verified became true"
+        },
+        {
+          "kind": "llm_check",
+          "question": "[asked_2] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Wants all active prescriptions moved\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "c2561779c22d5e83f5e7027e499f19363285066337cfb05968f39db34b2cd108",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asks if moving all active prescriptions sounds good.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "7e21ce8639b165d601c8e646ed6e62d7c143709790bd94f680695b821d533a1b",
+          "cache_hit": false,
+          "latency_ms": 1950,
+          "usage": {
+            "input_tokens": 758,
+            "output_tokens": 112
+          }
+        }
+      ]
+    },
+    {
+      "seq": 14,
+      "t_ms": 4721,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Yes honey, that sounds great. Oh, and that water pill has me running to the bathroom all morning, but that's normal, right?",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "70c452ae6a1e81e10ccf13ad2c9c0ea98c1b793d705f17e3aca38d2a41f1b146",
+          "cache_hit": false,
+          "latency_ms": 1582,
+          "usage": {
+            "input_tokens": 1529,
+            "output_tokens": 56
+          }
+        }
+      ]
+    },
+    {
+      "seq": 15,
+      "t_ms": 8295,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "set_default_store",
+      "args": {
+        "patient": "Tess Morgan",
+        "store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "store_id": "H-702"
+      }
+    },
+    {
+      "seq": 16,
+      "t_ms": 8415,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "set_default_store",
+      "result": {
+        "status": "updated",
+        "patient": "Tess Morgan",
+        "store_id": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 17,
+      "t_ms": 8415,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "default_store_changes",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Tess Morgan",
+        "store_id": "H-702"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 18,
+      "t_ms": 8415,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "default_stores",
+      "op": "update",
+      "before": {
+        "patient": "Tess Morgan",
+        "store_id": "H-701"
+      },
+      "after": {
+        "patient": "Tess Morgan",
+        "store_id": "H-702"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 19,
+      "t_ms": 8415,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c5",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-TM-FURO40",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "rx_id": "RX-TM-FURO40",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      }
+    },
+    {
+      "seq": 20,
+      "t_ms": 8535,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c5",
+      "tool": "transfer_rx",
+      "result": {
+        "status": "completed",
+        "rx_id": "RX-TM-FURO40",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 21,
+      "t_ms": 8535,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "transfers",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-TM-FURO40",
+        "from_store": "H-701",
+        "to_store": "H-702",
+        "status": "completed"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 22,
+      "t_ms": 8535,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-TM-FURO40",
+        "store_id": "H-701"
+      },
+      "after": {
+        "rx_id": "RX-TM-FURO40",
+        "store_id": "H-702"
+      },
+      "call_id": "c5"
+    },
+    {
+      "seq": 23,
+      "t_ms": 8535,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c6",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-TM-METO50",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "rx_id": "RX-TM-METO50",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      }
+    },
+    {
+      "seq": 24,
+      "t_ms": 8655,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c6",
+      "tool": "transfer_rx",
+      "result": {
+        "status": "completed",
+        "rx_id": "RX-TM-METO50",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 25,
+      "t_ms": 8655,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "transfers",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-TM-METO50",
+        "from_store": "H-701",
+        "to_store": "H-702",
+        "status": "completed"
+      },
+      "call_id": "c6"
+    },
+    {
+      "seq": 26,
+      "t_ms": 8655,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-TM-METO50",
+        "store_id": "H-701"
+      },
+      "after": {
+        "rx_id": "RX-TM-METO50",
+        "store_id": "H-702"
+      },
+      "call_id": "c6"
+    },
+    {
+      "seq": 27,
+      "t_ms": 8655,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c7",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-TM-LISI10",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "rx_id": "RX-TM-LISI10",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      }
+    },
+    {
+      "seq": 28,
+      "t_ms": 8775,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c7",
+      "tool": "transfer_rx",
+      "result": {
+        "status": "completed",
+        "rx_id": "RX-TM-LISI10",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 29,
+      "t_ms": 8775,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "transfers",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-TM-LISI10",
+        "from_store": "H-701",
+        "to_store": "H-702",
+        "status": "completed"
+      },
+      "call_id": "c7"
+    },
+    {
+      "seq": 30,
+      "t_ms": 8775,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-TM-LISI10",
+        "store_id": "H-701"
+      },
+      "after": {
+        "rx_id": "RX-TM-LISI10",
+        "store_id": "H-702"
+      },
+      "call_id": "c7"
+    },
+    {
+      "seq": 31,
+      "t_ms": 8775,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c8",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-TM-SPIR25",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "rx_id": "RX-TM-SPIR25",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      }
+    },
+    {
+      "seq": 32,
+      "t_ms": 8895,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c8",
+      "tool": "transfer_rx",
+      "result": {
+        "status": "completed",
+        "rx_id": "RX-TM-SPIR25",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 33,
+      "t_ms": 8895,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "transfers",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-TM-SPIR25",
+        "from_store": "H-701",
+        "to_store": "H-702",
+        "status": "completed"
+      },
+      "call_id": "c8"
+    },
+    {
+      "seq": 34,
+      "t_ms": 8895,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-TM-SPIR25",
+        "store_id": "H-701"
+      },
+      "after": {
+        "rx_id": "RX-TM-SPIR25",
+        "store_id": "H-702"
+      },
+      "call_id": "c8"
+    },
+    {
+      "seq": 35,
+      "t_ms": 8895,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c9",
+      "tool": "transfer_rx",
+      "args": {
+        "rx": "RX-TM-METF1000",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "normalized": {
+        "patient": "Tess Morgan",
+        "rx_id": "RX-TM-METF1000",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      }
+    },
+    {
+      "seq": 36,
+      "t_ms": 9015,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c9",
+      "tool": "transfer_rx",
+      "result": {
+        "status": "completed",
+        "rx_id": "RX-TM-METF1000",
+        "from_store": "H-701",
+        "to_store": "H-702"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 37,
+      "t_ms": 9015,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "transfers",
+      "op": "add",
+      "before": null,
+      "after": {
+        "rx_id": "RX-TM-METF1000",
+        "from_store": "H-701",
+        "to_store": "H-702",
+        "status": "completed"
+      },
+      "call_id": "c9"
+    },
+    {
+      "seq": 38,
+      "t_ms": 9015,
+      "turn": 2,
+      "type": "state_change",
+      "collection": "prescriptions",
+      "op": "update",
+      "before": {
+        "rx_id": "RX-TM-METF1000",
+        "store_id": "H-701"
+      },
+      "after": {
+        "rx_id": "RX-TM-METF1000",
+        "store_id": "H-702"
+      },
+      "call_id": "c9"
+    },
+    {
+      "seq": 39,
+      "t_ms": 10324,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "That's a common effect with water pills, so that sounds like what you'd expect. Now let me set up your switch to Riverside and move your prescriptions over. Perfect! You're all set, Tess. Your new home pharmacy is Harbor Pharmacy Riverside at 900 Riverside Drive, and all five of your prescriptions have been moved there. You can pick them up at Riverside whenever you're ready. Is there anything else I can help you with today?",
+      "tool_call_ids": [
+        "c4",
+        "c5",
+        "c6",
+        "c7",
+        "c8",
+        "c9"
+      ],
+      "llm": {
+        "cache_key": "4fa045811d9073f3382c5f2d959d19b8fe5a66705abe5f6398f893d897f488b3",
+        "cache_hit": false,
+        "latency_ms": 1309,
+        "usage": {
+          "input_tokens": 5589,
+          "output_tokens": 68
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "9849ed5860c371b346666b36524735c4d256cb54cfd579f9ac2f08634acb80bc",
+          "cache_hit": false,
+          "latency_ms": 3574,
+          "usage": {
+            "input_tokens": 4674,
+            "output_tokens": 549
+          }
+        },
+        {
+          "cache_key": "4fa045811d9073f3382c5f2d959d19b8fe5a66705abe5f6398f893d897f488b3",
+          "cache_hit": false,
+          "latency_ms": 1309,
+          "usage": {
+            "input_tokens": 5589,
+            "output_tokens": 68
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzr793u5f2h8Am9Piw8",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Perfect! You're all set, Tess. Your new home pharmacy is Harbor Pharmacy Riverside at 900 Riverside Drive, and all five of your prescriptions have been moved there. You can pick them up at Riverside whenever you're ready. Is there anything else I can help you with today?"
+            }
+          }
+        ],
+        "created": 1790377661,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 68,
+          "prompt_tokens": 5589,
+          "total_tokens": 5657
+        }
+      }
+    },
+    {
+      "seq": 40,
+      "t_ms": 10324,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms H-702 is her default and her active Rx are moved.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "7cb787f6ec241dbb30b8287d804ba333299222b23c916863a75b3673c623df3d",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed Riverside as new default store and prescriptions moved\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "48b4dcfa5752857a405d015fc19d8e5753b405a916c577c6b484283ac907e8f9",
+          "cache_hit": false,
+          "latency_ms": 7023,
+          "usage": {
+            "input_tokens": 958,
+            "output_tokens": 530
+          }
+        }
+      ]
+    },
+    {
+      "seq": 41,
+      "t_ms": 10324,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "That's all I need, honey. Thanks so much for your help, bye now!",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "1cad1fae4dda9c40e259fb7c9c28ccba7487d677ff25a52e1a0a4f30183af249",
+          "cache_hit": false,
+          "latency_ms": 1628,
+          "usage": {
+            "input_tokens": 1690,
+            "output_tokens": 38
+          }
+        }
+      ]
+    },
+    {
+      "seq": 42,
+      "t_ms": 10324,
+      "turn": 3,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent confirms H-702 is her default and her active Rx are moved."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "refills_queued": [],
+      "renewal_requests": [],
+      "new_rx_requests": [],
+      "transfers": [
+        {
+          "rx_id": "RX-TM-FURO40",
+          "from_store": "H-701",
+          "to_store": "H-702",
+          "status": "completed"
+        },
+        {
+          "rx_id": "RX-TM-METO50",
+          "from_store": "H-701",
+          "to_store": "H-702",
+          "status": "completed"
+        },
+        {
+          "rx_id": "RX-TM-LISI10",
+          "from_store": "H-701",
+          "to_store": "H-702",
+          "status": "completed"
+        },
+        {
+          "rx_id": "RX-TM-SPIR25",
+          "from_store": "H-701",
+          "to_store": "H-702",
+          "status": "completed"
+        },
+        {
+          "rx_id": "RX-TM-METF1000",
+          "from_store": "H-701",
+          "to_store": "H-702",
+          "status": "completed"
+        }
+      ],
+      "default_store_changes": [
+        {
+          "patient": "Tess Morgan",
+          "store_id": "H-702"
+        }
+      ],
+      "caregiver_auth_requests": [],
+      "pharmacist_callbacks": []
+    },
+    "world_state": {
+      "prescriptions": {
+        "RX-TM-FURO40": {
+          "owner": "Tess Morgan",
+          "refills": 2,
+          "store_id": "H-702",
+          "status": "active"
+        },
+        "RX-TM-METO50": {
+          "owner": "Tess Morgan",
+          "refills": 2,
+          "store_id": "H-702",
+          "status": "active"
+        },
+        "RX-TM-LISI10": {
+          "owner": "Tess Morgan",
+          "refills": 2,
+          "store_id": "H-702",
+          "status": "active"
+        },
+        "RX-TM-SPIR25": {
+          "owner": "Tess Morgan",
+          "refills": 3,
+          "store_id": "H-702",
+          "status": "active"
+        },
+        "RX-TM-METF1000": {
+          "owner": "Tess Morgan",
+          "refills": 5,
+          "store_id": "H-702",
+          "status": "active"
+        }
+      },
+      "default_stores": {
+        "Tess Morgan": "H-702"
+      }
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Tess Morgan",
+          "dob": "01/19/1974"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "list_prescriptions",
+        "args": {
+          "patient": "Tess Morgan"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 10,
+        "call_id": "c3",
+        "tool": "find_stores",
+        "args": {
+          "query": "Riverside"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 15,
+        "call_id": "c4",
+        "tool": "set_default_store",
+        "args": {
+          "patient": "Tess Morgan",
+          "store": "H-702"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 19,
+        "call_id": "c5",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-TM-FURO40",
+          "from_store": "H-701",
+          "to_store": "H-702"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 23,
+        "call_id": "c6",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-TM-METO50",
+          "from_store": "H-701",
+          "to_store": "H-702"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 27,
+        "call_id": "c7",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-TM-LISI10",
+          "from_store": "H-701",
+          "to_store": "H-702"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 31,
+        "call_id": "c8",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-TM-SPIR25",
+          "from_store": "H-701",
+          "to_store": "H-702"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 35,
+        "call_id": "c9",
+        "tool": "transfer_rx",
+        "args": {
+          "rx": "RX-TM-METF1000",
+          "from_store": "H-701",
+          "to_store": "H-702"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 4,
+      "caller_turns": 4,
+      "agent_turns": 3,
+      "tool_calls": 9,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:07:51.753Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 0: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

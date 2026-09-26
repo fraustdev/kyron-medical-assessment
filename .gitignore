@@ -18,3 +18,4 @@ web/dist/
 runs-*.log
 data/
 app-server.log
+runs-exp-*.log

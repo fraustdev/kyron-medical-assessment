@@ -1,0 +1,45 @@
+{
+  "key": "35abbedfd18e6b231421609bc6a422f9b6cdf7593bae0d48df53c7d7cf4a1bbd",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Tess Morgan, patient. 52, heart failure + type 2 diabetes; stoic, wants no fuss; due for her regular Dr. Rao follow-up.\nFacts:\n- Name; wants her regular Dr. Rao follow-up [upfront]\n- DOB 1974-01-19 [only_if_asked, the agent asked at turn 2]\n- Wants a morning next week, the first available [only_if_asked, the agent asked at turn 3]\n- Running to the bathroom all morning since the water pill; asks if that's normal [at_trigger, NEVER unlocked in this call]\n- Otherwise feels fine: no swelling, chest symptoms, weight change or breathlessness [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hi honey, Tess Morgan. I need to book my regular follow-up with Dr. Rao.\n[turn 1] AGENT: Hi Tess! I'd be happy to help you book a follow-up with Dr. Rao. Before I can do that, I need to verify your identity. Can you give me your date of birth?\n[turn 2] CALLER: Sure thing, honey. January 19th, 1974.\n[turn 2] AGENT: Thank you! Now let me search for available slots with Dr. Rao for your follow-up. What dates work best for you? Are you looking to come in soon, or do you have a particular week in mind?\n[turn 3] CALLER: Next week's good for me, honey. Mornings work best, whatever's first available.\n[turn 3] AGENT: Just to confirm—next week would be September 28th through October 4th, correct?\n[turn 4] CALLER: That sounds right, honey, whatever's next week works for me.\n[turn 4] AGENT: Great! I found three morning slots with Dr. Rao. The earliest is Tuesday, September 29th at 9:20 AM. Would that work for you?\n[turn 5] CALLER (scenario-scripted): The first one's fine, honey.\n[turn 5] AGENT: Perfect! Let me book that for you on Tuesday, September 29th at 9:20 AM with Dr. Rao. You're all set, Tess! Your follow-up with Dr. Rao is booked for Tuesday, September 29th at 9:20 AM. Is there anything else I can help you with?\n[turn 6] CALLER: That's it, honey, thank you kindly. Bye now!\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzdYxTgKXnGWpfAAWDZ",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377490,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1442,
+      "total_tokens": 1458
+    }
+  },
+  "latency_ms": 1224,
+  "created_at": "2026-09-25T23:04:51.289Z"
+}

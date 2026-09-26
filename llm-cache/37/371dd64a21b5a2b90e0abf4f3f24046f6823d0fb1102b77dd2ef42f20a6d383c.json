@@ -1,0 +1,45 @@
+{
+  "key": "371dd64a21b5a2b90e0abf4f3f24046f6823d0fb1102b77dd2ef42f20a6d383c",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the referee of a simulated phone call between a CALLER and a customer-service AGENT.\nFor each numbered condition, decide whether it is met RIGHT NOW, judging mainly the agent's LATEST turn in light of the whole call.\n- \"the agent first ...\" / \"the first time ...\" means it happens in the latest turn and had not happened before.\n- Conditions about what the agent says are judged on its words. \"[system actions: ...]\" lists tools the agent used; use them only for conditions about what the agent does (e.g. \"starts looking up\").\n- Conditions phrased as a caller stop rule (e.g. \"Agent confirms ...\", \"End the call right after ...\") are met when the call has reached that point.\n- A condition about how the agent responds to something (symptoms, a 911 instruction, a correction) is NOT met unless that thing has already happened in the call.\n- Be literal and strict: if in doubt, it is not met.\nReply with JSON only, one key per condition id: {\"<id>\": {\"met\": true|false, \"why\": \"<at most 15 words>\"}}"
+      },
+      {
+        "role": "user",
+        "content": "CALL SO FAR:\nCALLER: Hi, Jamal Carter, 3/14/95. Can you transfer my albuterol and sertraline from Brightway number 4471 in Columbus to the Harbor on Main in Lakeview?\nAGENT: I'll verify your identity and then help you transfer those prescriptions. I verified your identity. I searched for a Harbor Pharmacy on Main in Lakeview, but I'm not finding that location. Can you give me the address or cross street so I can find the right store?  [system actions: verify_identity, find_stores, list_prescriptions]\nCALLER: Near Oak, that's the cross street I remember.\nAGENT (LATEST): Let me search for that. Got it—Harbor Pharmacy at 2250 Main Street in Lakeview, near Oak. I found that store. However, I'm not seeing any active prescriptions in your record right now. Are your albuterol and sertraline currently at Brightway 4471, or have they already been filled elsewhere?  [system actions: find_stores]\n\nCONDITIONS:\nmove_0: the agent first asks which Main St store he means without offering options\nmove_2: the agent asks him to look up the address\ndisclosure_1: the agent first asks which Main St store\nstop_0: Agent confirms both transfers to H-302 with its address.\nemergency: In its LATEST turn, the agent told the caller to hang up and call 911 (or emergency services) now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 3000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzEdLVfVWhss9FnD67h",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"move_0\": {\"met\": false, \"why\": \"Agent found store, didn't ask which Main St without options\"}, \"move_2\": {\"met\": false, \"why\": \"Agent asked for cross street, not to look up address\"}, \"disclosure_1\": {\"met\": false, \"why\": \"Agent identified store, didn't ask which Main St\"}, \"stop_0\": {\"met\": false, \"why\": \"No transfers confirmed; no prescriptions found\"}, \"emergency\": {\"met\": false, \"why\": \"No mention of 911 or emergency services\"}}"
+        }
+      }
+    ],
+    "created": 1790377181,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 173,
+      "prompt_tokens": 832,
+      "total_tokens": 1005
+    }
+  },
+  "latency_ms": 2223,
+  "created_at": "2026-09-25T22:59:41.308Z"
+}

@@ -705,5 +705,586 @@
     "human_passed": true,
     "note": "",
     "updated_at": "2026-09-25T21:45:03.238Z"
+  },
+  {
+    "run_id": "run_S08_v1_t0_muhcutup893a",
+    "item_id": "run",
+    "human_passed": false,
+    "note": "Agent doesnt clarify what patient means when they want that pharmacy to be his mothers home store. Do they want to transfer medications over there?",
+    "updated_at": "2026-09-25T22:17:08.275Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.claim.4",
+    "human_passed": true,
+    "note": "The agent is a AI voice assistant for the store the patient wants to transfer to, so its okay if the agent says the store they are representing will have them ready.",
+    "updated_at": "2026-09-25T22:13:56.695Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.judged.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:14:09.850Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.judged.3",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:13:56.761Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.judged.4",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:14:04.142Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.judged.6",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:14:06.489Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:12:25.787Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.state.2",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:11:41.150Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.state.3",
+    "human_passed": true,
+    "note": "Agent asked for patient to call the store themselves since there was not enough information given. So, a transfer was not needed.",
+    "updated_at": "2026-09-25T22:12:25.723Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.state.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:12:27.339Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "S11.state.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:12:30.385Z"
+  },
+  {
+    "run_id": "run_S11_v1_t0_muhcvmvf4e07",
+    "item_id": "run",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:14:14.086Z"
+  },
+  {
+    "run_id": "run_S14_v1_t0_muhcwr83a588",
+    "item_id": "run",
+    "human_passed": false,
+    "note": "Agent never asked for the callers information, only the patients information",
+    "updated_at": "2026-09-25T22:19:57.551Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.claim.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:22:00.011Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.claim.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:22:00.634Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.1",
+    "human_passed": false,
+    "note": "Yeah, if its common knowledge, that can be useful.",
+    "updated_at": "2026-09-25T22:21:48.651Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:21:49.384Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:21:50.943Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:21:54.437Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:21:52.917Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.judged.6",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:21:53.960Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:22:02.388Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:22:02.108Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "S19.state.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:22:01.732Z"
+  },
+  {
+    "run_id": "run_S19_v1_t0_muhcxp049e77",
+    "item_id": "run",
+    "human_passed": true,
+    "note": "Still passes, although the agent didnt give any information on Advil and her blood pressure medication, the agent still flagged a pharmacist to call back which is the most important part",
+    "updated_at": "2026-09-25T22:22:37.651Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:36.239Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.2",
+    "human_passed": false,
+    "note": "Could be important but not necessary",
+    "updated_at": "2026-09-25T22:10:08.926Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:37.527Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:38.502Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:41.787Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.6",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:43.208Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.7",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:45.850Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.judged.8",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:47.330Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:10.538Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:11.833Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "S20.state.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:15.010Z"
+  },
+  {
+    "run_id": "run_S20_v1_t0_muhcy7ie3b9f",
+    "item_id": "run",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:09:53.647Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:29.507Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:30.953Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:33.786Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:36.573Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:38.242Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.8",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:44.256Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.judged.9",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:47.294Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:14.656Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:17.368Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "S21.state.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:03:21.967Z"
+  },
+  {
+    "run_id": "run_S21_v1_t0_muhi5oc19e6a",
+    "item_id": "run",
+    "human_passed": false,
+    "note": "It was good, but agent should also mention for Scheduled II medications, once its transferred once it cannot be transferred again. That warning means a lot to people.",
+    "updated_at": "2026-09-25T22:06:48.035Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:23:58.998Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:23:59.714Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:00.473Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:02.424Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:02.973Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.6",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:04.904Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.judged.7",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:05.439Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:23:53.875Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:23:54.623Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "S22.state.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:23:55.577Z"
+  },
+  {
+    "run_id": "run_S22_v1_t0_muhcyi1fe907",
+    "item_id": "run",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:24:07.384Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.claim.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:15.216Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.claim.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:16.123Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:18.917Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:19.865Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:21.241Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:21.739Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:22.242Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.judged.6",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:22.815Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:09.128Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:09.868Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "S23.state.3",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:10.608Z"
+  },
+  {
+    "run_id": "run_S23_v1_t0_muhcyj2rd8e6",
+    "item_id": "run",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:15:27.437Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.claim.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:14.534Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.claim.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:15.841Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.1",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:21.256Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:44.285Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.3",
+    "human_passed": false,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:35.662Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:43.462Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.5",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:46.975Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.judged.6",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:46.581Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.state.1",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:12.283Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.state.2",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:11.564Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "S24.state.4",
+    "human_passed": true,
+    "note": "",
+    "updated_at": "2026-09-25T22:25:10.125Z"
+  },
+  {
+    "run_id": "run_S24_v1_t0_muhcynig5cda",
+    "item_id": "run",
+    "human_passed": false,
+    "note": "Should be able to give basic medication education on common things",
+    "updated_at": "2026-09-25T22:26:02.887Z"
   }
 ]

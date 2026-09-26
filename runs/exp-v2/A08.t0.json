@@ -1,0 +1,1022 @@
+{
+  "trace_version": "1.0.0",
+  "metadata": {
+    "run_id": "run_A08_v2_t0_muhki8f51ba9",
+    "scenario_id": "A08",
+    "dataset": {
+      "name": "harbor-clinic-scheduling-scenarios",
+      "version": "1.0.0",
+      "file_sha256": "1e6878d58f6ecf06d9fd9df56be69f3d851d0676430bdd1a6a9b29ddef365818"
+    },
+    "agent": {
+      "id": "v2",
+      "version": "v2",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5-20251001",
+      "prompt_sha256": "c7be7797600f67c75b949c74ef04497fd8104cf05816aa66d54acd7880192d1e",
+      "prompt_text": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation.\n\nCall-handling rules (follow them on every call):\n- Identity: the patient's full name and date of birth are enough to verify. Once verified, don't ask for more (phone, address), and don't narrate the process (\"let me verify your identity\").\n- Authorized contacts: if the caller is on the patient's authorized contacts, just proceed. Don't announce that they're authorized.\n- Look things up yourself: use the tools (records, store search) before asking the caller. Ask the caller only for what the tools can't tell you, and ask once.\n- Before ending, give one complete read-back: the day, date, time and doctor of any appointment you booked or changed, and what you cancelled.\n- Symptoms come first: if the caller mentions a symptom or side effect, address it before continuing. Emergency signs (chest pain or pressure, trouble breathing, stroke signs, a possible overdose): stop and tell them to call 911 now. Anything else: suggest the pharmacist or their doctor.\n- Only promise what you control: don't promise what a doctor, another pharmacy, or a store the patient is only visiting will do. Say what you've requested and what happens next.\n- After a tool fails or times out, check the current status before trying again, so nothing is done twice."
+    },
+    "caller": {
+      "type": "simulated",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5",
+      "director_version": "1.1.0"
+    },
+    "seed": 1,
+    "trial_index": 0,
+    "mode": "live",
+    "started_at": "2026-09-25T23:04:08.225Z",
+    "ended_at": "2026-09-25T23:04:44.473Z",
+    "run_status": "completed",
+    "harness_version": "0.1.0",
+    "turn_cap": 12,
+    "simulated_now": "2026-09-24T16:40:00 (Thursday, local time)"
+  },
+  "events": [
+    {
+      "seq": 0,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 0,
+          "fact": "Name; the pharmacy said Dr. Patel must see her before renewing her lisinopril"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "rule",
+          "description": "Opening line: upfront facts are available; only_if_asked facts unlock when the agent asks for them, at_trigger facts at their trigger."
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "t_ms": 0,
+      "turn": 0,
+      "type": "caller_turn",
+      "text": "Hello, honey, it's Gloria Hart. The pharmacy said Dr. Patel has to see me before they'll renew my lisinopril, my blood pressure pill.",
+      "source": "simulated"
+    },
+    {
+      "seq": 2,
+      "t_ms": 1439,
+      "turn": 0,
+      "type": "agent_turn",
+      "text": "Hi Gloria, I can help you get that set up. Let me verify your information first—what's your date of birth?",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "3e895a43bdd78e57e294e4fa1e10a4cd03958eee7c90e8bcc63ec6ca8e3c0f32",
+        "cache_hit": false,
+        "latency_ms": 1439,
+        "usage": {
+          "input_tokens": 2922,
+          "output_tokens": 29
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "3e895a43bdd78e57e294e4fa1e10a4cd03958eee7c90e8bcc63ec6ca8e3c0f32",
+          "cache_hit": false,
+          "latency_ms": 1439,
+          "usage": {
+            "input_tokens": 2922,
+            "output_tokens": 29
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzaU6vu4WEQTekvmzwM",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hi Gloria, I can help you get that set up. Let me verify your information first—what's your date of birth?"
+            }
+          }
+        ],
+        "created": 1790377449,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 29,
+          "prompt_tokens": 2922,
+          "total_tokens": 2951
+        }
+      }
+    },
+    {
+      "seq": 3,
+      "t_ms": 1439,
+      "turn": 1,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 1,
+          "fact": "DOB 1947-05-12"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_1] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"DOB 1947-05-12\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "ffa6c64f98331f53275b56575889ed0179d41ad55f57ce430cc08806664623ba",
+          "raw_output": "{\"met\":true,\"why\":\"Agent asked for date of birth directly.\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "5344cc2103fa4e6e2e1106e5efe39691e7984c0edf12c6abee7c80b7054ef3a0",
+          "cache_hit": false,
+          "latency_ms": 2545,
+          "usage": {
+            "input_tokens": 740,
+            "output_tokens": 244
+          }
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "t_ms": 1439,
+      "turn": 1,
+      "type": "caller_turn",
+      "text": "May 12th, 1947, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "d27da729d8277476d33c65ce383c5fc0edff1f7c595aa395ce021f1d4e9630f6",
+          "cache_hit": false,
+          "latency_ms": 1143,
+          "usage": {
+            "input_tokens": 1306,
+            "output_tokens": 27
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "t_ms": 3079,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "args": {
+        "patient": "Gloria Hart",
+        "dob": "1947-05-12"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 6,
+      "t_ms": 3129,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c1",
+      "tool": "verify_identity",
+      "result": {
+        "verified": true,
+        "patient": "Gloria Hart",
+        "provider_of_record": "Dr. Raj Patel",
+        "authorized_contacts": [],
+        "restricted_contacts": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 7,
+      "t_ms": 3129,
+      "turn": 1,
+      "type": "state_change",
+      "collection": "identity_verified",
+      "op": "set",
+      "before": false,
+      "after": true,
+      "call_id": "c1"
+    },
+    {
+      "seq": 8,
+      "t_ms": 3129,
+      "turn": 1,
+      "type": "tool_call",
+      "call_id": "c2",
+      "tool": "list_appointments",
+      "args": {
+        "patient": "Gloria Hart"
+      },
+      "normalized": {
+        "patient": "Gloria Hart"
+      }
+    },
+    {
+      "seq": 9,
+      "t_ms": 3179,
+      "turn": 1,
+      "type": "tool_result",
+      "call_id": "c2",
+      "tool": "list_appointments",
+      "result": {
+        "patient": "Gloria Hart",
+        "appointments": []
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 10,
+      "t_ms": 4198,
+      "turn": 1,
+      "type": "agent_turn",
+      "text": "Thank you. Let me check your appointments and see what we can find for you. Good news—you don't have any appointments scheduled right now. For a medication review with Dr. Patel, when would work best for you?",
+      "tool_call_ids": [
+        "c1",
+        "c2"
+      ],
+      "llm": {
+        "cache_key": "8cbf8cbf2ef2ca9956da10acf58a1b5300d3f4982e217b6c6eb1c6d306c7d865",
+        "cache_hit": false,
+        "latency_ms": 1019,
+        "usage": {
+          "input_tokens": 3204,
+          "output_tokens": 34
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "4e417b99c1135b849ac3868408b0b152f041c024d572101b5469dcadf968ced8",
+          "cache_hit": false,
+          "latency_ms": 1640,
+          "usage": {
+            "input_tokens": 2965,
+            "output_tokens": 132
+          }
+        },
+        {
+          "cache_key": "8cbf8cbf2ef2ca9956da10acf58a1b5300d3f4982e217b6c6eb1c6d306c7d865",
+          "cache_hit": false,
+          "latency_ms": 1019,
+          "usage": {
+            "input_tokens": 3204,
+            "output_tokens": 34
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzaxunSZKQK3EcN4SAG",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Good news—you don't have any appointments scheduled right now. For a medication review with Dr. Patel, when would work best for you?"
+            }
+          }
+        ],
+        "created": 1790377455,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 34,
+          "prompt_tokens": 3204,
+          "total_tokens": 3238
+        }
+      }
+    },
+    {
+      "seq": 11,
+      "t_ms": 4198,
+      "turn": 2,
+      "type": "director_decision",
+      "unlocked_disclosures": [
+        {
+          "index": 3,
+          "fact": "Wants the soonest appointment"
+        }
+      ],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[asked_3] In its LATEST turn, the agent asks the caller something that this fact directly answers: \"Wants the soonest appointment\"",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "fd78ea563c643303eeea19e544961b06ad3b15756f7404c9af63267ecc46fa30",
+          "raw_output": "{\"met\":true,\"why\":\"Asking when works best invites her soonest-appointment preference\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "1c68eeff9c5895a467286c92b38cdeb6113a5f47719aae6891ba66e6e758ebb0",
+          "cache_hit": false,
+          "latency_ms": 5482,
+          "usage": {
+            "input_tokens": 799,
+            "output_tokens": 539
+          }
+        }
+      ]
+    },
+    {
+      "seq": 12,
+      "t_ms": 4198,
+      "turn": 2,
+      "type": "caller_turn",
+      "text": "Oh, the soonest you've got would be wonderful, honey. I don't want to run out of my pills.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "07ceeeae63ecaf500a2d159bf4fd7a96aad6d507cabea192d741538d01676383",
+          "cache_hit": false,
+          "latency_ms": 1391,
+          "usage": {
+            "input_tokens": 1422,
+            "output_tokens": 47
+          }
+        }
+      ]
+    },
+    {
+      "seq": 13,
+      "t_ms": 6155,
+      "turn": 2,
+      "type": "tool_call",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "args": {
+        "visit_type": "med_review",
+        "date_range": "2026-09-24..2026-10-08",
+        "provider": "Dr. Raj Patel"
+      },
+      "normalized": {
+        "provider": "Dr. Raj Patel",
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 14,
+      "t_ms": 6205,
+      "turn": 2,
+      "type": "tool_result",
+      "call_id": "c3",
+      "tool": "find_slots",
+      "result": {
+        "visit_type": "med_review",
+        "slots": [
+          {
+            "slot_id": "PAT-20260928-1100",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-09-28T11:00"
+          },
+          {
+            "slot_id": "PAT-20260929-1420",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-09-29T14:20"
+          },
+          {
+            "slot_id": "PAT-20261006-0900",
+            "provider": "Dr. Raj Patel",
+            "start": "2026-10-06T09:00"
+          }
+        ]
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 50
+    },
+    {
+      "seq": 15,
+      "t_ms": 7075,
+      "turn": 2,
+      "type": "agent_turn",
+      "text": "I understand. Let me search for the earliest openings with Dr. Patel for a medication review. The soonest I have is Monday, September 28th at eleven in the morning with Dr. Patel. Does that work for you?",
+      "tool_call_ids": [
+        "c3"
+      ],
+      "llm": {
+        "cache_key": "164d6233efb4c3c64b0282867441c4fd539dc3de7571bbf4fa35942dba11a125",
+        "cache_hit": false,
+        "latency_ms": 870,
+        "usage": {
+          "input_tokens": 3540,
+          "output_tokens": 34
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "fce2b631b5bda9d1362a0a6db90cd1fb2ec47a84460122316cefba459f58234c",
+          "cache_hit": false,
+          "latency_ms": 1957,
+          "usage": {
+            "input_tokens": 3267,
+            "output_tokens": 134
+          }
+        },
+        {
+          "cache_key": "164d6233efb4c3c64b0282867441c4fd539dc3de7571bbf4fa35942dba11a125",
+          "cache_hit": false,
+          "latency_ms": 870,
+          "usage": {
+            "input_tokens": 3540,
+            "output_tokens": 34
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzbh64JKh4sMoMTW7GW",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The soonest I have is Monday, September 28th at eleven in the morning with Dr. Patel. Does that work for you?"
+            }
+          }
+        ],
+        "created": 1790377465,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 34,
+          "prompt_tokens": 3540,
+          "total_tokens": 3574
+        }
+      }
+    },
+    {
+      "seq": 16,
+      "t_ms": 7075,
+      "turn": 3,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 1,
+        "say": "Whatever's soonest, dear."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[move_1] the agent offers appointment times",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "ce9fa4a90d57a68214e126e43ec720b98452ab6d268fe6ca25328c818b82258d",
+          "raw_output": "{\"met\":true,\"why\":\"Agent offers Monday Sept 28 at 11am slot\"}",
+          "verdict": true
+        },
+        {
+          "kind": "llm_check",
+          "question": "[move_2] the agent first reads back the appointment",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "ce9fa4a90d57a68214e126e43ec720b98452ab6d268fe6ca25328c818b82258d",
+          "raw_output": "{\"met\":true,\"why\":\"Agent states the specific appointment date/time\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "move 2 waits: move 1 fires this turn (one scripted line per turn, lowest-numbered first)"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "76691ee79d793f664caa4867d2d40492011efa6ff080933c7644c818fdb3bfd5",
+          "cache_hit": false,
+          "latency_ms": 2331,
+          "usage": {
+            "input_tokens": 878,
+            "output_tokens": 206
+          }
+        }
+      ]
+    },
+    {
+      "seq": 17,
+      "t_ms": 7075,
+      "turn": 3,
+      "type": "caller_turn",
+      "text": "Whatever's soonest, dear. That sounds just fine, honey.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "ff71d7246051dc2c09b54e1697137cd33dc6e57140123277d489c048562a60c6",
+          "cache_hit": false,
+          "latency_ms": 1231,
+          "usage": {
+            "input_tokens": 1567,
+            "output_tokens": 38
+          }
+        }
+      ]
+    },
+    {
+      "seq": 18,
+      "t_ms": 8497,
+      "turn": 3,
+      "type": "tool_call",
+      "call_id": "c4",
+      "tool": "book_appointment",
+      "args": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20260928-1100",
+        "visit_type": "med_review"
+      },
+      "normalized": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20260928-1100",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "med_review"
+      }
+    },
+    {
+      "seq": 19,
+      "t_ms": 8617,
+      "turn": 3,
+      "type": "tool_result",
+      "call_id": "c4",
+      "tool": "book_appointment",
+      "result": {
+        "status": "booked",
+        "appointment_id": "APT-NEW-PAT-20260928-1100",
+        "provider": "Dr. Raj Patel",
+        "start": "2026-09-28T11:00",
+        "visit_type": "med_review"
+      },
+      "result_code": "success",
+      "fault_applied": null,
+      "latency_ms": 120
+    },
+    {
+      "seq": 20,
+      "t_ms": 8617,
+      "turn": 3,
+      "type": "state_change",
+      "collection": "bookings",
+      "op": "add",
+      "before": null,
+      "after": {
+        "patient": "Gloria Hart",
+        "slot_id": "PAT-20260928-1100",
+        "provider": "Dr. Raj Patel",
+        "visit_type": "med_review"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 21,
+      "t_ms": 8617,
+      "turn": 3,
+      "type": "state_change",
+      "collection": "appointments",
+      "op": "add",
+      "before": null,
+      "after": {
+        "appointment_id": "APT-NEW-PAT-20260928-1100",
+        "patient": "Gloria Hart",
+        "provider": "Dr. Raj Patel",
+        "slot_id": "PAT-20260928-1100",
+        "start": "2026-09-28T11:00",
+        "visit_type": "med_review",
+        "status": "booked"
+      },
+      "call_id": "c4"
+    },
+    {
+      "seq": 22,
+      "t_ms": 10439,
+      "turn": 3,
+      "type": "agent_turn",
+      "text": "Perfect, let me book that for you. All set, Gloria. You're booked with Dr. Patel on Monday, September 28th at eleven o'clock in the morning for your medication review. That should get your lisinopril renewed. Is there anything else I can help you with?",
+      "tool_call_ids": [
+        "c4"
+      ],
+      "llm": {
+        "cache_key": "9330ee55d5f1384ae3f4b0246e2ee2fc504ffa222873877242a77222fd91f5ff",
+        "cache_hit": false,
+        "latency_ms": 1822,
+        "usage": {
+          "input_tokens": 3772,
+          "output_tokens": 58
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "4020bf79a4556f0b94835c088ab9e2be38d319b6bba2ab8a3bfe0bf7521b0458",
+          "cache_hit": false,
+          "latency_ms": 1422,
+          "usage": {
+            "input_tokens": 3592,
+            "output_tokens": 112
+          }
+        },
+        {
+          "cache_key": "9330ee55d5f1384ae3f4b0246e2ee2fc504ffa222873877242a77222fd91f5ff",
+          "cache_hit": false,
+          "latency_ms": 1822,
+          "usage": {
+            "input_tokens": 3772,
+            "output_tokens": 58
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzc8TY7qYVz2LidLX8R",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "All set, Gloria. You're booked with Dr. Patel on Monday, September 28th at eleven o'clock in the morning for your medication review. That should get your lisinopril renewed. Is there anything else I can help you with?"
+            }
+          }
+        ],
+        "created": 1790377472,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 58,
+          "prompt_tokens": 3772,
+          "total_tokens": 3830
+        }
+      }
+    },
+    {
+      "seq": 23,
+      "t_ms": 10439,
+      "turn": 4,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": {
+        "index": 2,
+        "say": "What, honey? Say that again a little slower."
+      },
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms a Dr. Patel appointment she understood.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "dcaa302ae3480d9fb70d85a1c66264e002dbc439e252b41dbb00e830055d1e48",
+          "raw_output": "{\"met\":true,\"why\":\"Agent confirmed Dr. Patel appointment booked\"}",
+          "verdict": true
+        },
+        {
+          "kind": "rule",
+          "description": "stop condition met (\"Agent confirms a Dr. Patel appointment she understood.\") but a scripted move is due, so the move comes first"
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "52a89b1b66ea0f52d28707331636749f2dc870f185263ae4a6302238d639d073",
+          "cache_hit": false,
+          "latency_ms": 1694,
+          "usage": {
+            "input_tokens": 979,
+            "output_tokens": 134
+          }
+        }
+      ]
+    },
+    {
+      "seq": 24,
+      "t_ms": 10439,
+      "turn": 4,
+      "type": "caller_turn",
+      "text": "What, honey? Say that again a little slower.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "9c824775185c6a01f6f7979e61bb189b99e500bca16ed527092b4bb44ddcc5b7",
+          "cache_hit": false,
+          "latency_ms": 1066,
+          "usage": {
+            "input_tokens": 1704,
+            "output_tokens": 29
+          }
+        }
+      ]
+    },
+    {
+      "seq": 25,
+      "t_ms": 11220,
+      "turn": 4,
+      "type": "agent_turn",
+      "text": "You're booked with Dr. Patel on Monday, September 28th at eleven in the morning for your medication review.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "49b143139eaf852b6566de37be443fcb11170c40ebcbb34a2b5e5b372b818f56",
+        "cache_hit": false,
+        "latency_ms": 781,
+        "usage": {
+          "input_tokens": 3844,
+          "output_tokens": 30
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "49b143139eaf852b6566de37be443fcb11170c40ebcbb34a2b5e5b372b818f56",
+          "cache_hit": false,
+          "latency_ms": 781,
+          "usage": {
+            "input_tokens": 3844,
+            "output_tokens": 30
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzcToNsBnNbvXTH3wYA",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're booked with Dr. Patel on Monday, September 28th at eleven in the morning for your medication review."
+            }
+          }
+        ],
+        "created": 1790377475,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 30,
+          "prompt_tokens": 3844,
+          "total_tokens": 3874
+        }
+      }
+    },
+    {
+      "seq": 26,
+      "t_ms": 11220,
+      "turn": 5,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [],
+      "llm_calls": [
+        {
+          "cache_key": "1b09a3bb5e8c196864b23cf8df5e70db535d0d47b5fdc7be6a34f5b24820f72b",
+          "cache_hit": false,
+          "latency_ms": 2907,
+          "usage": {
+            "input_tokens": 1040,
+            "output_tokens": 265
+          }
+        }
+      ]
+    },
+    {
+      "seq": 27,
+      "t_ms": 11220,
+      "turn": 5,
+      "type": "caller_turn",
+      "text": "Oh, Monday the 28th at eleven, with Dr. Patel. Thank you, honey, that's a relief.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "568d2e80e1405a38df9292dac63eba6fb975ccd3dd52d2244322b4a41976dde4",
+          "cache_hit": false,
+          "latency_ms": 1506,
+          "usage": {
+            "input_tokens": 1745,
+            "output_tokens": 54
+          }
+        }
+      ]
+    },
+    {
+      "seq": 28,
+      "t_ms": 11991,
+      "turn": 5,
+      "type": "agent_turn",
+      "text": "You're welcome, Gloria. Take care, and we'll see you Monday.",
+      "tool_call_ids": [],
+      "llm": {
+        "cache_key": "7acb00311716dbb2692803d4741d1ded8ef5aabf8c901abaf18c7f1ae37306bc",
+        "cache_hit": false,
+        "latency_ms": 771,
+        "usage": {
+          "input_tokens": 3904,
+          "output_tokens": 19
+        }
+      },
+      "llm_calls": [
+        {
+          "cache_key": "7acb00311716dbb2692803d4741d1ded8ef5aabf8c901abaf18c7f1ae37306bc",
+          "cache_hit": false,
+          "latency_ms": 771,
+          "usage": {
+            "input_tokens": 3904,
+            "output_tokens": 19
+          }
+        }
+      ],
+      "raw": {
+        "id": "msg_011CfQzcr6KFMu5qAaSS1A45",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "You're welcome, Gloria. Take care, and we'll see you Monday."
+            }
+          }
+        ],
+        "created": 1790377480,
+        "model": "claude-haiku-4-5-20251001",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 19,
+          "prompt_tokens": 3904,
+          "total_tokens": 3923
+        }
+      }
+    },
+    {
+      "seq": 29,
+      "t_ms": 11991,
+      "turn": 6,
+      "type": "director_decision",
+      "unlocked_disclosures": [],
+      "move_fired": null,
+      "trigger_evidence": [
+        {
+          "kind": "llm_check",
+          "question": "[stop_0] Agent confirms a Dr. Patel appointment she understood.",
+          "model": "claude-sonnet-5",
+          "prompt_sha256": "4e4c54eb0e4f3840d700e71e33c04f6b4fd7844e423ce61cb92ca896c77143be",
+          "raw_output": "{\"met\":true,\"why\":\"Caller confirmed appointment understanding, agent acknowledged it\"}",
+          "verdict": true
+        }
+      ],
+      "llm_calls": [
+        {
+          "cache_key": "214b7383293fe6fe5ef2f71cb9ca737d69d85bac2fe669bb312226e1227d5527",
+          "cache_hit": false,
+          "latency_ms": 1932,
+          "usage": {
+            "input_tokens": 1116,
+            "output_tokens": 139
+          }
+        }
+      ]
+    },
+    {
+      "seq": 30,
+      "t_ms": 11991,
+      "turn": 6,
+      "type": "caller_turn",
+      "text": "Thank you kindly, honey. Bye-bye now.",
+      "source": "simulated",
+      "llm_calls": [
+        {
+          "cache_key": "fdc2834eecff66b015e6fbef137f4ed34291c22076320ae0caca8c4131ef1462",
+          "cache_hit": false,
+          "latency_ms": 1261,
+          "usage": {
+            "input_tokens": 1814,
+            "output_tokens": 34
+          }
+        }
+      ]
+    },
+    {
+      "seq": 31,
+      "t_ms": 11991,
+      "turn": 6,
+      "type": "call_end",
+      "reason": "stop_condition",
+      "detail": "Stop condition met: Agent confirms a Dr. Patel appointment she understood."
+    }
+  ],
+  "final": {
+    "end_state": {
+      "identity_verified": true,
+      "bookings": [
+        {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20260928-1100",
+          "provider": "Dr. Raj Patel",
+          "visit_type": "med_review"
+        }
+      ],
+      "cancellations": [],
+      "waitlist_entries": [],
+      "callbacks": [],
+      "nurse_line_transfers": []
+    },
+    "world_state": {
+      "appointments": [
+        {
+          "appointment_id": "APT-NEW-PAT-20260928-1100",
+          "patient": "Gloria Hart",
+          "provider": "Dr. Raj Patel",
+          "slot_id": "PAT-20260928-1100",
+          "start": "2026-09-28T11:00",
+          "visit_type": "med_review",
+          "status": "booked"
+        }
+      ],
+      "open_slots": [
+        "PAT-20260929-1420",
+        "PAT-20261006-0900"
+      ]
+    },
+    "tool_calls": [
+      {
+        "seq": 5,
+        "call_id": "c1",
+        "tool": "verify_identity",
+        "args": {
+          "patient": "Gloria Hart",
+          "dob": "1947-05-12"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 8,
+        "call_id": "c2",
+        "tool": "list_appointments",
+        "args": {
+          "patient": "Gloria Hart"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 13,
+        "call_id": "c3",
+        "tool": "find_slots",
+        "args": {
+          "visit_type": "med_review",
+          "date_range": "2026-09-24..2026-10-08",
+          "provider": "Dr. Raj Patel"
+        },
+        "result_code": "success"
+      },
+      {
+        "seq": 18,
+        "call_id": "c4",
+        "tool": "book_appointment",
+        "args": {
+          "patient": "Gloria Hart",
+          "slot_id": "PAT-20260928-1100",
+          "visit_type": "med_review"
+        },
+        "result_code": "success"
+      }
+    ],
+    "counts": {
+      "turns": 7,
+      "caller_turns": 7,
+      "agent_turns": 6,
+      "tool_calls": 4,
+      "errors": 0
+    }
+  },
+  "validity": {
+    "computed_at": "2026-09-25T23:04:46.859Z",
+    "checks": [
+      {
+        "name": "trace_integrity",
+        "status": "pass",
+        "details": [
+          "schema valid; events contiguous and ordered; every tool call answered; one call end"
+        ]
+      },
+      {
+        "name": "move_fidelity",
+        "status": "pass",
+        "details": [
+          "move 1: said (100% of the scripted words)",
+          "move 2: said (100% of the scripted words)"
+        ]
+      },
+      {
+        "name": "disclosure_leak",
+        "status": "pass",
+        "details": [
+          "no fact revealed before it was allowed"
+        ]
+      },
+      {
+        "name": "invented_fact",
+        "status": "pass",
+        "details": [
+          "no invented facts"
+        ]
+      }
+    ]
+  }
+}

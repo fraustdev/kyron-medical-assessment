@@ -1,0 +1,45 @@
+{
+  "key": "f45e1d57ebb5a18469db8ea1d08436df8fbc3f2c6545e03fe165912cdad9d11e",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, hard of hearing, mixes up her pills and corrects herself.\nFacts:\n- Starts by asking for 'the water pill' [upfront]\n- DOB 1947-05-12 [only_if_asked, the agent asked at turn 2]\n- Has about a week of lisinopril left [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello honey, it's Gloria Hart. I need the water pill...\n[turn 1] AGENT: Hi Gloria! I'm happy to help you with your water pill. Let me pull up your prescriptions so I can see which one you need.\n\nTo get started, can you give me your date of birth?\n[turn 2] CALLER (scenario-scripted): Oh, wait, honey, no, not the water pill - I meant the blood pressure one... lisinopril. My birthday is May 12th, 1947.\n[turn 2] AGENT: Thank you, Gloria. Let me look up your lisinopril prescription. Perfect, Gloria. I found your lisinopril 10 milligrams. I see it has zero refills left, so I'll need to contact Dr. Raj Patel to get a renewal approved before we can fill it. Is that okay?\n[turn 3] CALLER (scenario-scripted): No refills? What do I do, honey?\n[turn 3] AGENT: Don't worry—I can send a renewal request to Dr. Patel right now, and he should get back to us quickly. Once he approves it, we'll fill it for you at Harbor store H-110, which is your home pharmacy.\n\nShould I go ahead and request that renewal?\n[turn 4] CALLER: Oh, alright honey, that sounds good. Thank you kindly for your help. Bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz9q5YpoLgRUV7TDkTL",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377114,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1223,
+      "total_tokens": 1239
+    }
+  },
+  "latency_ms": 1076,
+  "created_at": "2026-09-25T22:58:35.103Z"
+}

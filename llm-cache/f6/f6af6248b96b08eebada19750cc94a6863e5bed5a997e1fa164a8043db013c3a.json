@@ -1,0 +1,45 @@
+{
+  "key": "f6af6248b96b08eebada19750cc94a6863e5bed5a997e1fa164a8043db013c3a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Gloria Hart, patient. 79, takes nine medications, hard of hearing, polite and a little anxious about getting pills mixed up.\nFacts:\n- Full name Gloria Hart; drug amlodipine [upfront]\n- DOB May 12, 1947 [only_if_asked, the agent asked at turn 2]\n- Phone 555-0142 [only_if_asked, the agent NEVER asked]\n- Store is Harbor Pharmacy on Main St, Springfield [only_if_asked, the agent asked at turn 3]\n- Does not know her Rx number [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hello? Yes, honey, this is Gloria Hart. I need my blood pressure pill refilled, the amlodipine.\n[turn 1] AGENT: Hi Gloria, I'd be happy to help you refill your amlodipine. Let me pull up your account first—can you give me your date of birth?\n[turn 2] CALLER: Yes, honey, it's May 12th, 1947.\n[turn 2] AGENT: Thank you. Let me look up your prescriptions. Perfect, Gloria. I found your amlodipine 5 milligram—you have three refills left on it. Which Harbor Pharmacy store would you like to pick it up from?\n[turn 3] CALLER: The one on Main Street, honey, that's my usual store. Do you know when it'll be ready?\n[turn 3] AGENT: Let me queue that refill for you at the Main Street store right now. Great! Your amlodipine 5 milligram will be ready tomorrow, Friday, at 10 in the morning at the Main Street store. You've got two refills left after this one.\n[turn 4] CALLER (scenario-scripted): What, honey? Say that again a little slower.\n[turn 4] AGENT: Your blood pressure pill will be ready tomorrow, Friday, at 10 in the morning at the Main Street store.\n[turn 5] CALLER: Oh, tomorrow morning, Friday, ten o'clock. Thank you, honey, that's just fine.\n[turn 5] AGENT: You're welcome, Gloria. Have a good day!\n[turn 6] CALLER: Okay, thank you so much, dear. Bye-bye now.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQz1tVxEpK1gog7NbAhP",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377006,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 1403,
+      "total_tokens": 1419
+    }
+  },
+  "latency_ms": 883,
+  "created_at": "2026-09-25T22:56:47.163Z"
+}

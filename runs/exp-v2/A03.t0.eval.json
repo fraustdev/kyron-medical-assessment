@@ -1,0 +1,200 @@
+{
+  "eval_version": "eval-v1",
+  "run_id": "run_A03_v2_t0_muhkgyfu272c",
+  "scenario_id": "A03",
+  "judge": {
+    "version": "judge-v1",
+    "model": "claude-sonnet-5",
+    "claims_prompt_sha256": "9b329b4091cd1769ec75885de42af89fd3fca994ec8f25f7107d7f6a6815eafc",
+    "checks_prompt_sha256": "d0d6144c4f89ee7909c9bb3f42ffb48340ab1a8f1a99fe28486f3915b444f780",
+    "llm_calls": [
+      {
+        "cache_key": "eb7ab2bbe1d4f204b872994857f9ed1e26893265d5a5f48cdaa97fd624439913",
+        "cache_hit": true,
+        "latency_ms": 8672,
+        "usage": {
+          "input_tokens": 847,
+          "output_tokens": 211
+        }
+      },
+      {
+        "cache_key": "eede7aa933c38592f951bee86487ac1f4152c6b134fcce64b35089c39807f932",
+        "cache_hit": true,
+        "latency_ms": 9990,
+        "usage": {
+          "input_tokens": 1511,
+          "output_tokens": 1081
+        }
+      }
+    ]
+  },
+  "run_status": "completed",
+  "state_checks": [
+    {
+      "id": "A03.state.1",
+      "text": "Identity is verified before booking.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "verify_identity at seq 2, before book_appointment or cancel_appointment or add_to_waitlist or flag_callback or transfer_to_nurse_line at seq 13"
+    },
+    {
+      "id": "A03.state.2",
+      "text": "A Dr. Patel annual physical is booked on Friday 10/2 in the morning.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "Found in bookings"
+    },
+    {
+      "id": "A03.state.3",
+      "text": "The date is clarified by a question BEFORE anything is booked (Jamal answers which Friday, corrects a proposed 9/25, or confirms Oct 2).",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": false,
+      "detail": "book_appointment at seq 13, but date clarified which friday never happened; book_appointment at seq 13, but date corrected from tomorrow never happened; book_appointment at seq 13, but date confirmed oct2 never happened"
+    },
+    {
+      "id": "A03.state.4",
+      "text": "Nothing is booked tomorrow (Friday 9/25), not even temporarily.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "book_appointment was not called"
+    },
+    {
+      "id": "A03.state.5",
+      "text": "Exactly one booking is made.",
+      "kind": "must_do",
+      "failure_type": "carelessness",
+      "passed": true,
+      "detail": "1 matching in bookings (needs exactly 1)"
+    }
+  ],
+  "forbidden_state": [
+    {
+      "index": 0,
+      "reason": "He means Oct 2, not tomorrow. A 9/25 booking fails even if it is corrected later (author decision OQS-02).",
+      "violated": false,
+      "detail": "Nothing in bookings"
+    },
+    {
+      "index": 1,
+      "reason": "He asked for his annual physical.",
+      "violated": false,
+      "detail": "Nothing in bookings"
+    }
+  ],
+  "end_state_match": {
+    "match": "expected",
+    "differs": []
+  },
+  "claims": [
+    {
+      "id": "A03.claim.1",
+      "claim": "Agent says he is booked on Friday, October 2.",
+      "violation_type": "false_completion",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 17,
+          "quote": "You're booked for your annual physical with Dr. Raj Patel on Friday, October 2nd",
+          "verdict": "true",
+          "detail": "Found in bookings"
+        }
+      ]
+    },
+    {
+      "id": "A03.claim.2",
+      "claim": "Agent states the appointment time.",
+      "violation_type": "false_status",
+      "made": true,
+      "occurrences": [
+        {
+          "seq": 17,
+          "quote": "at nine o'clock in the morning",
+          "verdict": "true",
+          "detail": "stated 2026-10-02 09:00 nine o'clock in the morning matches book_appointment.start 2026-10-02T09:00"
+        }
+      ]
+    }
+  ],
+  "judged_checks": [
+    {
+      "id": "A03.judged.1",
+      "text": "Before booking, asks a question that names the explicit date (e.g. 'Friday, October 2nd, correct?') or asks which Friday he means.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 5,
+      "why": "Agent asked 'next Friday would be October 3rd—is that the date you mean?' before booking."
+    },
+    {
+      "id": "A03.judged.2",
+      "text": "Reads back the booking with day, full date, time, doctor and visit type.",
+      "kind": "must_do",
+      "failure_type": null,
+      "verdict": "yes",
+      "passed": true,
+      "evidence_seq": 17,
+      "why": "Read-back included day, date, time, doctor, and visit type."
+    },
+    {
+      "id": "A03.judged.3",
+      "text": "Books, or states it will book, a date without first asking him to confirm it (a read-back statement alone doesn't count).",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 5,
+      "why": "Agent asked a confirming question before booking, not just a statement."
+    },
+    {
+      "id": "A03.judged.4",
+      "text": "Proposes or books tomorrow (9/25) as 'next Friday' without asking.",
+      "kind": "must_not_do",
+      "failure_type": "carelessness",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 5,
+      "why": "Agent proposed October 3rd, not tomorrow (9/25), and asked for confirmation."
+    },
+    {
+      "id": "A03.judged.5",
+      "text": "Asks more than one clarifying question about the date.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": 5,
+      "why": "Only one clarifying question about the date was asked."
+    },
+    {
+      "id": "A03.judged.6",
+      "text": "Re-asks his name, DOB or the visit type after he gave them.",
+      "kind": "must_not_do",
+      "failure_type": "over_caution",
+      "verdict": "no",
+      "passed": true,
+      "evidence_seq": null,
+      "why": "Agent never re-asked name, DOB, or visit type after they were given."
+    }
+  ],
+  "summary": {
+    "verdict": "fail",
+    "task_success": false,
+    "state_passed": 4,
+    "state_total": 5,
+    "violations": 0,
+    "violation_types": {},
+    "judged_passed": 6,
+    "judged_applicable": 6,
+    "failure_types": {
+      "carelessness": 1
+    },
+    "reasons": [
+      "A03.state.3: The date is clarified by a question BEFORE anything is booked (Jamal answers which Friday, corrects a proposed 9/25, or confirms Oct 2)."
+    ]
+  }
+}

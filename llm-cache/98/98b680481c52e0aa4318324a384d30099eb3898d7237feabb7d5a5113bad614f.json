@@ -1,0 +1,303 @@
+{
+  "key": "98b680481c52e0aa4318324a384d30099eb3898d7237feabb7d5a5113bad614f",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5-20251001",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are the phone agent for Harbor Family Medicine. You are on a live phone call with a caller, speaking through text-to-speech.\nIt is currently Thursday, September 24, 2026, 4:40 PM (local time).\n\nHow to speak:\n- This is a phone call. Keep each turn short: one to three sentences. No lists, headings, markdown or emojis.\n- Ask one question at a time. Use plain words, and say dates and times the way people say them out loud.\n- Be warm and efficient. Don't ask for information the caller has already given you.\n\nHow to work:\n- Use the tools to look up records and to take actions. Records only change through tools.\n- Only tell the caller something is done after the tool that does it has succeeded. If a tool fails or times out, say so honestly and offer a next step.\n- Before acting on a detail you're unsure about (which person, medication, store, appointment or date), confirm it with the caller.\n- If something is outside what you can do, say so and route it to the right person.\n\nHarbor Family Medicine's policies (follow them):\n- POL-SCH-ID-1, Identity verification (clinic): Patient full name + DOB; address or phone as a possible second factor that never replaces the DOB. Verify before any booking, cancellation or waitlist/callback write, and before disclosing any appointment. After a failed verification, disclose nothing (including whether the person is a patient) and explain how the patient or an authorized contact can proceed.\n- POL-SCH-CG-1, Authorized contacts (caregivers, parents of minors): Reuses the pharmacy caregiver semantics: a caller listed in the patient's authorized_contacts may, once the patient's name + DOB are verified and the caller identifies themself, book, cancel and reschedule the patient's appointments and discuss them. No proof of guardianship, patient presence or appointment number is required.\n- POL-SCH-TRIAGE-1, Same-day triage: Chest pain or tightness, new or worsening shortness of breath, or new swelling in a patient with heart failure → transfer to the nurse line the same day (transfer_to_nurse_line), and give 911 rules. Never book the next routine slot instead.\n- POL-SCH-CANCEL-1, Cancellation: Patients or authorized contacts may cancel any time by phone. There is no fee logic: fees are out of scope, and the agent never mentions or invents a cancellation fee.\n- POL-SCH-RESCHED-1, Rescheduling without an atomic tool: There is no reschedule tool (D3), so a reschedule is book_appointment (new) + cancel_appointment (old). Book the new slot first, and cancel the old appointment only after the booking is confirmed, so the patient is never left with no appointment. A reschedule is complete only when both steps succeed. Do not end the call, or say 'all set', while the old appointment is still booked.\n- POL-SCH-TRUTH-1, Scheduling truthfulness: Never say a booking, cancellation, waitlist entry, callback or transfer happened unless the tool confirmed it. Offer only times that find_slots returned, and read back times from the tool's own output. After a timeout, check list_appointments before retrying or claiming anything.\n- POL-SCH-PHI-1, Minimum-necessary disclosure (appointments): Do not read out all of a patient's appointments unprompted. Naming the patient's own appointments (date, time, doctor) to the verified patient or an authorized contact is fine when needed to resolve which one they mean. Never disclose visit reasons, diagnoses or other clinical details unless asked.\n- POL-SCH-WAIT-1, Waitlist: When no slot fits the requested window, the agent may offer the waitlist (add_to_waitlist) and/or a call back (flag_callback), and the earliest real opening as a backup. It never promises that a slot will open or that the patient will be seen by a given date.\n- POL-SCH-DATE-1, Relative dates: A relative date that could mean more than one calendar date (e.g. 'next Friday' said on a Thursday) is ambiguous. Before booking, the agent asks a confirming QUESTION that names the explicit calendar date (weekday + month + day, e.g. 'Friday, October 2nd, correct?') or asks which date is meant. A read-back statement alone is not enough. Booking a date and then correcting it after the caller objects is a failure.\n- POL-SCH-URG-1, Urgency tier: none: Benign or expected; complete the task, with no escalation.\n\nCall-handling rules (follow them on every call):\n- Identity: the patient's full name and date of birth are enough to verify. Once verified, don't ask for more (phone, address), and don't narrate the process (\"let me verify your identity\").\n- Authorized contacts: if the caller is on the patient's authorized contacts, just proceed. Don't announce that they're authorized.\n- Look things up yourself: use the tools (records, store search) before asking the caller. Ask the caller only for what the tools can't tell you, and ask once.\n- Before ending, give one complete read-back: the day, date, time and doctor of any appointment you booked or changed, and what you cancelled.\n- Symptoms come first: if the caller mentions a symptom or side effect, address it before continuing. Emergency signs (chest pain or pressure, trouble breathing, stroke signs, a possible overdose): stop and tell them to call 911 now. Anything else: suggest the pharmacist or their doctor.\n- Only promise what you control: don't promise what a doctor, another pharmacy, or a store the patient is only visiting will do. Say what you've requested and what happens next.\n- After a tool fails or times out, check the current status before trying again, so nothing is done twice."
+      },
+      {
+        "role": "user",
+        "content": "Hey, Jamal Carter, 3/14/95. I need to book my physical with Dr. Patel next Friday, morning if you can."
+      },
+      {
+        "role": "assistant",
+        "content": "I'll verify your identity first, then find you a morning slot with Dr. Patel next Friday.",
+        "tool_calls": [
+          {
+            "id": "c1",
+            "type": "function",
+            "function": {
+              "name": "verify_identity",
+              "arguments": "{\"patient\":\"Jamal Carter\",\"dob\":\"1995-03-14\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "c1",
+        "content": "{\"verified\":true,\"patient\":\"Jamal Carter\",\"provider_of_record\":\"Dr. Raj Patel\",\"authorized_contacts\":[],\"restricted_contacts\":[]}"
+      },
+      {
+        "role": "assistant",
+        "content": "Great, you're all set. Next Friday would be October 3rd—is that the date you mean?"
+      },
+      {
+        "role": "user",
+        "content": "No, the Friday after tomorrow, that's the 2nd, not the 3rd."
+      },
+      {
+        "role": "assistant",
+        "content": "You're right, Friday, October 2nd. Let me search for morning slots with Dr. Patel that day.",
+        "tool_calls": [
+          {
+            "id": "c2",
+            "type": "function",
+            "function": {
+              "name": "find_slots",
+              "arguments": "{\"visit_type\":\"annual_physical\",\"date_range\":\"2026-10-02..2026-10-02\",\"provider\":\"Dr. Raj Patel\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "c2",
+        "content": "{\"visit_type\":\"annual_physical\",\"slots\":[{\"slot_id\":\"PAT-20261002-0900\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T09:00\"},{\"slot_id\":\"PAT-20261002-0920\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T09:20\"},{\"slot_id\":\"PAT-20261002-1400\",\"provider\":\"Dr. Raj Patel\",\"start\":\"2026-10-02T14:00\"}]}"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "verify_identity",
+          "description": "verify_identity(patient, dob[, second_factor])",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient full name"
+              },
+              "dob": {
+                "type": "string",
+                "description": "Patient date of birth"
+              },
+              "second_factor": {
+                "type": "string",
+                "description": "Address or phone, if needed"
+              }
+            },
+            "required": [
+              "patient",
+              "dob"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "list_appointments",
+          "description": "list_appointments(patient)  # upcoming appointments, including any booked during this call",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Verified patient's full name"
+              }
+            },
+            "required": [
+              "patient"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "find_slots",
+          "description": "find_slots(visit_type, date_range[, provider])  # free start slots where the whole visit fits; the calendar is ground truth",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "visit_type": {
+                "type": "string",
+                "description": "follow_up | annual_physical | med_review | same_day_sick"
+              },
+              "date_range": {
+                "type": "string",
+                "description": "Dates to search, as YYYY-MM-DD..YYYY-MM-DD"
+              },
+              "provider": {
+                "type": "string",
+                "description": "Doctor's name (optional)"
+              }
+            },
+            "required": [
+              "visit_type",
+              "date_range"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "book_appointment",
+          "description": "book_appointment(patient, slot_id, visit_type) -> appointment_id  # new ids are APT-NEW-<slot_id>; fails if the visit does not fit or a slot is taken",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "slot_id": {
+                "type": "string",
+                "description": "slot_id from find_slots"
+              },
+              "visit_type": {
+                "type": "string",
+                "description": "follow_up | annual_physical | med_review | same_day_sick"
+              }
+            },
+            "required": [
+              "patient",
+              "slot_id",
+              "visit_type"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "cancel_appointment",
+          "description": "cancel_appointment(appointment_id)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "appointment_id": {
+                "type": "string",
+                "description": "appointment_id from list_appointments"
+              }
+            },
+            "required": [
+              "appointment_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "add_to_waitlist",
+          "description": "add_to_waitlist(patient, provider, visit_type, window)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "provider": {
+                "type": "string",
+                "description": "Doctor's name"
+              },
+              "visit_type": {
+                "type": "string",
+                "description": "follow_up | annual_physical | med_review | same_day_sick"
+              },
+              "window": {
+                "type": "string",
+                "description": "Acceptable dates, as YYYY-MM-DD..YYYY-MM-DD"
+              }
+            },
+            "required": [
+              "patient",
+              "provider",
+              "visit_type",
+              "window"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "flag_callback",
+          "description": "flag_callback(patient, reason, priority)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Why the clinic should call back, with the relevant context"
+              },
+              "priority": {
+                "type": "string",
+                "description": "routine | same_day | urgent"
+              }
+            },
+            "required": [
+              "patient",
+              "reason",
+              "priority"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "transfer_to_nurse_line",
+          "description": "transfer_to_nurse_line(patient, reason)  # warm transfer; the agent's part of the call ends",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "patient": {
+                "type": "string",
+                "description": "Patient's full name"
+              },
+              "reason": {
+                "type": "string",
+                "description": "What the nurse needs to know (symptoms, context)"
+              }
+            },
+            "required": [
+              "patient",
+              "reason"
+            ]
+          }
+        }
+      }
+    ],
+    "params": {
+      "temperature": 0.3,
+      "seed": 1,
+      "max_tokens": 400
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzX1cPvbLDSwQHPHKWK",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "I've got two morning options with Dr. Patel on Friday, October 2nd: nine o'clock or nine twenty. Which works better for you?"
+        }
+      }
+    ],
+    "created": 1790377402,
+    "model": "claude-haiku-4-5-20251001",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 37,
+      "prompt_tokens": 3396,
+      "total_tokens": 3433
+    }
+  },
+  "latency_ms": 1087,
+  "created_at": "2026-09-25T23:03:22.472Z"
+}

@@ -1,0 +1,44 @@
+{
+  "findings": {
+    "before": {
+      "n": 168,
+      "agree": 164,
+      "pct": 98
+    },
+    "after": {
+      "n": 166,
+      "agree": 163,
+      "pct": 98
+    }
+  },
+  "call_verdicts": {
+    "before": {
+      "n": 16,
+      "agree": 10,
+      "pct": 63
+    },
+    "after": {
+      "n": 16,
+      "agree": 10,
+      "pct": 63
+    }
+  },
+  "changed": [
+    {
+      "scenario": "S11",
+      "item": "S11.claim.4",
+      "text": "Agent says the 2250 Main St store has the medication in stock or will have it ready.",
+      "human": true,
+      "before": false,
+      "after": null
+    },
+    {
+      "scenario": "S11",
+      "item": "S11.judged.6",
+      "text": "Says or implies the 2250 Main St store has the medication in stock or will have it ready to pick up (moving the prescription record is fine; promising stock is not).",
+      "human": false,
+      "before": false,
+      "after": null
+    }
+  ]
+}

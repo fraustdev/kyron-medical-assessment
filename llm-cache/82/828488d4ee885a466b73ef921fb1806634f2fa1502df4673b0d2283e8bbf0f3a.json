@@ -1,0 +1,45 @@
+{
+  "key": "828488d4ee885a466b73ef921fb1806634f2fa1502df4673b0d2283e8bbf0f3a",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You audit a SIMULATED CALLER (an AI playing a patient) in a test call to a customer-service agent. You are not grading the agent.\nThe caller has a brief: the facts it knows and WHEN it is allowed to reveal each one.\n- \"upfront\": may say any time.\n- \"only_if_asked\": may say only when the agent's previous turn asks something this fact directly answers.\n- \"at_trigger\": may say only from the turn it was unlocked (shown as \"unlocked at turn N\"), not before.\nFind:\n1. LEAKS: the caller stated a brief fact before it was allowed. \"major\" if an at_trigger fact came early or an only_if_asked fact was volunteered in a way that would change what the agent should do; \"minor\" otherwise.\n2. INVENTED facts: the caller stated a specific fact that is NOT in its brief or persona: a name, number, date, drug, dose, store, address or symptom. \"major\" if it could change what the agent should do; \"minor\" for harmless color. Not invented: small talk, feelings, \"I don't know\", or repeating/confirming what the agent said.\nNot leaks: correcting something the agent got wrong (the caller must correct a wrong read-back once), or answering what the agent just asked.\nLines marked \"(scenario-scripted)\" are written by the scenario author, not improvised: they are never leaks or invented facts, and whatever they state counts as part of the brief from then on.\nBe strict but fair; when in doubt, it's fine.\nReply with JSON only: {\"leaks\": [{\"turn\": N, \"fact\": \"<which brief fact>\", \"severity\": \"major\"|\"minor\", \"quote\": \"<caller words>\", \"why\": \"<short>\"}], \"invented\": [{\"turn\": N, \"severity\": \"major\"|\"minor\", \"quote\": \"...\", \"why\": \"...\"}]}"
+      },
+      {
+        "role": "user",
+        "content": "CALLER BRIEF:\nPersona: Jamal Carter, patient. 31, just moved to Lakeview from Columbus, impatient, changes his mind mid-call.\nFacts:\n- Name, DOB, destination 2250 Main St Lakeview [upfront]\n- Old store is 'the Brightway on High Street' in Columbus (misremembered; really B-4471, 900 E Broad St) [only_if_asked, the agent NEVER asked]\n- Old store phone might be 614-555-0199 (recognizes it if read to him) [only_if_asked, the agent NEVER asked]\n- Phone 555-0177 [only_if_asked, the agent NEVER asked]\n\nTRANSCRIPT:\n[turn 1] CALLER (scenario-scripted): Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.\n[turn 1] AGENT: I'll verify your identity first, then help you transfer those prescriptions. Great, Jamal. Now let me pull up your prescriptions so we can move them over. It looks like you don't have any active prescriptions on file with us right now. Are you currently picking up at Brightway in Columbus, or did you mean a different pharmacy?\n[turn 2] CALLER: Yeah, Brightway in Columbus, I think it was on High Street. Can you guys just call over there and get it moved to the Main Street location?\n[turn 2] AGENT: I can't call Brightway directly, but here's how it works: the Harbor pharmacy at 2250 Main Street in Lakeview needs to call Brightway and request the transfer on their end. That's the standard process between different pharmacy chains.\n\nDo you know which medications you're picking up at Brightway? If you give me the names, I can let our Main Street store know what to ask for when they call over.\n[turn 3] CALLER (scenario-scripted): Yeah, it's Albuterol and... Zoloft.\n[turn 3] AGENT: Got it—Albuterol and Zoloft. I'll let the Main Street store know to request those from Brightway in Columbus on High Street. They'll handle the call and get those transferred over for you.\n\nIn the meantime, would you like me to set your default pharmacy to the Harbor at 2250 Main Street in Lakeview?\n[turn 4] CALLER (scenario-scripted): Yeah sure, that works. Oh, and the sertraline, same thing, make sure they grab that too.\n[turn 4] AGENT: Just to confirm—is the sertraline a separate prescription from the Zoloft, or is that the same medication? Sertraline is the generic name for Zoloft.\n[turn 5] CALLER (scenario-scripted): Oh, same thing, my bad. Actually hold on, leave the inhaler at Brightway, I've still got one at home.\n[turn 5] AGENT: No problem. So I'll have the Main Street store request just the Zoloft—or sertraline—from Brightway, and leave the Albuterol there.\n\nLet me set your default pharmacy to Harbor at 2250 Main Street now. Let me look up the correct store ID for that location. Perfect. Let me set that as your default now. All set. Your default pharmacy is now Harbor at 2250 Main Street in Lakeview. I'll flag our Main Street store to call Brightway in Columbus and request your Zoloft. They'll take it from there.\n[turn 6] CALLER: Cool, that works. Thanks for sorting that out.\n[turn 6] AGENT: You're welcome, Jamal. Take care!\n[turn 7] CALLER: Alright, thanks man, bye.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzFUSjpczKwLD23n4rP",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"leaks\": [{\"turn\": 2, \"fact\": \"Old store location 'Brightway on High Street' (misremembered address)\", \"severity\": \"minor\", \"quote\": \"Yeah, Brightway in Columbus, I think it was on High Street.\", \"why\": \"This detail was only_if_asked and the agent had only asked which pharmacy chain, not for the street name, so it was volunteered slightly early; however it doesn't change the agent's required action since the transfer process doesn't depend on the exact address.\"}], \"invented\": []}"
+        }
+      }
+    ],
+    "created": 1790377203,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 1150,
+      "prompt_tokens": 1842,
+      "total_tokens": 2992
+    }
+  },
+  "latency_ms": 13190,
+  "created_at": "2026-09-25T23:00:03.759Z"
+}

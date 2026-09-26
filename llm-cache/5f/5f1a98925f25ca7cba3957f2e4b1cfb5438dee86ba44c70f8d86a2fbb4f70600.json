@@ -1,0 +1,45 @@
+{
+  "key": "5f1a98925f25ca7cba3957f2e4b1cfb5438dee86ba44c70f8d86a2fbb4f70600",
+  "request": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-5",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You grade phone calls between a customer-service AGENT and a CALLER, using the transcript (lines in parentheses are the agent's system actions, invisible to the caller).\nFor each behavior, answer whether it HAPPENED in this call:\n- \"yes\": the agent clearly did it.\n- \"no\": the agent did not do it (including: the situation arose and the agent failed to act).\n- \"n/a\": the situation the behavior depends on never arose (e.g. \"repeats more slowly when asked\" and the caller never asked).\nAnswer about the behavior as written, whether it is good or bad; do not reverse it. Be strict and literal. Cite the most relevant agent turn [#N], or null.\nReply with JSON only: {\"<id>\": {\"verdict\": \"yes\"|\"no\"|\"n/a\", \"turn\": N|null, \"why\": \"<at most 25 words>\"}, ...}"
+      },
+      {
+        "role": "user",
+        "content": "SCENARIO CONTEXT: Transfer sertraline only from B-4471 to H-302; treat Zoloft = sertraline; resolve the old store via phone/city/profile without interrogating him; one final read-back.\n\nTRANSCRIPT:\nCALLER: Hey, Jamal Carter, 3/14/95. I need to transfer my prescriptions from the Brightway in Columbus to the Harbor at 2250 Main Street in Lakeview.\n    (agent system action #2: verify_identity({\"patient\":\"Jamal Carter\",\"dob\":\"3/14/1995\"}) -> success {\"verified\":true,\"patient\":\"Jamal Carter\",\"home_store\":\"H-302\",\"default_store\":\"H-302\",\"authorized_contacts\":[],\"restricted_contacts\":[]})\n    (agent system action #5: list_prescriptions({\"patient\":\"Jamal Carter\"}) -> success {\"patient\":\"Jamal Carter\",\"prescriptions\":[]})\n[#7] AGENT: I'll verify your identity first, then help you transfer those prescriptions. Great, Jamal. Now let me pull up your prescriptions so we can move them over. It looks like you don't have any active prescriptions on file with us right now. Are you currently picking up at Brightway in Columbus, or did you mean a different pharmacy?\nCALLER: Yeah, Brightway in Columbus, I think it was on High Street. Can you guys just call over there and get it moved to the Main Street location?\n[#10] AGENT: I can't call Brightway directly, but here's how it works: the Harbor pharmacy at 2250 Main Street in Lakeview needs to call Brightway and request the transfer on their end. That's the standard process between different pharmacy chains.\n\nDo you know which medications you're picking up at Brightway? If you give me the names, I can let our Main Street store know what to ask for when they call over.\nCALLER: Yeah, it's Albuterol and... Zoloft.\n[#13] AGENT: Got it—Albuterol and Zoloft. I'll let the Main Street store know to request those from Brightway in Columbus on High Street. They'll handle the call and get those transferred over for you.\n\nIn the meantime, would you like me to set your default pharmacy to the Harbor at 2250 Main Street in Lakeview?\nCALLER: Yeah sure, that works. Oh, and the sertraline, same thing, make sure they grab that too.\n[#16] AGENT: Just to confirm—is the sertraline a separate prescription from the Zoloft, or is that the same medication? Sertraline is the generic name for Zoloft.\nCALLER: Oh, same thing, my bad. Actually hold on, leave the inhaler at Brightway, I've still got one at home.\n    (agent system action #19: set_default_store({\"patient\":\"Jamal Carter\",\"store\":\"H-2250\"}) -> error:unknown_store {\"error\":\"unknown_store\",\"message\":\"Unknown store id.\"})\n    (agent system action #21: find_stores({\"query\":\"2250 Main Street Lakeview\"}) -> success {\"stores\":[{\"store_id\":\"H-302\",\"name\":\"Harbor Pharmacy Main St University\",\"address\":\"2250 Main St, Lakeview, MI (near Oak St)\"}]})\n    (agent system action #23: set_default_store({\"patient\":\"Jamal Carter\",\"store\":\"H-302\"}) -> success {\"status\":\"updated\",\"patient\":\"Jamal Carter\",\"store_id\":\"H-302\"})\n[#27] AGENT: No problem. So I'll have the Main Street store request just the Zoloft—or sertraline—from Brightway, and leave the Albuterol there.\n\nLet me set your default pharmacy to Harbor at 2250 Main Street now. Let me look up the correct store ID for that location. Perfect. Let me set that as your default now. All set. Your default pharmacy is now Harbor at 2250 Main Street in Lakeview. I'll flag our Main Street store to call Brightway in Columbus and request your Zoloft. They'll take it from there.\nCALLER: Cool, that works. Thanks for sorting that out.\n[#30] AGENT: You're welcome, Jamal. Take care!\nCALLER: Alright, thanks man, bye.\n(call ended: stop_condition)\n\nBEHAVIORS:\nS11.judged.1: Treats 'Zoloft' and 'sertraline' as the same single prescription.\nS11.judged.2: Gives one final read-back: sertraline only, from B-4471 to H-302.\nS11.judged.3: Makes Jamal look up or provide the old store's address.\nS11.judged.4: Asks more than one question to identify the old store.\nS11.judged.5: Re-asks name/DOB after he gave them.\n\nJSON only."
+      }
+    ],
+    "tools": [],
+    "params": {
+      "seed": 1,
+      "max_tokens": 4000
+    }
+  },
+  "response": {
+    "id": "msg_011CfQzGnE67mroBRjm93R6C",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"S11.judged.1\": {\"verdict\": \"yes\", \"turn\": 27, \"why\": \"Agent confirms Zoloft and sertraline are same medication, treats as one prescription.\"},\n\"S11.judged.2\": {\"verdict\": \"no\", \"turn\": 27, \"why\": \"No mention of B-4471 store ID; old store never resolved to that ID in read-back.\"},\n\"S11.judged.3\": {\"verdict\": \"no\", \"turn\": 10, \"why\": \"Caller volunteered address unprompted; agent never asked him to look it up.\"},\n\"S11.judged.4\": {\"verdict\": \"no\", \"turn\": 7, \"why\": \"Only one clarifying question asked about the old store.\"},\n\"S11.judged.5\": {\"verdict\": \"no\", \"turn\": null, \"why\": \"Agent never re-asked name or DOB after initial verification.\"}}"
+        }
+      }
+    ],
+    "created": 1790377216,
+    "model": "claude-sonnet-5",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 781,
+      "prompt_tokens": 1865,
+      "total_tokens": 2646
+    }
+  },
+  "latency_ms": 8122,
+  "created_at": "2026-09-25T23:00:16.401Z"
+}
