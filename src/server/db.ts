@@ -73,6 +73,13 @@ export class Db {
 
   scenario(id: string) { return this.scenarios.get(id) ?? null; }
 
+  /** A batch's one-line description, from runs/<batch>/batch.json (optional). */
+  batchDescription(batch: string, dir = RUNS_DIR): string | null {
+    const f = join(dir, batch, "batch.json");
+    if (!existsSync(f)) return null;
+    try { return String((JSON.parse(readFileSync(f, "utf8")) as { description?: unknown }).description ?? "") || null; } catch { return null; }
+  }
+
   /** Load every trace under runs/ (and its .eval.json, if any). Returns the number of runs loaded. */
   importRuns(dir = RUNS_DIR): number {
     let n = 0;

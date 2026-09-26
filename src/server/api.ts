@@ -212,7 +212,7 @@ export function getRun(db: Db, runId: string) {
 // ------------------------------------------------------------------------------------------ batches & compare
 
 export interface BatchStats {
-  batch: string; runs: number; evaluated: number; invalid: number;
+  batch: string; description: string | null; runs: number; evaluated: number; invalid: number;
   pass: number; pass_rate: number | null;
   state_pass_rate: number | null;              // share of state checks passed
   runs_with_false_claims: number; false_claims: number;
@@ -228,7 +228,7 @@ export function batchStats(db: Db, batch: string): BatchStats {
   const scored = ev.filter((r) => r.verdict !== "invalid");
   const sum = (f: (r: (typeof runs)[number]) => number | null) => scored.reduce((a, r) => a + (f(r) ?? 0), 0);
   return {
-    batch, runs: runs.length, evaluated: ev.length, invalid: ev.length - scored.length,
+    batch, description: db.batchDescription(batch), runs: runs.length, evaluated: ev.length, invalid: ev.length - scored.length,
     pass: scored.filter((r) => r.effective_verdict === "pass").length,
     pass_rate: rate(scored.filter((r) => r.effective_verdict === "pass").length, scored.length),
     state_pass_rate: rate(sum((r) => r.state_passed), sum((r) => r.state_total)),

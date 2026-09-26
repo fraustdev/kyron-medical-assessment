@@ -12,7 +12,7 @@ function Lede({ b }: { b: Batch }) {
         <div><dt>Required outcomes met</dt><dd>{pct(b.state_pass_rate)}</dd></div>
         <div><dt>Calls with a false claim</dt><dd className={b.runs_with_false_claims ? "bad" : ""}>{b.runs_with_false_claims}</dd></div>
         <div><dt>Caller-handling checks passed</dt><dd>{pct(b.judged_pass_rate)}</dd></div>
-        {b.invalid > 0 && <div><dt>Broken runs</dt><dd>{b.invalid}</dd></div>}
+        {b.invalid > 0 && <div><dt>Not scored (unfair test)</dt><dd>{b.invalid}</dd></div>}
         {b.overridden > 0 && <div><dt>Verdicts set by a reviewer</dt><dd>{b.overridden}</dd></div>}
       </dl>
     </>
@@ -51,6 +51,8 @@ export function Runs() {
         </label>
       </div>
 
+      {current?.description && <p className="batch-note">{current.description}</p>}
+      {!batch && batches.data && <p className="batch-note">All three batches together. <b>baseline-v1</b> is the set I reviewed by hand; <b>exp-v1</b> and <b>exp-v2</b> are the two sides of the experiment (Compare versions).</p>}
       {current && <Lede b={current} />}
 
       {!runs.data ? <Loading error={runs.error} /> : runs.data.length === 0 ? (
