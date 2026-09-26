@@ -45,7 +45,14 @@ Every decision I made is logged, with a reason, in [NOTES.md](NOTES.md).
 
 *Time limit:* the brief asks for eight hours within a 48-hour window. Kyron's founding engineer confirmed I could use the full 48 hours (NOTES.md, §8).
 
-> **[YOUR WORDS]** Roughly how many hours on each: the scenarios and answer keys (Part 1), the harness and simulator, the grader, the app, reviewing calls and labelling, the experiment, and the writeups. From my side of the work, the big blocks in order were: the datasets and your open-question decisions (Thursday); the harness, simulator and model choice (Friday morning); the grader and app (Friday midday); three baseline runs to fix simulator leaks; your review of 16 calls; the experiment; the writeups.
+I spent the time in roughly this order, with the biggest share on the first two blocks:
+
+1. **Scenarios and answer keys (Part 1): the largest block.** I generated a first set of 21 pharmacy calls from caller perspectives, then reworked them against real pharmacy practice. That meant answering about 30 open questions on identity, caregivers, controlled substances, transfers and stock. I then added three scenarios, five fault variants, a nine-call clinic scheduling workflow, and a validator that checks every answer key.
+2. **The harness and simulator (Part 2): the second-largest.** A mock pharmacy and clinic with fault injection, a live agent, and a simulated caller whose brief is enforced in code. This included choosing the agent model: local models first, then a paid API when they failed. It took three baseline runs to stop the simulated caller leaking hidden facts.
+3. **The grader and the app (Parts 3–4):** code checks on the records, an LLM judge, the claim-timing logic, and the review app, including two passes to make it readable for someone new.
+4. **Reviewing calls (Part 3):** I reviewed 16 calls by hand in the app. That surfaced the S21 simulator bug, the home-store/default-store error, and the answer-key problems described in CALIBRATION.md.
+5. **The experiment (Part 5):** designing the v2 rules, running both versions, and investigating the regressions.
+6. **The writeups and this video.**
 
 ### What I intentionally did not complete
 
@@ -57,19 +64,32 @@ Every decision I made is logged, with a reason, in [NOTES.md](NOTES.md).
 
 ### How I used AI tools
 
-> **[YOUR WORDS]** The brief asks for three things here: **(1)** how you used AI, **(2)** where its output was unreliable or generic, and **(3)** one consequential decision you made rather than delegated.
->
-> For (2), real examples from this project:
-> - Claude assumed "default store" and "home store" were different things. You corrected it, and two answer keys changed.
-> - Its first simulated caller leaked hidden facts through sample lines and personas; it took three baseline runs to see and fix.
-> - It gave the judge too small a budget, so the judge returned empty answers.
-> - Its 400-token agent limit made the agent look silent.
-> - Several numbers in its first drafts of these documents were wrong until checked against the data.
-> - The local models it first suggested all claimed actions they never took.
->
-> For (3), candidates: choosing to pay for the API after the local-model results; "home store = default store"; that the receiving pharmacy requests a transfer (REG-3); the stock/readiness rule; "never replace a 911 call with a callback"; approving the v2 rules.
->
-> How you used it: For accuracy: Claude Code wrote the code, tests and draft documents. The pharmacy-practice decisions were yours and are logged in NOTES.md as [me], for example home store = default store, name + DOB is enough ID, the receiving pharmacy starts a transfer, stock promises, never replacing 911 with a callback, and the v2 rules. You reviewed and labelled 16 calls, which found the S21 and S08 problems. Claude models are also *inside* the lab (agent, caller, grader), and part of the work was checking them rather than trusting them: the simulator leaks, the empty judge replies, the 400-token cut-off.
+**How I used it.** I worked with Claude Code throughout. It wrote nearly all of the code, tests and first drafts of these documents, and I directed the work milestone by milestone. My part was the judgment: every pharmacy-practice decision (logged in NOTES.md with my reasons, tagged [me]), approving the scenarios and answer keys, reviewing the traces, and labelling calls. I also used a multi-perspective brainstorming plugin to generate the first 21 scenarios from the point of view of different callers. AI models are also *inside* the lab (the agent, the simulated caller, the grader), so a large part of the work was checking them rather than trusting them.
+
+**Where its output was unreliable or generic:**
+- **It modelled the pharmacy wrong where it lacked domain knowledge.** It assumed a patient's "default store" and "home store" were different things. In a real pharmacy system they're the same, and the mistake led two answer keys to require the agent to "set" a store that was already the default. I caught it while reviewing S08.
+- **Its simulator looked fine but wasn't.** The first simulated caller leaked hidden facts through sample lines and persona text, and volunteered details it was only supposed to give when asked. It took three baseline runs, and moving the rules from instructions into code, to make it a fair test.
+- **Several plausible-looking settings were wrong.** The judge's token budget was too small, so it returned empty answers. The 400-token limit on the agent cut replies off mid-action, which made the agent look silent. We only found that by reading the raw responses during the experiment.
+- **Its first drafts of these documents had wrong numbers** (call counts, sample splits, which transfers failed) until each was checked against the data.
+- **The local models it first recommended** all claimed actions they never took, which is what pushed me to a paid API.
+
+**One consequential decision I made rather than delegated: a human-in-the-loop review of the evaluator's own output, built into the product.**
+
+The easy path was to let the LLM grader's verdicts stand as the result. I decided instead that, for every judgment-based metric, **human review is the ground truth and the automated evaluator is an estimator that has to be calibrated against it**, and that this review loop belongs in the product itself, not a one-off check:
+
+1. **Label the evaluator's output, not the raw calls.** In the app, the reviewer marks each finding (required outcome, claim, caller-handling check) and the call's overall verdict as Pass or Fail, with a note. Labels persist to `labels/labels.json`, are versioned with the repo, and override the automated verdict everywhere downstream (pass rates, comparisons, failure patterns).
+2. **Measure agreement per evaluator component,** not as one number: percent agreement and Cohen's κ, split by source (deterministic state checks, LLM-detected claims, LLM-judged behaviors, overall verdict), plus the direction of each disagreement (evaluator too lenient vs. too strict).
+3. **Root-cause every disagreement** into one of four classes, because each has a different owner and fix: an evaluator error, a rubric gap (a standard no check encodes), an answer-key error, or a simulator artifact (the run wasn't a fair test).
+4. **Revise the right layer, then re-grade and re-measure.**
+
+**What it caught** in 16 reviewed calls and 184 labels:
+- a **simulator defect**: S21 ended before its scripted emergency, so the agent was graded on a situation it never saw;
+- a **world-model error**: the mock pharmacy treated "home store" and "default store" as different things;
+- **three answer-key errors**, and **four rubric gaps**.
+
+**What the numbers showed:** the evaluator agrees with me on 98% of individual findings (κ 0.86) but only 63% of call-level verdicts (κ 0.21). A re-run after fixing the answer keys showed call-level agreement **didn't move**. That told me the remaining gap is structural (unencoded standards plus all-or-nothing aggregation), not a grading bug, and the loop is what made that measurable rather than a guess.
+
+**Why it's consequential:** it changed the dataset (2.1.1), the simulator (director 1.1.0), the agent (two of the v2 rules come straight from my review notes), and how the Part 5 result is reported (the pass rate turned out to be too fragile to headline). In production, the same loop becomes continuous: stratified sampling for review, a fixed calibration set re-scored on every evaluator change, and drift alerts. See PRODUCTION.md §4 and §6.
 
 ### What I'd do next with more time
 

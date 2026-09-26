@@ -2,11 +2,11 @@
 
 ## What changed, and why
 
-**v2 = v1 + nine call-handling rules** (`src/agents/prompt.ts`, `renderAgentPromptV2`). Each rule targets a failure *pattern* seen in the v1 baseline (`runs/baseline-v1`) or in the author's calibration review (`labels/labels.json`). None encodes a specific scenario's answer. The author approved the rules before any v2 call ran.
+**v2 = v1 + nine call-handling rules** (`src/agents/prompt.ts`, `renderAgentPromptV2`). Each rule targets a failure *pattern* seen in the v1 baseline (`runs/baseline-v1`) or in my calibration review (`labels/labels.json`). None encodes a specific scenario's answer. I approved the rules before any v2 call ran.
 
 | # | Rule | Evidence it came from |
 |---|---|---|
-| 1 | Name + DOB is enough; don't ask for more, don't narrate verification | A02 (asked for phone/address), S02 ("let me verify") in calibration |
+| 1 | Name + DOB is enough; don't ask for more, don't narrate verification | A02 (asked for phone/address), S02 ("let me verify") in my calibration review |
 | 2 | Authorized contact on file: just proceed, don't announce it | A04 in calibration |
 | 3 | Look things up yourself; ask the caller only what the tools can't tell you, once | S11 / S11-F1 (made Jamal find the old store, asked twice) |
 | 4 | Pharmacy change: review the whole profile, point out prescriptions held elsewhere | S08 (missed metformin at Oak St) |
@@ -34,7 +34,7 @@
 
 Reproduce: `npm run sim -- compare exp-v1 exp-v2`, or the app's **Compare versions** page with Before = `exp-v1`, After = `exp-v2`.
 
-Final numbers, after the reply-limit fix and the author's two answer-key decisions below:
+Final numbers, after the reply-limit fix and my two answer-key decisions below:
 
 | | v1 | v2 | change |
 |---|---|---|---|
@@ -55,7 +55,7 @@ The first comparison said the opposite: **v2 32% → 29%, a regression.** How it
 
 **In the first comparison the pass rate went down.** Three calls regressed from pass to fail, and investigating each showed three different things:
 - **S21, the 911 case: a grading flaw, not the agent.** v2 handled the emergency perfectly (911 twice, held firm through the pushback). It "failed" a forbidden-state rule, "a callback is not a substitute for 911", because it had flagged a pharmacist callback *before* Kevin mentioned any symptoms, as the correct first step for a controlled-drug transfer to a store he's only visiting. The rule fires on any callback at any time; it should only fire on one made *instead of* 911, after the emergency.
-- **S04: the answer key and the author disagree.** Rule 2 ("don't announce that a contact is authorized", from the author's calibration note on A04) made v2 stop confirming Jamal's authorization aloud, and S04's answer key requires that confirmation.
+- **S04: the answer key and I disagreed.** Rule 2 ("don't announce that a contact is authorized", from my calibration note on A04) made v2 stop confirming Jamal's authorization aloud, and S04's answer key requires that confirmation.
 - **S23: a real v2 failure.** It told Jamal "a pharmacist will give you a call" without flagging one: exactly the promise rule 7 targets.
 
 ## The failure investigated closely: the silent agent (S09)
@@ -66,12 +66,12 @@ In v2's first S09 run the agent twice said nothing, then told Kevin "let me get 
 
 The agent's reply limit went from 400 to 1,024 tokens (`src/agents/llm.ts`). The three affected scenarios (S06, S09, S13) were re-run in **both** batches under the new limit, so the comparison stays like-for-like. Result: S06 now passes in both versions; v2 completes all of S09's actions (8/8 required outcomes). It also then made two false promises in that call ("the pharmacist will call Dr. Okafor", "it'll be ready for pickup" for a prescription that doesn't exist yet), which the grader correctly caught.
 
-## Answer-key changes made after examining the regressions (author decisions)
+## Answer-key changes I made after examining the regressions
 
-- **S20 and S21:** removed the forbidden-state rule "a callback is not a substitute for 911". The author's rule is that a callback must never *replace* 911, and that was already enforced: both scenarios fail any system action, callbacks included, after the emergency is mentioned. The removed rule also failed a callback made *before* the emergency.
-- **S04:** retired "confirms Jamal is listed as an authorized contact". The author's standard, from calibration, is that the agent just proceeds when the caller is on the list.
+- **S20 and S21:** removed the forbidden-state rule "a callback is not a substitute for 911". My rule is that a callback must never *replace* 911, and that was already enforced: both scenarios fail any system action, callbacks included, after the emergency is mentioned. The removed rule also failed a callback made *before* the emergency.
+- **S04:** retired "confirms Jamal is listed as an authorized contact". My standard, from calibration, is that the agent just proceeds when the caller is on the list.
 
-Only grading changed, so the saved calls were **re-graded, not re-run** (`npx tsx src/cli/evaluate.ts runs/exp-v*/*.t0.json`, all from the cache). S21 and S04 now pass under v2; S23 is the only remaining regression, and it's a real one. `baseline-v1` was deliberately *not* re-graded: the author's calibration labels were made against its original grades.
+Only grading changed, so the saved calls were **re-graded, not re-run** (`npx tsx src/cli/evaluate.ts runs/exp-v*/*.t0.json`, all from the cache). S21 and S04 now pass under v2; S23 is the only remaining regression, and it's a real one. `baseline-v1` was deliberately *not* re-graded: my calibration labels were made against its original grades.
 
 ## What we would and would not conclude
 

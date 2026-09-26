@@ -7,7 +7,6 @@ trace of every run: turns, tool calls, state changes, errors and the final outco
 are *run-validity* checks (is this run trustworthy?), added in M6.
 
 > Status: M0 (trace schema), M1 (world + mock tools) and M2 (scripted mode + golden traces) are done.
-> Later sections are marked TODO and are filled in as each milestone lands.
 
 ---
 
@@ -209,29 +208,22 @@ Each fix made the simulator enforce its brief *structurally* rather than by inst
 
 ## 10. What this harness can and cannot tell us about a real voice system
 
-*TODO (author): write this section in your own words. The bullets under each point are evidence from the runs to draw on; delete them once written.*
+**What it can tell us:** whether the agent does the right thing, in the right order, and tells the truth about it, across situations that are hard to catch in production: a caller who corrects themselves, a caregiver, a symptom mentioned in passing, a tool that times out but actually went through. It can compare two versions of the agent on exactly the same situations, and every result points to the moment in the call it's about. It can't tell us how a real phone call will go, for five reasons.
 
-1. **What a text-only simulation leaves out.**
-   - Speech-recognition errors on drug names, DOBs and store names ("sertraline"/"Zoloft", "3/14/95"). Every caller line here arrives as perfect text.
-   - Barge-in and talking over the agent; silence and hold time. The caller here always waits for a full turn.
-   - Latency the caller feels. Agent response times are recorded (about 1–2 s per turn for Haiku) but don't affect the simulated caller.
-   - Tone and prosody: Gloria's "what, honey?" is written in, not heard.
-2. **How closely the mock tools resemble a real pharmacy or clinic system.**
-   - Built to follow your decisions: the receiving pharmacy requests transfers; transfers within Harbor are instant for non-controlled drugs; controlled drugs go to a pharmacist; home store = default store; no stock visibility.
-   - Simplified: no insurance or price checks, no refill-too-soon edits, no duplicate-order protection (that's why S01-F2's duplicate refill was possible), and one directory covering Harbor stores only (that's why transfers in from Brightway fail).
-   - Faults are injected on purpose (timeouts that did or didn't commit, errors, silent no-ops, empty results) to test honesty under failure.
-3. **The simulated caller's biases.**
-   - Cooperative and consistent: it answers what's asked, rarely changes its mind, and never hangs up in frustration unless scripted.
-   - It still slips. Over three baseline runs it leaked hidden facts through sample lines and personas, and volunteered only-if-asked facts, until the brief was enforced in code. It invented details (S17's store number, which the agent then used; S07's "Dr. Patel"; S14's "Fifth and Main"). About 1–3 calls in 38 per batch are excluded as unfair tests.
-   - It can't say anything outside its brief, even something a real person would know (A02: Gloria doesn't know her own phone number).
-4. **What a passing run does and does not show.**
-   - It shows that on *this* scenario, with *this* caller behavior, one trial, the agent reached the required outcomes, made no false claims, and handled the caller acceptably by the rubric.
-   - It doesn't show the agent would pass again (one trial; the agent and the caller are both random), would pass with a real caller or voice, or is right about things the rubric doesn't check. Calibration found 4 calls you'd fail that the rubric passed.
-5. **What would be needed to trust results on real traffic.**
-   - A reviewed sample of real calls, labelled with the same rubric, to check the scenarios look like real calls and the grader agrees with reviewers on them.
-   - Several trials per scenario, a second reviewer, and a judge from a different model family than the simulator.
-   - Voice in the loop.
-   - See PRODUCTION.md.
+**1. Everything that makes a phone call a phone call is missing.** Callers here are typed text, so there are no speech-recognition errors on drug names, dates of birth and store names ("sertraline" versus "Zoloft", "3/14/95"), which is where I'd expect many real failures. Nobody talks over the agent, hesitates, or goes silent; the caller always waits for a full turn. The agent's response time is recorded but doesn't affect the caller, and tone is written in: Gloria's "what, honey?" is scripted, not heard.
+
+**2. The mock pharmacy follows my rules, but it's simpler than a real one.** It models what I know matters: the receiving pharmacy requests a transfer, transfers between Harbor stores are instant for non-controlled drugs, controlled drugs go to a pharmacist, the home store is the default store, and the agent can't see stock. It leaves out insurance and price checks and refill-too-soon edits. It has no protection against duplicate orders, which is why S01-F2's duplicate refill was possible; a real system might block it. Its store search only knows Harbor's own stores, which is why transfers in from another pharmacy fail. Faults are injected on purpose to test honesty under failure, not to match real failure rates.
+
+**3. The simulated caller is more cooperative than real people, and it still slips.** It answers what's asked, rarely changes its mind, and never hangs up in frustration unless the scenario says to. It can't say anything outside its brief, even something a real person would obviously know: in A02, Gloria can't give her own phone number. And it makes mistakes. Over three baseline runs it leaked hidden facts through sample lines and persona text and volunteered details it should only give when asked, until those rules were enforced in code. It still occasionally invents a detail (S17's store number, which the agent then used; S07's "Dr. Patel"). Those calls are caught and excluded, one to three per batch of 38.
+
+**4. A passing call shows less than it seems.** A pass means that on this scenario, with this caller behavior, in one trial, the agent reached the required outcomes, made no false claims, and handled the caller acceptably by the rubric. It doesn't mean the agent would pass again: both the agent and the caller are random, and single calls flip between runs. It doesn't mean it would pass with a real caller or voice. And it doesn't mean the agent is right about things the rubric doesn't check: when I reviewed 16 calls, I would have failed 4 that the rubric passed.
+
+**5. What it would take to trust results on real traffic:**
+- A reviewed sample of real, de-identified calls, labelled with the same rubric, to check that my scenarios look like real calls and that the grader agrees with reviewers on them.
+- Several trials per scenario, a second pharmacy reviewer, and a grader from a different model family than the simulated caller.
+- Voice in the loop.
+
+PRODUCTION.md describes how I'd get there.
 
 ## 11. Resolved items
 - **Retry count must not affect grading** (author decision). S11-F1's "no more than 3 transfer attempts" check was dropped in dataset 2.1.1 to match it.
