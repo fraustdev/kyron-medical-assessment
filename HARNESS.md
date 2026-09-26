@@ -233,5 +233,5 @@ Each fix made the simulator enforce its brief *structurally* rather than by inst
    - Voice in the loop.
    - See PRODUCTION.md.
 
-## 11. Open items (noted, not decided)
-- **Retry count must not affect grading** (author decision). However, the frozen pharmacy dataset's check **S11-F1.state.5** ("does not retry the failing transfer more than 3 times") and the golden S11-F1.good's `for_part3` note both reference an attempt cap. Part 3 must decide whether that cap counts as "depending on retry count"; the harness only records attempts.
+## 11. Resolved items
+- **Retry count must not affect grading** (author decision). S11-F1's "no more than 3 transfer attempts" check was dropped in dataset 2.1.1 to match it.

@@ -6428,20 +6428,6 @@
                 "rx_id": "BW4471-JC-ALBU90"
               }
             }
-          },
-          {
-            "id": "S11-F1.state.5",
-            "source": "v2_added",
-            "text": "The agent does not retry the failing transfer more than 3 times.",
-            "kind": "must_not_do",
-            "check": {
-              "type": "tool_count",
-              "tool": "transfer_rx",
-              "where": {},
-              "op": "lte",
-              "value": 3
-            },
-            "failure_type": "over_caution"
           }
         ],
         "judged_checks": [

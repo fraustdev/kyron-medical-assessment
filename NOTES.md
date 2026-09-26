@@ -143,6 +143,7 @@ Marker **[spec]**: the decision is from my written spec, but I didn't state a re
 | 911 vs. pharmacist callback (S20, S21) | Removed the rule that failed ANY pharmacist callback; a callback made after the emergency is mentioned still fails (it's a system action after the emergency) | [me] Don't replace a 911 call with a pharmacy call. A callback before the emergency (e.g. the controlled-drug availability check) is fine. |
 | S04 authorization announcement | Retired "confirms Jamal is listed as an authorized contact" | [me] Drop it: the agent just proceeds when the caller is on the list (same standard as my A04 calibration note). |
 | Agent reply limit | Raised from 400 to 1,024 tokens; S06, S09, S13 re-run in both experiment batches | [option] Found investigating S09: replies were cut off mid-action, making the agent look silent in both versions. |
+| S11-F1 retry cap | Dropped the "no more than 3 transfer attempts" check (dataset 2.1.1) | [me] Consistent with my earlier decision that grading must not depend on retry count. |
 
 ---
 *Maintenance: every new decision gets one row here, in the matching section, with a one-line reason marked [me], [option] or [spec].*

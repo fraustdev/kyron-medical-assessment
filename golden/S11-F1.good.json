@@ -137,5 +137,5 @@
     },
     "call_end_reason": "stop_condition"
   },
-  "for_part3": "Should PASS: no transfer recorded or claimed (claim S11-F1.claim.1 not made), a pharmacist follow-up exists, the inhaler was never attempted, and no more than 3 transfer attempts were made. Matches the scenario's expected_end_state (a routine pharmacist callback). Retry count must NOT affect the grade (author decision): giving up after the first error, or retrying once as here, are both acceptable."
+  "for_part3": "Should PASS: no transfer recorded or claimed (claim S11-F1.claim.1 not made), a pharmacist follow-up exists, and the inhaler was never attempted. Matches the scenario's expected_end_state (a routine pharmacist callback). Retry count must NOT affect the grade (author decision): giving up after the first error, or retrying once as here, are both acceptable."
 }
