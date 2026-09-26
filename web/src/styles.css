@@ -317,13 +317,6 @@ input.note { width: 160px; font-size: 13px; min-height: 30px; padding: 4px 8px; 
 .inventory li { margin: 6px 0; }
 .button { display: inline-block; padding: 10px 16px; border-radius: var(--r-control); background: var(--ink); color: var(--label); font-weight: 700; text-decoration: none; }
 .button:hover { opacity: 0.9; }
-.page-list { list-style: none; padding: 0; margin: 0; }
-.page-list li { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule); }
-.page-list a { font-weight: 700; }
-.page-list span { color: var(--ink-2); max-width: 70ch; }
-.glossary { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 40px; }
-.glossary dt { font-weight: 700; }
-.glossary dd { margin: 2px 0 0; color: var(--ink-2); max-width: 62ch; }
 
 /* ------------------------------------------------------------------ call story */
 .story { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 32px; background: var(--label); border-radius: var(--r-surface); box-shadow: 0 0 0 1px var(--rule); padding: 20px 24px; margin: 20px 0 16px; }
@@ -347,6 +340,5 @@ details.tech .facts { margin-top: 12px; }
 @media (max-width: 1080px) {
   .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
   .flow li::after { display: none; }
-  .two-col, .glossary, .story { grid-template-columns: minmax(0, 1fr); }
-  .page-list li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .two-col, .story { grid-template-columns: minmax(0, 1fr); }
 }

@@ -11,23 +11,6 @@ const STEPS = [
   { title: "Human review", body: "An expert marks each result right or wrong. The lab measures how often the automatic grader agrees, so you know how far to trust it." },
 ];
 
-const PAGES = [
-  { to: "/calls", name: "Calls", body: "Every test call, whether it passed, and a line showing where it went wrong. Open one to read the conversation next to its grade." },
-  { to: "/compare", name: "Compare versions", body: "The same tests run against two versions of the agent: what got better, what got worse." },
-  { to: "/patterns", name: "Recurring failures", body: "Mistakes that show up again and again across calls, which is where the agent needs work." },
-  { to: "/calibration", name: "Review & calibration", body: "Your review of the grades, and how often the automatic grader agreed with you." },
-];
-
-const TERMS = [
-  ["Required outcome", "Something that must (or must not) end up in the pharmacy's records, like \"the refill is queued at the Main St store\". Checked by code, not by an AI."],
-  ["System action", "The agent using a pharmacy or clinic system: verifying identity, looking up prescriptions, queuing a refill. The caller can't see these."],
-  ["False claim", "The agent telling the caller something was done when the records show it wasn't done at that moment, such as \"your refill is ready\" before it was queued."],
-  ["Caller-handling check", "How the agent treated the caller: did it repeat slowly when asked, avoid rushing, tell her not to drive herself. Judged by an AI reading the transcript."],
-  ["Scripted moment", "A line the scenario makes the caller say when the agent reaches a certain point, like a correction or a mention of chest pain. Everything else the caller says is improvised."],
-  ["Batch", "One run of a set of scenarios against one version of the agent. Comparing batches shows whether a change helped."],
-  ["Your verdict", "Your own pass or fail on a result. It overrides the automatic grade everywhere, and feeds the calibration numbers."],
-];
-
 export function HowItWorks() {
   const o = useFetch(() => api.overview(), []);
   const d = o.data;
@@ -71,15 +54,6 @@ export function HowItWorks() {
         </section>
       </div>
 
-      <h2>The pages</h2>
-      <ul className="page-list">
-        {PAGES.map((p) => <li key={p.to}><Link to={p.to}>{p.name}</Link><span>{p.body}</span></li>)}
-      </ul>
-
-      <h2>Words used in this app</h2>
-      <dl className="glossary">
-        {TERMS.map(([t, def]) => <div key={t}><dt>{t}</dt><dd>{def}</dd></div>)}
-      </dl>
     </div>
   );
 }
