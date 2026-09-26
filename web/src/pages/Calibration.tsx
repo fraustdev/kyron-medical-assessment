@@ -57,7 +57,8 @@ export function Calibration() {
 
           <h2>Where you and the evaluator disagree</h2>
           {d.disagreements.length === 0 ? <p className="sub">Nowhere yet: the evaluator matched every finding you reviewed.</p> : (
-            <table className="runs">
+            <table className="runs disagreements">
+              <colgroup><col className="c-call" /><col className="c-finding" /><col className="c-verdict" /><col className="c-verdict" /><col /></colgroup>
               <thead><tr><th>Call</th><th>Finding</th><th>Evaluator</th><th>You</th><th>Your note</th></tr></thead>
               <tbody>{d.disagreements.map((x) => (
                 <tr key={x.run_id + x.item_id} className="static">

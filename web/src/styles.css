@@ -126,6 +126,13 @@ table.metrics { max-width: 820px; margin-bottom: 8px; }
 .sid { display: inline-block; font-weight: 700; color: var(--ink-2); background: var(--wash); border-radius: 6px; padding: 0 7px; margin-right: 4px; font-size: 13px; }
 .col-strip { width: 26%; min-width: 180px; }
 .runs td:last-child { white-space: nowrap; }
+/* Disagreements: fixed columns, so long notes wrap instead of squeezing the finding text. */
+table.disagreements { table-layout: fixed; }
+.disagreements .c-call { width: 84px; }
+.disagreements .c-finding { width: 36%; }
+.disagreements .c-verdict { width: 96px; }
+.disagreements td { overflow-wrap: anywhere; }
+.runs.disagreements td:last-child { white-space: normal; }
 .change { font-weight: 700; }
 .change.improved { color: var(--pass); }
 .change.regressed { color: var(--fail); }
