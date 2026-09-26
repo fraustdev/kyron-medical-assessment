@@ -266,29 +266,6 @@ export function compare(db: Db, a: string, b: string) {
   return { a: batchStats(db, a), b: batchStats(db, b), rows };
 }
 
-// ------------------------------------------------------------------------------------------ overview
-
-export function overview(db: Db) {
-  const scenarios = db.allScenarios();
-  const byDataset: Record<string, { scenarios: number; categories: Record<string, number> }> = {};
-  for (const s of scenarios) {
-    const d = (byDataset[s._dataset] ??= { scenarios: 0, categories: {} });
-    d.scenarios += 1;
-    const cat = String((s as { category?: string }).category ?? "other");
-    d.categories[cat] = (d.categories[cat] ?? 0) + 1;
-  }
-  const runs = listRuns(db);
-  const latest = [...runs].sort((a, b) => b.started_at.localeCompare(a.started_at))[0];
-  const example = runs.find((r) => r.scenario_id === "S20") ?? runs.find((r) => r.verdict !== null) ?? null;
-  const judge = latest ? (getRun(db, latest.run_id)?.eval?.judge?.model ?? null) : null;
-  return {
-    datasets: byDataset, scenarios: scenarios.length, runs: runs.length, batches: new Set(runs.map((r) => r.batch)).size,
-    scored: runs.filter((r) => r.verdict !== null && r.verdict !== "invalid").length,
-    models: latest ? { agent: latest.agent_model, caller: latest.caller_model, judge } : null,
-    example: example ? { run_id: example.run_id, scenario_id: example.scenario_id, title: example.title } : null,
-  };
-}
-
 // ------------------------------------------------------------------------------------------ patterns
 
 export function patterns(db: Db, batch?: string) {

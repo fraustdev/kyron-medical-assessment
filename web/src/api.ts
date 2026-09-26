@@ -1,5 +1,5 @@
 /** Typed fetch helpers. The response types come straight from the server's query functions. */
-import type { batchStats, calibration, compare, getRun, listBatches, listRuns, overview, patterns, ReviewItem } from "../../src/server/api";
+import type { batchStats, calibration, compare, getRun, listBatches, listRuns, patterns, ReviewItem } from "../../src/server/api";
 
 export type Batch = ReturnType<typeof batchStats>;
 export type RunRow = ReturnType<typeof listRuns>[number];
@@ -9,7 +9,6 @@ export type Patterns = ReturnType<typeof patterns>;
 export type Calibration = ReturnType<typeof calibration>;
 export type { ReviewItem };
 export type Batches = ReturnType<typeof listBatches>;
-export type Overview = ReturnType<typeof overview>;
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const r = await fetch(`/api${path}`, init);
@@ -18,7 +17,6 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  overview: () => req<Overview>("/overview"),
   batches: () => req<Batches>("/batches"),
   runs: (q: Record<string, string> = {}) => req<RunRow[]>(`/runs?${new URLSearchParams(q)}`),
   run: (id: string) => req<RunDetail>(`/runs/${encodeURIComponent(id)}`),

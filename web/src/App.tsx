@@ -1,14 +1,12 @@
 import { Link, useLocation } from "./router";
 import { Calibration } from "./pages/Calibration";
-import { HowItWorks } from "./pages/HowItWorks";
 import { Compare } from "./pages/Compare";
 import { Patterns } from "./pages/Patterns";
 import { RunDetail } from "./pages/RunDetail";
 import { Runs } from "./pages/Runs";
 
 const NAV = [
-  { to: "/", label: "How it works", match: (p: string) => p === "/" },
-  { to: "/calls", label: "Calls", match: (p: string) => p.startsWith("/calls") || p.startsWith("/runs") },
+  { to: "/", label: "Calls", match: (p: string) => p === "/" || p.startsWith("/calls") || p.startsWith("/runs") },
   { to: "/compare", label: "Compare versions", match: (p: string) => p.startsWith("/compare") },
   { to: "/patterns", label: "Recurring failures", match: (p: string) => p.startsWith("/patterns") },
   { to: "/calibration", label: "Review & calibration", match: (p: string) => p.startsWith("/calibration") },
@@ -36,8 +34,7 @@ export function App() {
           : path.startsWith("/compare") ? <Compare />
           : path.startsWith("/patterns") ? <Patterns />
           : path.startsWith("/calibration") ? <Calibration />
-          : path.startsWith("/calls") ? <Runs />
-          : <HowItWorks />}
+          : <Runs />}
       </main>
     </div>
   );

@@ -2,7 +2,7 @@
 
 A lab that runs an AI pharmacy/clinic phone agent through realistic test calls, records everything, grades each call automatically with evidence pointing at the exact moment in the call, checks the grader against a pharmacy technician's judgment, and compares agent versions.
 
-**Start here:** `npm install`, then `npm run app` and open http://localhost:5174. The "How it works" page explains the lab. Setup details are in [README.md](README.md). **No API key is needed to review:** every model response is committed in `llm-cache/`, and all runs replay from it.
+**Start here:** `npm install`, then `npm run app` and open http://localhost:5174. It opens on the list of calls; open any call to see the conversation next to its grade. Setup details are in [README.md](README.md). **No API key is needed to review:** every model response is committed in `llm-cache/`, and all runs replay from it.
 
 ## What's where (the brief's "What to Submit" list)
 

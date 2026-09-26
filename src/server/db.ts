@@ -72,7 +72,6 @@ export class Db {
   }
 
   scenario(id: string) { return this.scenarios.get(id) ?? null; }
-  allScenarios() { return [...this.scenarios.values()]; }
 
   /** Load every trace under runs/ (and its .eval.json, if any). Returns the number of runs loaded. */
   importRuns(dir = RUNS_DIR): number {

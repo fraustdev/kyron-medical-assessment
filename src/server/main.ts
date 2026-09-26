@@ -8,7 +8,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { REPO_ROOT } from "../world/dataset.js";
-import { batchStats, calibration, compare, getRun, listBatches, listRuns, overview, patterns } from "./api.js";
+import { batchStats, calibration, compare, getRun, listBatches, listRuns, patterns } from "./api.js";
 import { openFreshDb, type Db } from "./db.js";
 
 const PORT = Number(process.env.PORT ?? 5174);
@@ -41,7 +41,6 @@ async function api(req: IncomingMessage, res: ServerResponse, url: URL): Promise
   const q = Object.fromEntries(url.searchParams);
   let m: RegExpExecArray | null;
 
-  if (req.method === "GET" && p === "/overview") return json(res, 200, overview(db));
   if (req.method === "GET" && p === "/batches") return json(res, 200, listBatches(db));
   if (req.method === "GET" && (m = /^\/batches\/(.+)$/.exec(p))) return json(res, 200, batchStats(db, decodeURIComponent(m[1]!)));
   if (req.method === "GET" && p === "/runs") return json(res, 200, listRuns(db, q));

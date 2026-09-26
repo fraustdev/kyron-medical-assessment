@@ -302,22 +302,6 @@ input.note { width: 160px; font-size: 13px; min-height: 30px; padding: 4px 8px; 
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
-/* ------------------------------------------------------------------ how it works */
-.start .lede { max-width: 66ch; font-size: 20px; }
-.flow { list-style: none; margin: 0 0 12px; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; counter-reset: none; }
-.flow li { position: relative; padding: 0 18px 0 0; }
-.flow li:not(:last-child)::after { content: ""; position: absolute; top: 15px; left: 38px; right: 8px; height: 2px; background: var(--rule); }
-.flow-n { position: relative; z-index: 1; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--label); font-weight: 700; margin-bottom: 10px; }
-.flow li:nth-child(3) .flow-n { background: var(--fail); }
-.flow h3 { margin-bottom: 4px; }
-.flow p { font-size: 14px; color: var(--ink-2); }
-.two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
-.two-col p { max-width: 62ch; }
-.inventory { padding-left: 18px; margin: 0 0 16px; }
-.inventory li { margin: 6px 0; }
-.button { display: inline-block; padding: 10px 16px; border-radius: var(--r-control); background: var(--ink); color: var(--label); font-weight: 700; text-decoration: none; }
-.button:hover { opacity: 0.9; }
-
 /* ------------------------------------------------------------------ call story */
 .story { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 32px; background: var(--label); border-radius: var(--r-surface); box-shadow: 0 0 0 1px var(--rule); padding: 20px 24px; margin: 20px 0 16px; }
 .story h2 { font-size: 15px; margin: 0 0 6px; color: var(--ink-2); }
@@ -338,7 +322,5 @@ details.tech summary { cursor: pointer; font-weight: 700; font-size: 14px; }
 details.tech .facts { margin-top: 12px; }
 
 @media (max-width: 1080px) {
-  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-  .flow li::after { display: none; }
-  .two-col, .story { grid-template-columns: minmax(0, 1fr); }
+  .story { grid-template-columns: minmax(0, 1fr); }
 }
