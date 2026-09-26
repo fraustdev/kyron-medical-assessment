@@ -41,7 +41,4 @@ export function validateTrace(doc: unknown): TraceValidationResult {
   return { valid, errors };
 }
 
-export function assertValidTrace(doc: unknown): asserts doc is Trace {
-  const r = validateTrace(doc);
-  if (!r.valid) throw new Error(`invalid trace:\n  ${r.errors.join("\n  ")}`);
-}
+

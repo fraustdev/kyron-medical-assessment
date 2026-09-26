@@ -25,7 +25,6 @@ export type RunStatus = (typeof RUN_STATUSES)[number];
 export const EVENT_TYPES = [
   "caller_turn", "agent_turn", "tool_call", "tool_result", "state_change", "director_decision", "error", "call_end",
 ] as const;
-export type EventType = (typeof EVENT_TYPES)[number];
 
 export const CALL_END_REASONS = ["stop_condition", "turn_cap", "agent_hangup", "transfer", "emergency_instruction"] as const;
 export type CallEndReason = (typeof CALL_END_REASONS)[number];
@@ -47,7 +46,6 @@ export type HandoffTarget = (typeof HANDOFF_TARGETS)[number];
 export const HANDOFF_TOOLS = ["transfer_to_nurse_line", "flag_callback", "flag_pharmacist_callback"] as const;
 
 export const TRIGGER_EVIDENCE_KINDS = ["tool_event", "llm_check", "turn_count", "rule"] as const;
-export type TriggerEvidenceKind = (typeof TRIGGER_EVIDENCE_KINDS)[number];
 
 export const VALIDITY_CHECK_NAMES = ["disclosure_leak", "move_fidelity", "invented_fact", "trace_integrity"] as const;
 export type ValidityCheckName = (typeof VALIDITY_CHECK_NAMES)[number];

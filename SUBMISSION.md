@@ -1,6 +1,6 @@
 # Submission: an evaluation lab for a healthcare voice agent
 
-A lab that runs an AI pharmacy/clinic phone agent through realistic test calls, records everything, grades each call automatically with evidence pointing at the exact moment in the call, checks the grader against a pharmacy technician's judgment, and compares agent versions.
+A lab that runs an AI pharmacy/clinic phone agent through realistic test calls, records everything, grades each call automatically with evidence pointing at the exact moment in the call, checks the grader against a humans judgment, and compares agent versions.
 
 **Start here:** `npm install`, then `npm run app` and open http://localhost:5174. It opens on the list of calls; open any call to see the conversation next to its grade. Setup details are in [README.md](README.md). **No API key is needed to review:** every model response is committed in `llm-cache/`, and all runs replay from it.
 
@@ -43,7 +43,6 @@ Every decision I made is logged, with a reason, in [NOTES.md](NOTES.md).
 
 ### Where I spent my time
 
-*Time limit:* the brief asks for eight hours within a 48-hour window. Kyron's founding engineer confirmed I could use the full 48 hours (NOTES.md, §8).
 
 I spent the time in roughly this order, with the biggest share on the first two blocks:
 

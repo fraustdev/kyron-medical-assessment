@@ -4,18 +4,16 @@
  * calls or results), and this turn's directive. It never sees scripted moves that haven't fired, locked facts,
  * expected outcomes or grading.
  */
-import { createHash } from "node:crypto";
+import { sha256 } from "../llm/cache.js";
 import { completeJson, parseJsonObject } from "../llm/json.js";
 import type { ChatClient, ChatMessage } from "../llm/openai-compat.js";
 
-export { parseJsonObject };
 import type { LlmCallInfo } from "../trace/types.js";
 import type { Dataset, Scenario } from "../world/dataset.js";
 import { Director, DIRECTOR_VERSION, heardTurns, renderTranscript, type Classifier, type ClassifierAnswer, type DirectorOutput } from "./director.js";
 import { overlap } from "./text.js";
 import type { Caller, CallerContext, CallerInfo, CallerUtterance } from "./types.js";
 
-const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
 // ------------------------------------------------------------------------------------------ classifier
 

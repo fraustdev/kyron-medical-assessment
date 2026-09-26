@@ -6,21 +6,19 @@
  * Every call goes through the LLM cache, so evaluations replay without a key. Part 3 calibrates this judge
  * against human labels; JUDGE_VERSION and the prompt hash identify exactly which judge produced a result.
  */
-import { createHash } from "node:crypto";
+import { sha256 } from "../llm/cache.js";
 import { completeJson } from "../llm/json.js";
 import type { ChatClient, ChatMessage } from "../llm/openai-compat.js";
 import type { LlmCallInfo, Trace } from "../trace/types.js";
 import { spokenNow } from "../agents/prompt.js";
 
 export const JUDGE_VERSION = "judge-v1";
-const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
 export interface ClaimSpec { id: string; claim: string; wantsValue: boolean }
 export interface ClaimOccurrence { seq: number; quote: string; date: string | null; time: string | null; text: string | null }
 export interface JudgedSpec { id: string; text: string; kind: string }
 export interface JudgedVerdict { verdict: "yes" | "no" | "n/a"; evidence_seq: number | null; why: string }
 
-export interface JudgeInfo { version: string; model: string; claims_prompt_sha256: string | null; checks_prompt_sha256: string | null }
 
 export interface Judge {
   readonly model: string;

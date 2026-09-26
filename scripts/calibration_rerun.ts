@@ -26,10 +26,11 @@ mkdirSync(OUT, { recursive: true });
 
 const labels = JSON.parse(readFileSync(join(REPO_ROOT, "labels", "labels.json"), "utf8")) as Label[];
 const runIds = [...new Set(labels.map((l) => l.run_id))];
+const index = readFileSync(join(SRC, "index.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as { run_id: string; file: string });
 const traceFile = (runId: string) => {
-  for (const f of JSON.parse(readFileSync(join(SRC, "index.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => `[${l}]`).join("").replace(/\]\[/g, ",")) as { run_id: string; file: string }[])
-    if (f.run_id === runId) return join(REPO_ROOT, f.file);
-  throw new Error(`no trace for ${runId}`);
+  const f = index.find((x) => x.run_id === runId);
+  if (!f) throw new Error(`no trace for ${runId}`);
+  return join(REPO_ROOT, f.file);
 };
 
 const judgeClient = new ChatClient(llmConfigFromEnv("JUDGE"), new LlmCache("live"));

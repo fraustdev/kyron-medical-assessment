@@ -8,7 +8,8 @@
  * The runner RECORDS. It never judges what the agent did. The only statuses it assigns are about whether the
  * run itself completed (completed / turn_cap_hit / agent_error / harness_error); sim_untrustworthy comes in M6.
  */
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
+import { sha256 } from "../llm/cache.js";
 import type { Agent, ExecutedToolCall, Message } from "../agents/types.js";
 import { ScriptExhaustedError } from "../agents/scripted.js";
 import type { Caller, CallerUtterance } from "../caller/types.js";
@@ -46,7 +47,6 @@ export function turnCapFor(scenario: Scenario): number {
   return DEFAULT_TURN_CAP;
 }
 
-const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
 export class AgentLoopError extends Error {
   constructor(rounds: number) { super(`agent requested tools for more than ${rounds} rounds in one turn`); this.name = "AgentLoopError"; }

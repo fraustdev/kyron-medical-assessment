@@ -9,6 +9,8 @@
  * Entries are small JSON files under llm-cache/, committed to the repo so reviewers can replay runs without a model.
  */
 import { createHash } from "node:crypto";
+
+export const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { REPO_ROOT } from "../world/dataset.js";

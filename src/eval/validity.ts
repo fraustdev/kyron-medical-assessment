@@ -19,7 +19,6 @@ import type { LlmCallInfo, RunValidity, Trace, ValidityCheck, ValidityStatus } f
 import { validateTrace } from "../trace/validate.js";
 import type { Scenario } from "../world/dataset.js";
 
-export const VALIDITY_VERSION = "validity-v1";
 
 // ------------------------------------------------------------------------------------------ deterministic checks
 
